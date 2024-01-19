@@ -1,13 +1,10 @@
 package org.nebula.jgl.data;
 
-import org.lwjgl.BufferUtils;
 import org.nebula.base.interfaces.IDisposable;
-
-import java.nio.ByteBuffer;
-import java.nio.IntBuffer;
+import org.nebula.io.Files;
+import org.nebula.io.ByteBufferedImage;
 
 import static org.lwjgl.opengl.GL33C.*;
-import static org.lwjgl.stb.STBImage.*;
 
 public class Texture implements IDisposable
 {
@@ -24,21 +21,15 @@ public class Texture implements IDisposable
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
-        IntBuffer widthBuffer = BufferUtils.createIntBuffer(1);
-        IntBuffer heightBuffer = BufferUtils.createIntBuffer(1);
-        IntBuffer channelBuffer = BufferUtils.createIntBuffer(1);
+        ByteBufferedImage image = Files.loadImage(filepath);
 
-        ByteBuffer image = stbi_load(filepath, widthBuffer, heightBuffer, channelBuffer, STBI_default);
+        width = image.getWidth();
+        height = image.getHeight();
+        channels = image.getChannels();
 
-        width = widthBuffer.get();
-        height = heightBuffer.get();
-        channels = channelBuffer.get();
-
-        final int colorMode = hasAlpha ? GL_RGBA : GL_RGB;
-        image.flip();
-        glTexImage2D(GL_TEXTURE_2D, 0, colorMode, widthBuffer.get(), heightBuffer.get(),
-                0, colorMode, GL_UNSIGNED_BYTE, image);
-        stbi_image_free(image);
+        final int colorMode = image.getChannels() == 4 ? GL_RGBA : GL_RGB;
+        glTexImage2D(GL_TEXTURE_2D, 0, colorMode, image.getWidth(), image.getHeight(),
+                0, colorMode, GL_UNSIGNED_BYTE, image.getBytes());
     }
 
     public int getId ()

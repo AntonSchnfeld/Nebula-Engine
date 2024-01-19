@@ -24,6 +24,7 @@ public class GLFWWindow implements IDisposable
     private int width, height;
     private String title;
     private GLFWErrorCallback errorCallback;
+    private ByteBufferedImage currentIcon;
 
     public GLFWWindow (final String title, final int x, final int y, final int width, final int height)
     {
@@ -141,6 +142,9 @@ public class GLFWWindow implements IDisposable
 
     public void setWindowIcon (ByteBufferedImage icon)
     {
+        if (currentIcon != null) currentIcon.dispose();
+        currentIcon = icon;
+
         GLFWImage.Buffer imageBuffer = GLFWImage.malloc(1);
         GLFWImage glfwImage = GLFWImage.malloc();
         glfwImage.set(icon.getWidth(), icon.getHeight(), icon.getBytes());
@@ -152,6 +156,7 @@ public class GLFWWindow implements IDisposable
     @Override
     public void dispose ()
     {
+        if (currentIcon != null) currentIcon.dispose();
         errorCallback.free();
         glfwDestroyWindow(windowObject);
         glfwTerminate();

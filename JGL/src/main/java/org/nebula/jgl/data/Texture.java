@@ -30,6 +30,8 @@ public class Texture implements IDisposable
         final int colorMode = image.getChannels() == 4 ? GL_RGBA : GL_RGB;
         glTexImage2D(GL_TEXTURE_2D, 0, colorMode, image.getWidth(), image.getHeight(),
                 0, colorMode, GL_UNSIGNED_BYTE, image.getBytes());
+
+        image.dispose();
     }
 
     public int getId ()

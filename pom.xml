@@ -12,7 +12,7 @@
         <module>JGL</module>
         <module>JGLFW</module>
         <module>Engine</module>
-        <module>BaseClasses</module>
+        <module>Core</module>
     </modules>
 
     <properties>

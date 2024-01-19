@@ -1,6 +1,7 @@
 package org.nebula.jgl.data;
 
 import org.lwjgl.BufferUtils;
+import org.nebula.base.interfaces.IDisposable;
 
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
@@ -8,7 +9,7 @@ import java.nio.IntBuffer;
 import static org.lwjgl.opengl.GL33C.*;
 import static org.lwjgl.stb.STBImage.*;
 
-public class Texture
+public class Texture implements IDisposable
 {
     private final int id, width, height, channels;
 
@@ -58,5 +59,11 @@ public class Texture
     public int getChannels ()
     {
         return channels;
+    }
+
+    @Override
+    public void dispose()
+    {
+        glDeleteTextures(id);
     }
 }

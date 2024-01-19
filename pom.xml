@@ -12,6 +12,7 @@
         <module>JGL</module>
         <module>JGLFW</module>
         <module>Engine</module>
+        <module>BaseClasses</module>
     </modules>
 
     <properties>

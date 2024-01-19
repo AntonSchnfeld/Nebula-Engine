@@ -1,7 +1,7 @@
 package org.nebula.jgl.data;
 
 import org.joml.*;
-import org.nebula.engine.interfaces.IDisposable;
+import org.nebula.base.interfaces.IDisposable;
 
 import java.util.HashMap;
 

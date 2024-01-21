@@ -9,6 +9,7 @@ public class Main
     {
         GLFWWindow window = new GLFWWindow("Hello GLFW");
         window.setWindowIcon(Files.loadImage("assets\\nebula.png"));
+        //window.center();
         window.loop();
         window.dispose();
     }

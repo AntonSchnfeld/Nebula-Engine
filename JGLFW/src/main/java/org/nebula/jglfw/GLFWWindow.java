@@ -1,12 +1,14 @@
 package org.nebula.jglfw;
 
+import org.joml.Vector2f;
 import org.lwjgl.BufferUtils;
-import org.lwjgl.glfw.GLFWErrorCallback;
-import org.lwjgl.glfw.GLFWImage;
-import org.lwjgl.glfw.GLFWVidMode;
+import org.lwjgl.glfw.*;
 import org.lwjgl.system.MemoryStack;
 import org.nebula.base.interfaces.IDisposable;
 import org.nebula.io.ByteBufferedImage;
+import org.nebula.jglfw.listeners.IGLFWInputListener;
+import org.nebula.jglfw.listeners.IGLFWWindowListener;
+import org.nebula.jglfw.listeners.RenderListener;
 
 import java.awt.*;
 import java.nio.IntBuffer;
@@ -21,40 +23,34 @@ public class GLFWWindow implements IDisposable
     public static final int DEFAULT_HEIGHT = 500;
 
     private long windowObject;
-    private int width, height;
-    private String title;
+    private RenderListener renderListener;
     private GLFWErrorCallback errorCallback;
     private ByteBufferedImage currentIcon;
+    private String title;
 
     public GLFWWindow (final String title, final int x, final int y, final int width, final int height)
     {
-        if (!glfwInit())
-            throw new IllegalStateException("Unable to initialize GLFW");
-
-        this.width = width;
-        this.height = height;
+        GLFW.init();
         this.title = title;
-
-        init();
+        init(title, x, y, width, height);
     }
-
     public GLFWWindow (final String title, final int width, final int height)
     {
-        this(title,
-                (Toolkit.getDefaultToolkit().getScreenSize().width / 2) - (width / 2),
-                (Toolkit.getDefaultToolkit().getScreenSize().height / 2) - (height / 2),
+        this(title, 0, 0,
                 width, height);
+        center();
     }
-
     public GLFWWindow (final String title)
     {
         this(title, DEFAULT_WIDTH, DEFAULT_HEIGHT);
+        center();
     }
 
-    private void init ()
+    private void init (String title, int x, int y, int width, int height)
     {
         // Set up an error callback. The default implementation
         // will print the error message in System.err.
+        renderListener = (window) -> {};
         errorCallback = GLFWErrorCallback.createPrint(System.err);
         errorCallback.set();
 
@@ -82,7 +78,8 @@ public class GLFWWindow implements IDisposable
             GLFWVidMode vidMode = glfwGetVideoMode(glfwGetPrimaryMonitor());
 
             // Center the window
-            glfwSetWindowPos(windowObject, (vidMode.width() - pWidth.get(0)) / 2, (vidMode.height() - pHeight.get(0)) / 2);
+            glfwSetWindowPos(windowObject, (vidMode.width() - pWidth.get(0)) / 2,
+                    (vidMode.height() - pHeight.get(0)) / 2);
         } // the stack frame is popped automatically
 
         // Make the OpenGL context current
@@ -90,69 +87,116 @@ public class GLFWWindow implements IDisposable
         // Enable v-sync
         glfwSwapInterval(1);
 
+        setPosition(x, y);
+
         glfwShowWindow(windowObject);
     }
-
     public void loop ()
     {
-
-        IntBuffer screenWidth = BufferUtils.createIntBuffer(1);
-        IntBuffer screenHeight = BufferUtils.createIntBuffer(1);
-
         while (!glfwWindowShouldClose(windowObject)) {
-            glfwGetFramebufferSize(windowObject, screenWidth, screenHeight);
-
-            screenWidth.clear();
-            screenHeight.clear();
-
-            width = screenWidth.get(0);
-            height = screenHeight.get(0);
 
             glfwSwapBuffers(windowObject);
+
+            renderListener.render(this);
 
             // Poll for window events. The key callback above will only be invoked during this call.
             glfwPollEvents();
         }
     }
-
-    public int getWidth ()
+    public void center ()
     {
-        return width;
+        GLFWVidMode vidMode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+        if (vidMode == null)
+            throw new IllegalStateException("Could not retrieve glfw vid mode");
+
+        Vector2f size = getSize();
+
+        setPosition((int) ((vidMode.width() - size.x) / 2), (int) ((vidMode.height() - size.y) / 2));
     }
 
-    public int getHeight ()
+    public void setWindowListener (IGLFWWindowListener listener)
     {
-        return height;
+        glfwSetWindowSizeCallback(windowObject,
+                (window, width, height) -> listener.onWindowResize(this, width, height));
+        glfwSetWindowPosCallback(windowObject,
+                (window, x, y) -> listener.onWindowPositionChange(this, x, y));
+        glfwSetWindowCloseCallback(windowObject,
+                window -> listener.onClose(this));
+        glfwSetFramebufferSizeCallback(windowObject,
+                (window, width, height) -> listener.onFrameBufferResize(this, width, height));
     }
-
-    public void setWidth (int width)
+    public void setWindowInputListener (IGLFWInputListener listener)
+    {
+        var callback = glfwSetCursorPosCallback(windowObject,
+                (window, x, y) -> listener.onCursorPositionChange(this, x, y));
+        glfwSetKeyCallback(windowObject,
+                (window, key, scancode, action, mods) -> listener.onKeyAction(this, key, scancode, action, mods));
+        glfwSetMouseButtonCallback(windowObject,
+                (window, button, action, mods) -> listener.onMouseButtonAction(this, button, action, mods));
+    }
+    public void setSize (int width, int height)
     {
         glfwSetWindowSize(windowObject, width, height);
     }
-
-    public void setHeight (int height)
+    public void setPosition (int x, int y)
     {
-        glfwSetWindowSize(windowObject, width, height);
+        glfwSetWindowPos(windowObject, x, y);
     }
-
-    public void setTitle (String title)
-    {
-        glfwSetWindowTitle(windowObject, title);
-    }
-
     public void setWindowIcon (ByteBufferedImage icon)
     {
+        // Dispose of previous icon if it exists
         if (currentIcon != null) currentIcon.dispose();
         currentIcon = icon;
 
+        // Allocate native resources
         GLFWImage.Buffer imageBuffer = GLFWImage.malloc(1);
         GLFWImage glfwImage = GLFWImage.malloc();
         glfwImage.set(icon.getWidth(), icon.getHeight(), icon.getBytes());
         imageBuffer.put(0, glfwImage);
 
+        // Seg window icon
         glfwSetWindowIcon(windowObject, imageBuffer);
+
+        // Free allocated resources
+        imageBuffer.free();
+        glfwImage.free();
+    }
+    public void setTitle (String title)
+    {
+        this.title = title;
+        glfwSetWindowTitle(windowObject, title);
+    }
+    public void setRenderer (RenderListener renderListener)
+    {
+        this.renderListener = renderListener;
     }
 
+    public RenderListener getRenderer ()
+    {
+        return renderListener;
+    }
+    public Vector2f getSize ()
+    {
+        IntBuffer width = BufferUtils.createIntBuffer(1);
+        IntBuffer height = BufferUtils.createIntBuffer(1);
+
+        glfwGetWindowSize(windowObject, width, height);
+
+        return new Vector2f(width.get(), height.get());
+    }
+    public String getTitle ()
+    {
+        return title;
+    }
+    public Vector2f getPosition ()
+    {
+        IntBuffer x = BufferUtils.createIntBuffer(1);
+        IntBuffer y = BufferUtils.createIntBuffer(1);
+
+        glfwGetWindowPos(windowObject, x, y);
+
+        return new Vector2f(x.get(), y.get());
+    }
     @Override
     public void dispose ()
     {

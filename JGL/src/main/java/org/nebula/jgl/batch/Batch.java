@@ -4,7 +4,9 @@ import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.joml.Vector4f;
 import org.nebula.jgl.data.Color;
+import org.nebula.jgl.data.Shader;
 import org.nebula.jgl.data.Texture;
+import org.nebula.jgl.data.TextureRegion;
 
 /**
  * <br>
@@ -28,8 +30,42 @@ import org.nebula.jgl.data.Texture;
  * @see org.joml.Vector2f
  * @see org.joml.Vector4f
  */
-public interface Batch
+public abstract class Batch
 {
+    protected Color color;
+    protected Shader shader;
+    protected boolean blendingEnabled;
+    protected Matrix4f projectionMatrix;
+
+    public Batch ()
+    {
+        this.color = Color.WHITE;
+        this.blendingEnabled = true;
+        this.projectionMatrix = new Matrix4f();
+    }
+
+    /**
+     * Prepares the Batch for rendering. This method is called before drawing any sprites.
+     * It sets up the necessary states and buffers to start the rendering process.
+     * Subsequent calls to draw sprites should be made between {@code begin()} and {@code end()}.
+     */
+    public abstract void begin();
+
+    /**
+     * Finishes the rendering process and performs any necessary cleanup.
+     * This method is called after all sprites have been drawn between {@code begin()} and {@code end()}.
+     * It ensures that any remaining buffered data is flushed and the rendering state is restored.
+     */
+    public abstract void end();
+
+    /**
+     * Flushes any remaining batched rendering commands to the graphics pipeline.
+     * This method is typically called automatically by {@code end()}, but can be used manually
+     * to force an immediate rendering of any pending batched data.
+     * It is essential to call {@code flush()} to ensure that all sprites are rendered correctly.
+     */
+    public abstract void flush();
+
     /**
      * Renders a textured quad with specified coordinates and texture coordinates.
      *
@@ -38,18 +74,8 @@ public interface Batch
      * @param y       the y-coordinate of the quad's position
      * @param width   the width of the quad
      * @param height  the height of the quad
-     * @param u1      the first texture coordinate along the x-axis
-     * @param v1      the first texture coordinate along the y-axis
-     * @param u2      the second texture coordinate along the x-axis
-     * @param v2      the second texture coordinate along the y-axis
-     * @param u3      the third texture coordinate along the x-axis
-     * @param v3      the third texture coordinate along the y-axis
-     * @param u4      the fourth texture coordinate along the x-axis
-     * @param v4      the fourth texture coordinate along the y-axis
      */
-    void texture(Texture texture, float x, float y, float width, float height, float u1, float v1, float u2,
-                 float v2, float u3, float v3, float u4, float v4);
-
+    public abstract void texture(TextureRegion texture, float x, float y, float width, float height);
     /**
      * Renders a textured quad with specified coordinates.
      *
@@ -59,8 +85,7 @@ public interface Batch
      * @param width   the width of the quad
      * @param height  the height of the quad
      */
-    void texture(Texture texture, float x, float y, float width, float height);
-
+    public abstract void texture(Texture texture, float x, float y, float width, float height);
     /**
      * Renders a textured quad with specified coordinates.
      *
@@ -68,8 +93,7 @@ public interface Batch
      * @param x       the x-coordinate of the quad's position
      * @param y       the y-coordinate of the quad's position
      */
-    void texture(Texture texture, float x, float y);
-
+    public abstract void texture(Texture texture, float x, float y);
     /**
      * Renders a quad with specified coordinates.
      *
@@ -82,8 +106,7 @@ public interface Batch
      * @param x4 the x-coordinate of the fourth vertex
      * @param y4 the y-coordinate of the fourth vertex
      */
-    void quad(float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4);
-
+    public abstract void quad(float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4);
     /**
      * Renders a quad with specified coordinates using {@link Vector2f} vertices.
      *
@@ -92,52 +115,29 @@ public interface Batch
      * @param v3 the position of the third vertex
      * @param v4 the position of the fourth vertex
      */
-    void quad(Vector2f v1, Vector2f v2, Vector2f v3, Vector2f v4);
-
+    public abstract void quad(Vector2f v1, Vector2f v2, Vector2f v3, Vector2f v4);
     /**
      * Renders a textured triangle with specified coordinates and texture coordinates.
      *
      * @param texture the texture to be rendered
      * @param x1      the x-coordinate of the first vertex
      * @param y1      the y-coordinate of the first vertex
-     * @param u1      the texture coordinate along the x-axis for the first vertex
-     * @param v1      the texture coordinate along the y-axis for the first vertex
      * @param x2      the x-coordinate of the second vertex
      * @param y2      the y-coordinate of the second vertex
-     * @param u2      the texture coordinate along the x-axis for the second vertex
-     * @param v2      the texture coordinate along the y-axis for the second vertex
      * @param x3      the x-coordinate of the third vertex
      * @param y3      the y-coordinate of the third vertex
-     * @param u3      the texture coordinate along the x-axis for the third vertex
-     * @param v3      the texture coordinate along the y-axis for the third vertex
      */
-    void texturedTriangle(Texture texture, float x1, float y1, float u1, float v1, float x2, float y2, float u2,
-                          float v2, float x3, float y3, float u3, float v3);
-
+    public abstract void texturedTriangle(TextureRegion texture, float x1, float y1, float x2, float y2,
+                                          float x3, float y3);
     /**
      * Renders a textured triangle with specified {@link Vector2f} vertices and texture coordinates.
      *
      * @param texture the texture to be rendered
      * @param xy1     the position of the first vertex
-     * @param uv1     the texture coordinate of the first vertex
      * @param xy2     the position of the second vertex
-     * @param uv2     the texture coordinate of the second vertex
      * @param xy3     the position of the third vertex
-     * @param uv3     the texture coordinate of the third vertex
      */
-    void texturedTriangle(Texture texture, Vector2f xy1, Vector2f uv1, Vector2f xy2, Vector2f uv2,
-                          Vector2f xy3, Vector2f uv3);
-
-    /**
-     * Renders a textured triangle with specified {@link Vector4f} vertices.
-     *
-     * @param texture the texture to be rendered
-     * @param v1      the position and texture coordinate of the first vertex
-     * @param v2      the position and texture coordinate of the second vertex
-     * @param v3      the position and texture coordinate of the third vertex
-     */
-    void texturedTriangle(Texture texture, Vector4f v1, Vector4f v2, Vector4f v3);
-
+    public abstract void texturedTriangle(TextureRegion texture, Vector2f xy1, Vector2f xy2, Vector2f xy3);
     /**
      * Renders a triangle with specified coordinates.
      *
@@ -148,8 +148,7 @@ public interface Batch
      * @param x3 the x-coordinate of the third vertex
      * @param y3 the y-coordinate of the third vertex
      */
-    void triangle(float x1, float y1, float x2, float y2, float x3, float y3);
-
+    public abstract void triangle(float x1, float y1, float x2, float y2, float x3, float y3);
     /**
      * Renders a triangle with specified {@link Vector2f} vertices.
      *
@@ -157,8 +156,7 @@ public interface Batch
      * @param v2 the position of the second vertex
      * @param v3 the position of the third vertex
      */
-    void triangle(Vector2f v1, Vector2f v2, Vector2f v3);
-
+    public abstract void triangle(Vector2f v1, Vector2f v2, Vector2f v3);
     /**
      * Renders a line between two specified coordinates.
      *
@@ -167,55 +165,67 @@ public interface Batch
      * @param x2 the x-coordinate of the ending point
      * @param y2 the y-coordinate of the ending point
      */
-    void line(float x1, float y1, float x2, float y2);
-
+    public abstract void line(float x1, float y1, float x2, float y2);
     /**
      * Renders a line between two specified {@link Vector2f} points.
      *
      * @param v1 the starting point
      * @param v2 the ending point
      */
-    void line(Vector2f v1, Vector2f v2);
+    public abstract void line(Vector2f v1, Vector2f v2);
 
     /**
      * Sets the color for subsequent rendering operations.
      *
      * @param color the color to be set
      */
-    void setColor(Color color);
-
+    public void setColor(Color color)
+    {
+        this.color = color;
+    }
     /**
      * Enables or disables blending for subsequent rendering operations.
      *
      * @param enabled true to enable blending, false to disable
      */
-    void setBlendingEnabled(boolean enabled);
-
+    public void setBlendingEnabled(boolean enabled)
+    {
+        this.blendingEnabled = enabled;
+    }
     /**
      * Sets the projection matrix for subsequent rendering operations.
      *
      * @param projectionMatrix the projection matrix to be set
      */
-    void setProjectionMatrix(Matrix4f projectionMatrix);
-
+    public void setProjectionMatrix(Matrix4f projectionMatrix)
+    {
+        this.projectionMatrix = projectionMatrix;
+    }
     /**
      * Retrieves the current color used for rendering.
      *
      * @return the current color
      */
-    Color getColor();
-
+    public Color getColor()
+    {
+        return color;
+    }
     /**
      * Checks if blending is currently enabled for rendering operations.
      *
      * @return true if blending is enabled, false otherwise
      */
-    boolean isBlendingEnabled();
-
+    public boolean isBlendingEnabled()
+    {
+        return blendingEnabled;
+    }
     /**
      * Retrieves the current projection matrix used for rendering.
      *
      * @return the current projection matrix
      */
-    Matrix4f getProjectionMatrix();
+    public Matrix4f getProjectionMatrix()
+    {
+        return projectionMatrix;
+    }
 }

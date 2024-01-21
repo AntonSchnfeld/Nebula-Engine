@@ -13,7 +13,8 @@ import static org.lwjgl.glfw.GLFW.*;
  * @see org.lwjgl.glfw.GLFW
  * @author Anton Schoenfeld
  */
-public class GLFW {
+public class JGLFW
+{
 
     private static boolean initialized = false;
     private static boolean terminated = true;
@@ -37,7 +38,7 @@ public class GLFW {
             terminated = false;
 
             // Register a shutdown hook to ensure GLFW termination on application exit
-            Runtime.getRuntime().addShutdownHook(new Thread(GLFW::terminate));
+            Runtime.getRuntime().addShutdownHook(new Thread(JGLFW::terminate));
         }
     }
 

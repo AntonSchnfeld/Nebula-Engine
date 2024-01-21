@@ -10,7 +10,6 @@ import org.nebula.jglfw.listeners.IGLFWInputListener;
 import org.nebula.jglfw.listeners.IGLFWWindowListener;
 import org.nebula.jglfw.listeners.RenderListener;
 
-import java.awt.*;
 import java.nio.IntBuffer;
 
 import static org.lwjgl.glfw.GLFW.*;
@@ -30,7 +29,7 @@ public class GLFWWindow implements IDisposable
 
     public GLFWWindow (final String title, final int x, final int y, final int width, final int height)
     {
-        GLFW.init();
+        JGLFW.init();
         this.title = title;
         init(title, x, y, width, height);
     }

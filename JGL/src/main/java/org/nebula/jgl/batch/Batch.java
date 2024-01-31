@@ -2,11 +2,10 @@ package org.nebula.jgl.batch;
 
 import org.joml.Matrix4f;
 import org.joml.Vector2f;
-import org.joml.Vector4f;
 import org.nebula.jgl.data.Color;
 import org.nebula.jgl.data.Shader;
-import org.nebula.jgl.data.Texture;
-import org.nebula.jgl.data.TextureRegion;
+import org.nebula.jgl.data.texture.Texture;
+import org.nebula.jgl.data.texture.TextureRegion;
 
 /**
  * <br>

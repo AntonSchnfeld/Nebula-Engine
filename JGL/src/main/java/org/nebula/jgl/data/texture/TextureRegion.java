@@ -1,4 +1,4 @@
-package org.nebula.jgl.data;
+package org.nebula.jgl.data.texture;
 
 /**
  * <br>

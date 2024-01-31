@@ -17,7 +17,6 @@ public class Files
         IntBuffer height = BufferUtils.createIntBuffer(1);
         IntBuffer channels = BufferUtils.createIntBuffer(1);
         ByteBuffer bytes = stbi_load(filePath, width, height, channels, STBI_default);
-
         if (bytes == null)
             throw new RuntimeException("stb Failure Reason: " + stbi_failure_reason());
 

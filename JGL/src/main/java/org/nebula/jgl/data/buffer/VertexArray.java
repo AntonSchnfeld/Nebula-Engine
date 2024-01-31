@@ -22,19 +22,16 @@ public class VertexArray implements IDisposable {
     public void enableVertexAttributeArray(int position) {
         bind();
         glEnableVertexAttribArray(position);
-        unbind();
     }
 
     public void vertexAttribPointer(int index, int size, Buffer.BufferDataType dataType, int stride, int pointer) {
         bind();
         glVertexAttribPointer(index, size, dataType.getGlConstant(), false, stride, pointer);
-        unbind();
     }
 
     public void disableVertexAttribArray(int position) {
         bind();
-        glDisableVertexAttribArray(0);
-        unbind();
+        glDisableVertexAttribArray(position);
     }
 
     @Override

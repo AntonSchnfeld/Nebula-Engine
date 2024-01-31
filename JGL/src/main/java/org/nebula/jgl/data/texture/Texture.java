@@ -1,4 +1,4 @@
-package org.nebula.jgl.data;
+package org.nebula.jgl.data.texture;
 
 import org.nebula.base.interfaces.IDisposable;
 import org.nebula.io.Files;

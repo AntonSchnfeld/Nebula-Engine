@@ -10,7 +10,7 @@ public class Texture implements IDisposable
 {
     private final int id, width, height, channels;
 
-    public Texture (final String filepath, boolean hasAlpha)
+    public Texture (final String filepath)
     {
         id = glGenTextures();
         glBindTexture(GL_TEXTURE_2D, id);

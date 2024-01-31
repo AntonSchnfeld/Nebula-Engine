@@ -2,8 +2,12 @@ package org.nebula.io;
 
 import org.lwjgl.BufferUtils;
 
+import java.io.BufferedReader;
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import static org.lwjgl.stb.STBImage.*;
 
@@ -22,5 +26,15 @@ public class Files
         bytes.flip();
 
         return new ByteBufferedImage(bytes, width.get(), height.get(), channels.get());
+    }
+
+    public static byte[] readFile (String filePath) throws IOException
+    {
+        return java.nio.file.Files.readAllBytes(Path.of(filePath));
+    }
+
+    public static String readFileAsString (String filePath) throws IOException
+    {
+        return new String(readFile(filePath));
     }
 }

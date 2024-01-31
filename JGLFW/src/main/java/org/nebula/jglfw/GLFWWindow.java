@@ -3,6 +3,10 @@ package org.nebula.jglfw;
 import org.joml.Vector2f;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.*;
+import org.lwjgl.opengl.GL;
+import org.lwjgl.opengl.GLCapabilities;
+import org.lwjgl.opengl.GLX;
+import org.lwjgl.opengl.GLXCapabilities;
 import org.lwjgl.system.MemoryStack;
 import org.nebula.base.interfaces.IDisposable;
 import org.nebula.io.ByteBufferedImage;
@@ -49,7 +53,7 @@ public class GLFWWindow implements IDisposable
     {
         // Set up an error callback. The default implementation
         // will print the error message in System.err.
-        renderListener = (window) -> {};
+        renderListener = () -> {};
         errorCallback = GLFWErrorCallback.createPrint(System.err);
         errorCallback.set();
 
@@ -90,18 +94,26 @@ public class GLFWWindow implements IDisposable
 
         glfwShowWindow(windowObject);
     }
+
+    public GLCapabilities createGLCapabilities()
+    {
+        return GL.createCapabilities();
+    }
+
     public void loop ()
     {
-        while (!glfwWindowShouldClose(windowObject)) {
+        while (!glfwWindowShouldClose(windowObject))
+        {
 
             glfwSwapBuffers(windowObject);
 
-            renderListener.render(this);
+            renderListener.render();
 
             // Poll for window events. The key callback above will only be invoked during this call.
             glfwPollEvents();
         }
     }
+
     public void center ()
     {
         GLFWVidMode vidMode = glfwGetVideoMode(glfwGetPrimaryMonitor());

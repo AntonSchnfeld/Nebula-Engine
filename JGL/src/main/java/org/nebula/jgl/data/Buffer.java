@@ -23,7 +23,8 @@ public class Buffer implements IDisposable
      * Enum representing different buffer usage patterns, specifying how the data will be accessed and modified.
      * Each enum constant corresponds to an OpenGL constant for buffer usage.
      */
-    public enum BufferUsage {
+    public enum BufferUsage
+    {
         DYNAMIC_DRAW(GL_DYNAMIC_DRAW),
         DYNAMIC_COPY(GL_DYNAMIC_COPY),
         DYNAMIC_READ(GL_DYNAMIC_READ),
@@ -50,17 +51,35 @@ public class Buffer implements IDisposable
         }
     }
 
+    public enum BufferType
+    {
+        ARRAY_BUFFER(GL_ARRAY_BUFFER),
+        ELEMENT_ARRAY_BUFFER(GL_ELEMENT_ARRAY_BUFFER);
+
+        private int glConstant;
+
+        BufferType (int glConstant)
+        {
+            this.glConstant = glConstant;
+        }
+
+        public int getGlConstant ()
+        {
+            return glConstant;
+        }
+    }
+
     private final int id;
     private final int bufferType;
 
     /**
      * Constructs a Buffer object with the specified buffer type (e.g., GL_ARRAY_BUFFER, GL_ELEMENT_ARRAY_BUFFER).
      *
-     * @param bufferType The OpenGL buffer type.
+     * @param type The OpenGL buffer type.
      */
-    public Buffer(final int bufferType) {
+    public Buffer(BufferType type) {
         id = glGenBuffers();
-        this.bufferType = bufferType;
+        this.bufferType = type.getGlConstant();
     }
 
     /**
@@ -83,9 +102,9 @@ public class Buffer implements IDisposable
      * @param data   The float array data to be stored in the buffer.
      * @param usage  The buffer usage pattern indicating how the data will be accessed and modified.
      */
-    public void put(float[] data, BufferUsage usage) {
+    public void data(float[] data, BufferUsage usage) {
         bind();
-        glBufferData(id, BufferUtils.createFloatBuffer(data.length).put(data), usage.getGlConstant());
+        glBufferData(bufferType, BufferUtils.createFloatBuffer(data.length).put(data), usage.getGlConstant());
         unbind();
     }
 
@@ -95,9 +114,9 @@ public class Buffer implements IDisposable
      * @param data   The FloatBuffer data to be stored in the buffer.
      * @param usage  The buffer usage pattern indicating how the data will be accessed and modified.
      */
-    public void put(FloatBuffer data, BufferUsage usage) {
+    public void data(FloatBuffer data, BufferUsage usage) {
         bind();
-        glBufferData(id, data, usage.getGlConstant());
+        glBufferData(bufferType, data, usage.getGlConstant());
         unbind();
     }
 
@@ -107,9 +126,9 @@ public class Buffer implements IDisposable
      * @param data   The int array data to be stored in the buffer.
      * @param usage  The buffer usage pattern indicating how the data will be accessed and modified.
      */
-    public void put(int[] data, BufferUsage usage) {
+    public void data(int[] data, BufferUsage usage) {
         bind();
-        glBufferData(id, BufferUtils.createIntBuffer(data.length).put(data), usage.getGlConstant());
+        glBufferData(bufferType, BufferUtils.createIntBuffer(data.length).put(data), usage.getGlConstant());
         unbind();
     }
 
@@ -119,9 +138,37 @@ public class Buffer implements IDisposable
      * @param data   The IntBuffer data to be stored in the buffer.
      * @param usage  The buffer usage pattern indicating how the data will be accessed and modified.
      */
-    public void put(IntBuffer data, BufferUsage usage) {
+    public void data(IntBuffer data, BufferUsage usage) {
         bind();
-        glBufferData(id, data, usage.getGlConstant());
+        glBufferData(bufferType, data, usage.getGlConstant());
+        unbind();
+    }
+
+    public void subData(float[] data, long offset)
+    {
+        bind();
+        glBufferSubData(bufferType, offset, BufferUtils.createFloatBuffer(data.length).put(data));
+        unbind();
+    }
+
+    public void subData(FloatBuffer data, long offset)
+    {
+        bind();
+        glBufferSubData(bufferType, offset, data);
+        unbind();
+    }
+
+    public void subData(int[] data, long offset)
+    {
+        bind();
+        glBufferSubData(bufferType, offset, BufferUtils.createIntBuffer(data.length).put(data));
+        unbind();
+    }
+
+    public void subData(IntBuffer data, long offset)
+    {
+        bind();
+        glBufferSubData(bufferType, offset, data);
         unbind();
     }
 

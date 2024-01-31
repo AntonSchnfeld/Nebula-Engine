@@ -1,4 +1,4 @@
-package org.nebula.jgl.data;
+package org.nebula.jgl.data.buffer;
 
 import org.lwjgl.BufferUtils;
 import org.nebula.base.interfaces.IDisposable;
@@ -56,7 +56,7 @@ public class Buffer implements IDisposable
         ARRAY_BUFFER(GL_ARRAY_BUFFER),
         ELEMENT_ARRAY_BUFFER(GL_ELEMENT_ARRAY_BUFFER);
 
-        private int glConstant;
+        private final int glConstant;
 
         BufferType (int glConstant)
         {
@@ -69,8 +69,26 @@ public class Buffer implements IDisposable
         }
     }
 
-    private final int id;
+    public enum BufferDataType {
+        FLOAT(GL_FLOAT),
+        UNSIGNED_INT(GL_UNSIGNED_INT),
+        UNSIGNED_SHORT(GL_UNSIGNED_SHORT),
+        UNSIGNED_BYTE(GL_UNSIGNED_BYTE);
+
+        private final int glConstant;
+
+        BufferDataType(int glConstant) {
+            this.glConstant = glConstant;
+        }
+
+        public int getGlConstant() {
+            return glConstant;
+        }
+    }
+
+    public final int id;
     private final int bufferType;
+    protected VertexArray vertexArray;
 
     /**
      * Constructs a Buffer object with the specified buffer type (e.g., GL_ARRAY_BUFFER, GL_ELEMENT_ARRAY_BUFFER).
@@ -80,6 +98,10 @@ public class Buffer implements IDisposable
     public Buffer(BufferType type) {
         id = glGenBuffers();
         this.bufferType = type.getGlConstant();
+    }
+
+    public VertexArray getVertexArray() {
+        return vertexArray;
     }
 
     /**
@@ -102,11 +124,10 @@ public class Buffer implements IDisposable
      * @param data   The float array data to be stored in the buffer.
      * @param usage  The buffer usage pattern indicating how the data will be accessed and modified.
      */
-    public void data(float[] data, BufferUsage usage) {
-        bind();
-        glBufferData(bufferType, BufferUtils.createFloatBuffer(data.length).put(data), usage.getGlConstant());
-        unbind();
-    }
+        public void data(float[] data, BufferUsage usage) {
+            bind();
+            glBufferData(bufferType, data, usage.getGlConstant());
+        }
 
     /**
      * Stores the specified FloatBuffer data in the buffer with the given usage pattern.
@@ -117,7 +138,6 @@ public class Buffer implements IDisposable
     public void data(FloatBuffer data, BufferUsage usage) {
         bind();
         glBufferData(bufferType, data, usage.getGlConstant());
-        unbind();
     }
 
     /**
@@ -128,8 +148,7 @@ public class Buffer implements IDisposable
      */
     public void data(int[] data, BufferUsage usage) {
         bind();
-        glBufferData(bufferType, BufferUtils.createIntBuffer(data.length).put(data), usage.getGlConstant());
-        unbind();
+        glBufferData(bufferType, data, usage.getGlConstant());
     }
 
     /**
@@ -141,35 +160,30 @@ public class Buffer implements IDisposable
     public void data(IntBuffer data, BufferUsage usage) {
         bind();
         glBufferData(bufferType, data, usage.getGlConstant());
-        unbind();
     }
 
     public void subData(float[] data, long offset)
     {
         bind();
         glBufferSubData(bufferType, offset, BufferUtils.createFloatBuffer(data.length).put(data));
-        unbind();
     }
 
     public void subData(FloatBuffer data, long offset)
     {
         bind();
         glBufferSubData(bufferType, offset, data);
-        unbind();
     }
 
     public void subData(int[] data, long offset)
     {
         bind();
         glBufferSubData(bufferType, offset, BufferUtils.createIntBuffer(data.length).put(data));
-        unbind();
     }
 
     public void subData(IntBuffer data, long offset)
     {
         bind();
         glBufferSubData(bufferType, offset, data);
-        unbind();
     }
 
     /**

@@ -3,9 +3,11 @@ package org.nebula.jgl.batch;
 import org.joml.Vector2f;
 import org.nebula.jgl.data.Texture;
 import org.nebula.jgl.data.TextureRegion;
+import org.nebula.jgl.data.buffer.VertexArray;
 
 public class RenderBatch extends Batch
 {
+
     public RenderBatch ()
     {
         super();

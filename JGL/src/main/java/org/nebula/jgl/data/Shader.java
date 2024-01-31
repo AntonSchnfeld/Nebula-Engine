@@ -32,8 +32,7 @@ import static org.lwjgl.opengl.GL33C.*;
  * @see org.joml.Matrix3f
  * @see org.joml.Matrix4f
  */
-public class Shader implements IDisposable
-{
+public class Shader implements IDisposable {
 
     private final int id;
     private final HashMap<String, Integer> uniformVariables;
@@ -44,8 +43,7 @@ public class Shader implements IDisposable
      * @param vertexSource   the source code for the vertex shader
      * @param fragmentSource the source code for the fragment shader
      */
-    public Shader(final String vertexSource, final String fragmentSource)
-    {
+    public Shader(final String vertexSource, final String fragmentSource) {
         uniformVariables = new HashMap<>();
 
         id = glCreateProgram();
@@ -59,13 +57,26 @@ public class Shader implements IDisposable
         glCompileShader(vertexShader);
         glCompileShader(fragmentShader);
 
+        if (glGetShaderi(vertexShader, GL_COMPILE_STATUS) == GL_FALSE)
+            throw new ShaderException(glGetShaderInfoLog(vertexShader));
+        if (glGetShaderi(fragmentShader, GL_COMPILE_STATUS) == GL_FALSE)
+            throw new ShaderException(glGetShaderInfoLog(fragmentShader));
+
         glAttachShader(id, vertexShader);
         glAttachShader(id, fragmentShader);
 
         glLinkProgram(id);
 
+        if (glGetProgrami(id, GL_LINK_STATUS) == GL_FALSE)
+            throw new ShaderException(glGetProgramInfoLog(id));
+
         glDeleteShader(vertexShader);
         glDeleteShader(fragmentShader);
+
+        glValidateProgram(id);
+
+        if (glGetProgrami(id, GL_VALIDATE_STATUS) == GL_FALSE)
+            throw new ShaderException(glGetProgramInfoLog(id));
     }
 
     /**
@@ -74,9 +85,12 @@ public class Shader implements IDisposable
      * This method sets the current OpenGL shader program to the one represented by this Shader object.
      * </p>
      */
-    public void bind()
-    {
+    public void bind() {
         glUseProgram(id);
+    }
+
+    public void unbind() {
+        glUseProgram(0);
     }
 
     /**
@@ -85,8 +99,7 @@ public class Shader implements IDisposable
      * @param uniformName the name of the uniform variable
      * @return the location of the uniform variable
      */
-    public int getUniformLocation(final String uniformName)
-    {
+    public int getUniformLocation(final String uniformName) {
         return glGetUniformLocation(id, uniformName);
     }
 
@@ -96,8 +109,7 @@ public class Shader implements IDisposable
      * @param uniformName the name of the uniform variable
      * @param value       the float value to upload
      */
-    public void uploadUniformFloat(final String uniformName, final float value)
-    {
+    public void uploadUniformFloat(final String uniformName, final float value) {
         if (!uniformVariables.containsKey(uniformName))
             uniformVariables.put(uniformName, getUniformLocation(uniformName));
 
@@ -112,8 +124,7 @@ public class Shader implements IDisposable
      * @param uniformName the name of the uniform variable
      * @param value       the integer value to upload
      */
-    public void uploadUniformInt(final String uniformName, final int value)
-    {
+    public void uploadUniformInt(final String uniformName, final int value) {
         if (!uniformVariables.containsKey(uniformName))
             uniformVariables.put(uniformName, getUniformLocation(uniformName));
 
@@ -128,8 +139,7 @@ public class Shader implements IDisposable
      * @param uniformName the name of the uniform variable
      * @param value       the Vector2f value to upload
      */
-    public void uploadUniformVec2f(final String uniformName, final Vector2f value)
-    {
+    public void uploadUniformVec2f(final String uniformName, final Vector2f value) {
         if (!uniformVariables.containsKey(uniformName))
             uniformVariables.put(uniformName, getUniformLocation(uniformName));
 
@@ -144,8 +154,7 @@ public class Shader implements IDisposable
      * @param uniformName the name of the uniform variable
      * @param value       the Vector3f value to upload
      */
-    public void uploadUniformVec3f(final String uniformName, final Vector3f value)
-    {
+    public void uploadUniformVec3f(final String uniformName, final Vector3f value) {
         if (!uniformVariables.containsKey(uniformName))
             uniformVariables.put(uniformName, getUniformLocation(uniformName));
 
@@ -160,8 +169,7 @@ public class Shader implements IDisposable
      * @param uniformName the name of the uniform variable
      * @param value       the Vector4f value to upload
      */
-    public void uploadUniformVec4f(final String uniformName, final Vector4f value)
-    {
+    public void uploadUniformVec4f(final String uniformName, final Vector4f value) {
         if (!uniformVariables.containsKey(uniformName))
             uniformVariables.put(uniformName, getUniformLocation(uniformName));
 
@@ -177,8 +185,7 @@ public class Shader implements IDisposable
      * @param uniformName the name of the uniform variable
      * @param value       the boolean value to upload
      */
-    public void uploadUniformBool(final String uniformName, final boolean value)
-    {
+    public void uploadUniformBool(final String uniformName, final boolean value) {
         if (!uniformVariables.containsKey(uniformName))
             uniformVariables.put(uniformName, getUniformLocation(uniformName));
 
@@ -193,8 +200,7 @@ public class Shader implements IDisposable
      * @param uniformName the name of the uniform variable
      * @param value       the Vector2i value to upload
      */
-    public void uploadUniformVec2i(final String uniformName, final Vector2i value)
-    {
+    public void uploadUniformVec2i(final String uniformName, final Vector2i value) {
         if (!uniformVariables.containsKey(uniformName))
             uniformVariables.put(uniformName, getUniformLocation(uniformName));
 
@@ -209,8 +215,7 @@ public class Shader implements IDisposable
      * @param uniformName the name of the uniform variable
      * @param value       the Vector3i value to upload
      */
-    public void uploadUniformVec3i(final String uniformName, final Vector3i value)
-    {
+    public void uploadUniformVec3i(final String uniformName, final Vector3i value) {
         if (!uniformVariables.containsKey(uniformName))
             uniformVariables.put(uniformName, getUniformLocation(uniformName));
 
@@ -225,8 +230,7 @@ public class Shader implements IDisposable
      * @param uniformName the name of the uniform variable
      * @param value       the Vector4i value to upload
      */
-    public void uploadUniformVec4i(final String uniformName, final Vector4i value)
-    {
+    public void uploadUniformVec4i(final String uniformName, final Vector4i value) {
         if (!uniformVariables.containsKey(uniformName))
             uniformVariables.put(uniformName, getUniformLocation(uniformName));
 
@@ -241,8 +245,7 @@ public class Shader implements IDisposable
      * @param uniformName the name of the uniform variable
      * @param value       the Matrix2f value to upload
      */
-    public void uploadUniformMat2f(final String uniformName, final Matrix2f value)
-    {
+    public void uploadUniformMat2f(final String uniformName, final Matrix2f value) {
         if (!uniformVariables.containsKey(uniformName))
             uniformVariables.put(uniformName, getUniformLocation(uniformName));
 
@@ -257,8 +260,7 @@ public class Shader implements IDisposable
      * @param uniformName the name of the uniform variable
      * @param value       the Matrix3f value to upload
      */
-    public void uploadUniformMat3f(final String uniformName, final Matrix3f value)
-    {
+    public void uploadUniformMat3f(final String uniformName, final Matrix3f value) {
         if (!uniformVariables.containsKey(uniformName))
             uniformVariables.put(uniformName, getUniformLocation(uniformName));
 
@@ -273,8 +275,7 @@ public class Shader implements IDisposable
      * @param uniformName the name of the uniform variable
      * @param value       the Matrix4f value to upload
      */
-    public void uploadUniformMat4f(final String uniformName, final Matrix4f value)
-    {
+    public void uploadUniformMat4f(final String uniformName, final Matrix4f value) {
         if (!uniformVariables.containsKey(uniformName))
             uniformVariables.put(uniformName, getUniformLocation(uniformName));
 
@@ -290,8 +291,7 @@ public class Shader implements IDisposable
      * @return true if the objects are equal, false otherwise
      */
     @Override
-    public boolean equals(Object obj)
-    {
+    public boolean equals(Object obj) {
         if (obj == null)
             return true;
         if (obj instanceof Shader that)
@@ -305,8 +305,7 @@ public class Shader implements IDisposable
      * @return the hash code
      */
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         return id;
     }
 
@@ -314,8 +313,7 @@ public class Shader implements IDisposable
      * Releases associated OpenGL resources by deleting the shader program.
      */
     @Override
-    public void dispose()
-    {
+    public void dispose() {
         glDeleteProgram(id);
     }
 }

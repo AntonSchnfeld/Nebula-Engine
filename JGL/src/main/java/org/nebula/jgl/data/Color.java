@@ -49,8 +49,7 @@ public class Color {
      * @param blue  the blue component, within the range [0, 1]
      * @param alpha the alpha (opacity) component, within the range [0, 1]
      */
-    public Color(float red, float green, float blue, float alpha)
-    {
+    public Color(float red, float green, float blue, float alpha) {
         this.red = Math.clamp(red, 0, 1);
         this.green = Math.clamp(green, 0, 1);
         this.blue = Math.clamp(blue, 0, 1);
@@ -64,8 +63,7 @@ public class Color {
      * @param green the green component, within the range [0, 1]
      * @param blue  the blue component, within the range [0, 1]
      */
-    public Color(float red, float green, float blue)
-    {
+    public Color(float red, float green, float blue) {
         this(red, green, blue, 1);
     }
 
@@ -74,8 +72,7 @@ public class Color {
      *
      * @return the red component, within the range [0, 1]
      */
-    public float getRed()
-    {
+    public float getRed() {
         return red;
     }
 
@@ -84,8 +81,7 @@ public class Color {
      *
      * @param red the red component, within the range [0, 1]
      */
-    public void setRed(float red)
-    {
+    public void setRed(float red) {
         this.red = red;
     }
 
@@ -94,8 +90,7 @@ public class Color {
      *
      * @return the green component, within the range [0, 1]
      */
-    public float getGreen()
-    {
+    public float getGreen() {
         return green;
     }
 
@@ -104,8 +99,7 @@ public class Color {
      *
      * @param green the green component, within the range [0, 1]
      */
-    public void setGreen(float green)
-    {
+    public void setGreen(float green) {
         this.green = green;
     }
 
@@ -114,8 +108,7 @@ public class Color {
      *
      * @return the blue component, within the range [0, 1]
      */
-    public float getBlue()
-    {
+    public float getBlue() {
         return blue;
     }
 
@@ -124,8 +117,7 @@ public class Color {
      *
      * @param blue the blue component, within the range [0, 1]
      */
-    public void setBlue(float blue)
-    {
+    public void setBlue(float blue) {
         this.blue = blue;
     }
 
@@ -134,8 +126,7 @@ public class Color {
      *
      * @return the alpha component, within the range [0, 1]
      */
-    public float getAlpha()
-    {
+    public float getAlpha() {
         return alpha;
     }
 
@@ -144,8 +135,7 @@ public class Color {
      *
      * @param alpha the alpha component, within the range [0, 1]
      */
-    public void setAlpha(float alpha)
-    {
+    public void setAlpha(float alpha) {
         this.alpha = alpha;
     }
 }

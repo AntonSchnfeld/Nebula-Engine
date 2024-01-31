@@ -9,8 +9,7 @@ package org.nebula.jgl.data;
  * and (1, 1) is the upper-right corner of the texture.
  * @author Anton Schoenfeld
  */
-public class TextureRegion
-{
+public class TextureRegion {
 
     /** The texture containing the region. */
     private final Texture texture;
@@ -39,8 +38,7 @@ public class TextureRegion
      * @param width   The width of the region.
      * @param height  The height of the region.
      */
-    public TextureRegion(Texture texture, float startX, float startY, float width, float height)
-    {
+    public TextureRegion(Texture texture, float startX, float startY, float width, float height) {
         this.texture = texture;
         this.uvs = new float[]{
                 startX, startY - height,     // Lower left
@@ -80,8 +78,7 @@ public class TextureRegion
      * @param width   The width of the region in pixels.
      * @param height  The height of the region in pixels.
      */
-    public TextureRegion(Texture texture, int startX, int startY, int width, int height)
-    {
+    public TextureRegion(Texture texture, int startX, int startY, int width, int height) {
         this(texture, (float) startX / texture.getWidth(), (float) startY / texture.getHeight(),
                 (float) width / texture.getWidth(), (float) height / texture.getHeight());
     }
@@ -91,8 +88,7 @@ public class TextureRegion
      *
      * @param texture The texture.
      */
-    public TextureRegion(Texture texture)
-    {
+    public TextureRegion(Texture texture) {
         this(texture, 0f, 0f, 1f, 1f);
     }
 
@@ -101,8 +97,7 @@ public class TextureRegion
      *
      * @return The UV coordinates.
      */
-    public float[] getUvs()
-    {
+    public float[] getUvs() {
         return uvs.clone(); // Returning a copy to maintain immutability
     }
 
@@ -111,8 +106,7 @@ public class TextureRegion
      *
      * @return The texture.
      */
-    public Texture getTexture()
-    {
+    public Texture getTexture() {
         return texture;
     }
 }

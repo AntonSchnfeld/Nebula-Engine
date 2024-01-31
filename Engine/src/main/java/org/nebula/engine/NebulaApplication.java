@@ -3,8 +3,6 @@ package org.nebula.engine;
 import org.nebula.io.Files;
 import org.nebula.jglfw.GLFWWindow;
 
-import java.nio.channels.FileLock;
-
 public class NebulaApplication
 {
     private ApplicationListener applicationListener;
@@ -15,7 +13,7 @@ public class NebulaApplication
         window = new GLFWWindow(title, width, height);
         window.center();
         window.setRenderer(listener::render);
-        window.setWindowIcon(Files.loadImage("assets/nebula.png"));
+        window.setWindowIcon(Files.readImage("assets/nebula.png"));
 
         listener.init();
 

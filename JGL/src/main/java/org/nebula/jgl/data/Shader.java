@@ -33,6 +33,8 @@ import static org.lwjgl.opengl.GL33C.*;
  * @see org.joml.Matrix4f
  */
 public class Shader implements IDisposable {
+    public static final String PROJECTION_MAT_NAME = "uProjection";
+    public static final String VIEW_MAT_NAME = "uView";
 
     private final int id;
     private final HashMap<String, Integer> uniformVariables;

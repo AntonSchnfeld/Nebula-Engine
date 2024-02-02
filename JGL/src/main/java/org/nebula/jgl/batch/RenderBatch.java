@@ -1,6 +1,7 @@
 package org.nebula.jgl.batch;
 
 import org.joml.Vector2f;
+import org.nebula.jgl.data.Shader;
 import org.nebula.jgl.data.Vertex;
 import org.nebula.jgl.data.buffer.Buffer;
 import org.nebula.jgl.data.buffer.VertexArray;
@@ -10,9 +11,13 @@ import org.nebula.jgl.data.texture.TextureRegion;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.lwjgl.opengl.GL33C.*;
+import static org.nebula.jgl.data.buffer.Buffer.*;
+import static org.nebula.jgl.data.Vertex.*;
+
 public class RenderBatch extends Batch {
     private final VertexArray triVao;
-    private final Buffer triBuffer, triElementBuffer;
+    private final Buffer triBuffer;
     private final List<Vertex> triVertices;
 
     private final List<Texture> textures;
@@ -24,7 +29,6 @@ public class RenderBatch extends Batch {
         this.maxTextures = maxTextures;
         triVao = new VertexArray();
         triBuffer = new Buffer(Buffer.BufferType.ARRAY_BUFFER);
-        triElementBuffer = new Buffer(Buffer.BufferType.ELEMENT_ARRAY_BUFFER);
         triVertices = new ArrayList<>();
 
         textures = new ArrayList<>();
@@ -41,7 +45,11 @@ public class RenderBatch extends Batch {
     private void init() {
         triVao.bind();
         triBuffer.bind();
-        triElementBuffer.bind();
+
+        triVao.vertexAttribPointer(POSITION_LOC, POSITION_SIZE, BufferDataType.FLOAT, VERTEX_SIZE_BYTES, POSITION_STRIDE);
+        triVao.vertexAttribPointer(COLOR_LOC, COLOR_SIZE, BufferDataType.FLOAT, VERTEX_SIZE_BYTES, COLOR_STRIDE);
+        triVao.vertexAttribPointer(UV_LOC, UV_SIZE, BufferDataType.FLOAT, VERTEX_SIZE_BYTES, UV_STRIDE);
+        triVao.vertexAttribPointer(TEXTURE_ID_LOC, TEXTURE_ID_SIZE, BufferDataType.FLOAT, VERTEX_SIZE_BYTES, TEXTURE_ID_STRIDE);
     }
 
     /**
@@ -67,6 +75,7 @@ public class RenderBatch extends Batch {
             throw new IllegalStateException("Can not call RenderBatch.end when RenderBatch is not rendering");
 
         rendering = false;
+        flush();
     }
 
     /**
@@ -74,7 +83,35 @@ public class RenderBatch extends Batch {
      */
     @Override
     public void flush() {
+        System.out.println("#################################################");
 
+        float[] triangleVertices = new float[VERTEX_SIZE * triVertices.size()];
+
+        for (int i = 0; i < triangleVertices.length; i+=Vertex.VERTEX_SIZE) {
+            Vertex vertex = triVertices.get(i / VERTEX_SIZE);
+            float[] array = vertex.toArray();
+            System.arraycopy(array, 0, triangleVertices, i, array.length);
+        }
+
+        for (int i = 0; i < triangleVertices.length; i++) {
+            if (i % VERTEX_SIZE == 0) System.out.println();
+            System.out.print(triangleVertices[i] + ((i + 1) % VERTEX_SIZE != 0 ? ", " : ""));
+        }
+
+        triVao.bind();
+        triBuffer.data(triangleVertices, Buffer.BufferUsage.DYNAMIC_DRAW);
+
+        shader.bind();
+
+        shader.uploadUniformMat4f(Shader.PROJECTION_MAT_NAME, projectionMatrix);
+        shader.uploadUniformMat4f(Shader.VIEW_MAT_NAME, viewMatrix);
+
+        triVao.bind();
+        triBuffer.bind();
+        glDrawArrays(GL_TRIANGLES, 0, triangleVertices.length);
+        final int error = glGetError();
+        if (error != GL_NO_ERROR)
+            throw new RuntimeException("GL Error code: " + error);
     }
 
     /**
@@ -130,9 +167,14 @@ public class RenderBatch extends Batch {
      */
     @Override
     public void texturedTriangle(TextureRegion texture, Vector2f v1, Vector2f v2, Vector2f v3) {
+        // Using this function without a texture is virtually the same as triangle
+        if (texture == null) {
+            triangle(v1, v2, v3);
+            return;
+        }
+
         if (!textures.contains(texture.getTexture()) && textures.size() >= maxTextures)
             throw new RuntimeException("Tried to add texture to RenderBatch even though there was no space");
-
     }
 
     /**
@@ -167,5 +209,11 @@ public class RenderBatch extends Batch {
     @Override
     public void line(Vector2f v1, Vector2f v2) {
 
+    }
+
+    @Override
+    public void dispose() {
+        triVao.dispose();
+        triBuffer.dispose();
     }
 }

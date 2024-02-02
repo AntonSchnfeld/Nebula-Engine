@@ -24,6 +24,9 @@
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/lwjgl/lwjgl-openal/3.3.3/lwjgl-openal-3.3.3-natives-windows.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/com/code-disaster/steamworks4j/steamworks4j-server/1.9.0/steamworks4j-server-1.9.0.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/com/code-disaster/steamworks4j/steamworks4j/1.9.0/steamworks4j-1.9.0.jar" path-in-jar="/" />
+      <element id="directory" name="assets">
+        <element id="dir-copy" path="$PROJECT_DIR$/assets" />
+      </element>
     </root>
   </artifact>
 </component>

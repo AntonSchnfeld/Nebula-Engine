@@ -2,6 +2,7 @@ package org.nebula.jgl.batch;
 
 import org.joml.Matrix4f;
 import org.joml.Vector2f;
+import org.nebula.base.interfaces.IDisposable;
 import org.nebula.jgl.data.Color;
 import org.nebula.jgl.data.Shader;
 import org.nebula.jgl.data.texture.Texture;
@@ -29,18 +30,21 @@ import org.nebula.jgl.data.texture.TextureRegion;
  * @see org.joml.Vector2f
  * @see org.joml.Vector4f
  */
-public abstract class Batch
+public abstract class Batch implements IDisposable
 {
     protected Color color;
     protected Shader shader;
     protected boolean blendingEnabled;
     protected Matrix4f projectionMatrix;
 
+    protected Matrix4f viewMatrix;
+
     public Batch ()
     {
         this.color = Color.WHITE;
         this.blendingEnabled = true;
         this.projectionMatrix = new Matrix4f();
+        this.viewMatrix = new Matrix4f();
     }
 
     /**
@@ -199,6 +203,18 @@ public abstract class Batch
     public void setProjectionMatrix(Matrix4f projectionMatrix)
     {
         this.projectionMatrix = projectionMatrix;
+    }
+    public void setViewMatrix(Matrix4f viewMatrix) {
+        this.viewMatrix = viewMatrix;
+    }
+    public void setShader (Shader shader) {
+        this.shader = shader;
+    }
+    public Matrix4f getViewMatrix() {
+        return viewMatrix;
+    }
+    public Shader getShader() {
+        return shader;
     }
     /**
      * Retrieves the current color used for rendering.

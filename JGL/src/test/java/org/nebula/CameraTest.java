@@ -9,8 +9,6 @@ import org.nebula.jgl.data.buffer.VertexArray;
 import org.nebula.jglfw.GLFWWindow;
 
 import static org.lwjgl.opengl.GL11C.*;
-import static org.nebula.jgl.data.Vertex.*;
-import static org.nebula.jgl.data.Vertex.TEXTURE_ID_LOC;
 
 public class CameraTest {
 

@@ -12,7 +12,7 @@ public class Vertex {
     public static final int COLOR_LOC = 1;
     public static final int COLOR_SIZE = 4;
     public static final int COLOR_SIZE_BYTES = COLOR_SIZE * Float.BYTES;
-    public static final int COLOR_POINTER = POSITION_POINTER + POSITION_SIZE;
+    public static final int COLOR_POINTER = POSITION_POINTER + POSITION_SIZE_BYTES;
 
     public static final int UV_LOC = 2;
     public static final int UV_SIZE = 2;
@@ -75,7 +75,7 @@ public class Vertex {
         return new float[] {
                 position.x, position.y,
                 color.getRed(), color.getBlue(), color.getGreen(), color.getAlpha(),
-                uv == null ? -1 : uv.x, uv == null ? -1 : uv.y,
+                uv.x, uv.y,
                 textureId
         };
     }

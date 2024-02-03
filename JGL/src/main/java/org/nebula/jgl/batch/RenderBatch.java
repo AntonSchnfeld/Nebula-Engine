@@ -197,9 +197,9 @@ public class RenderBatch extends Batch {
      */
     @Override
     public void triangle(Vector2f v1, Vector2f v2, Vector2f v3) {
-        triVertices.add(new Vertex(v1, color, null, -1));
-        triVertices.add(new Vertex(v2, color, null, -1));
-        triVertices.add(new Vertex(v3, color, null, -1));
+        triVertices.add(new Vertex(v1, color, new Vector2f(-1, -1), -1));
+        triVertices.add(new Vertex(v2, color, new Vector2f(-1, -1), -1));
+        triVertices.add(new Vertex(v3, color, new Vector2f(-1, -1), -1));
     }
 
     /**

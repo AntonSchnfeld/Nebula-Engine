@@ -74,7 +74,7 @@ public class Vertex {
     public float[] toArray() {
         return new float[] {
                 position.x, position.y,
-                color.getRed(), color.getBlue(), color.getGreen(), color.getAlpha(),
+                color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha(),
                 uv.x, uv.y,
                 textureId
         };

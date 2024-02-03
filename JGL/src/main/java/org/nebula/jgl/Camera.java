@@ -3,52 +3,46 @@ package org.nebula.jgl;
 import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
+import org.joml.Vector4f;
 
 public class Camera
 {
-    private final Matrix4f projectionMatrix, viewMatrix;
+    private Matrix4f projection, view;
     public Vector2f position;
+    private float left, right, bottom, top, zNear, zFar;
 
-    public Camera (Vector2f position, int width, int height)
-    {
+    public Camera(Vector2f position, float left, float right, float bottom, float top, float zNear, float zFar) {
         this.position = position;
-        this.projectionMatrix = new Matrix4f();
-        this.viewMatrix = new Matrix4f();
-        adjustProjection(width, height);
+        this.left = left;
+        this.right = right;
+        this.bottom = bottom;
+        this.top = top;
+        this.zNear = zNear;
+        this.zFar = zFar;
+        projection = new Matrix4f().ortho(left, right, bottom, top, zNear, zFar);
+        view = new Matrix4f().translate(position.x, position.y, 0);
     }
 
-    public Camera (float x, float y, int width, int height)
-    {
-        this(new Vector2f(x, y), width, height);
+    public Camera(Vector2f position) {
+        this(position, -1, 1, -1, 1, -1, 1);
     }
 
-    public void adjustProjection (int width, int height)
-    {
-        projectionMatrix.identity();
-        projectionMatrix.ortho(0.0f, width, 0.0f, height, 0.0f, 20.0f);
+    public Camera() {
+        this(new Vector2f(0, 0));
     }
 
-    public Matrix4f getViewMatrix ()
-    {
-        Vector3f cameraFront = new Vector3f(0.0f, 0.0f, -1.0f);
-        Vector3f cameraUp = new Vector3f(0.0f, 1.0f, 0.0f);
-        this.viewMatrix.identity();
-        viewMatrix.lookAt(
-                new Vector3f(position.x, position.y, 20.0f),
-                cameraFront.add(position.x, position.y, 0.0f),
-                cameraUp
-        );
-
-        return this.viewMatrix;
+    public void updateView() {
+        Vector3f eye = new Vector3f(position, zFar);
+        Vector3f center = new Vector3f(position.x, position.y, -1f);
+        Vector3f up = new Vector3f(0, 1, 0);
+        view.setLookAt(eye, center, up);
     }
 
-    public Matrix4f getProjectionMatrix ()
-    {
-        return this.projectionMatrix;
+    public Matrix4f getProjection() {
+        return projection;
     }
 
-    public Vector2f getPosition ()
-    {
-        return position;
+    public Matrix4f getView() {
+        return view;
     }
 }

@@ -32,6 +32,7 @@ public class Color {
 
     /** Constant for the color yellow (fully opaque). */
     public static final Color YELLOW = new Color(1, 1, 0, 1);
+    public static final Color ORANGE = new Color(1, 0.5f, 0, 1);
 
     /** Constant for the color magenta (fully opaque). */
     public static final Color MAGENTA = new Color(1, 0, 1, 1);

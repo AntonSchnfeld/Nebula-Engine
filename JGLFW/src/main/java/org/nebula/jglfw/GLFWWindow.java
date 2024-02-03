@@ -92,6 +92,8 @@ public class GLFWWindow implements IDisposable
 
         setPosition(x, y);
 
+        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
         glfwShowWindow(windowObject);
     }
 
@@ -138,7 +140,7 @@ public class GLFWWindow implements IDisposable
     }
     public void setWindowInputListener (IGLFWInputListener listener)
     {
-        var callback = glfwSetCursorPosCallback(windowObject,
+        glfwSetCursorPosCallback(windowObject,
                 (window, x, y) -> listener.onCursorPositionChange(this, x, y));
         glfwSetKeyCallback(windowObject,
                 (window, key, scancode, action, mods) -> listener.onKeyAction(this, key, scancode, action, mods));

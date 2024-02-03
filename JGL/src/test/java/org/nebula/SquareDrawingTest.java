@@ -10,6 +10,30 @@ import org.nebula.jglfw.GLFWWindow;
 import static org.lwjgl.opengl.GL33C.*;
 
 public class SquareDrawingTest {
+
+    private static final String vertex = """
+            #version 330 core
+            layout (location = 0) in vec3 aPos;
+            layout (location = 1) in vec4 aCol;
+
+            out vec4 fCol;
+
+            void main() {
+                fCol = aCol;
+                gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);
+            }""";
+    public static final String fragment = """
+            #version 330 core
+
+            in vec4 fCol;
+
+            out vec4 FragColor;
+
+            void main() {
+                FragColor = fCol;
+            }""";
+
+
     private final GLFWWindow window;
     private final Shader shader;
     private final VertexArray VAO;
@@ -18,10 +42,8 @@ public class SquareDrawingTest {
     public SquareDrawingTest() {
         window = new GLFWWindow("Hello Nebula!");
         window.createGLCapabilities();
-        window.setWindowIcon(Files.readImage("assets/nebula.png"));
 
-        shader = new Shader(Files.readFileAsString("assets/shaders/triangle.vert"),
-                Files.readFileAsString("assets/shaders/triangle.frag"));
+        shader = new Shader(vertex, fragment);
 
         VAO = new VertexArray();
         EBO = new Buffer(Buffer.BufferType.ELEMENT_ARRAY_BUFFER);

@@ -9,6 +9,7 @@ import org.nebula.jgl.data.texture.Texture;
 import org.nebula.jgl.data.texture.TextureRegion;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.lwjgl.opengl.GL33C.*;
@@ -21,7 +22,7 @@ public class RenderBatch extends Batch {
     private final List<Vertex> triVertices;
 
     private final List<Texture> textures;
-    private int maxTextures;
+    private final int maxTextures;
     private boolean rendering;
 
     public RenderBatch(int maxTextures) {
@@ -46,10 +47,14 @@ public class RenderBatch extends Batch {
         triVao.bind();
         triBuffer.bind();
 
-        triVao.vertexAttribPointer(POSITION_LOC, POSITION_SIZE, BufferDataType.FLOAT, VERTEX_SIZE_BYTES, POSITION_STRIDE);
-        triVao.vertexAttribPointer(COLOR_LOC, COLOR_SIZE, BufferDataType.FLOAT, VERTEX_SIZE_BYTES, COLOR_STRIDE);
-        triVao.vertexAttribPointer(UV_LOC, UV_SIZE, BufferDataType.FLOAT, VERTEX_SIZE_BYTES, UV_STRIDE);
-        triVao.vertexAttribPointer(TEXTURE_ID_LOC, TEXTURE_ID_SIZE, BufferDataType.FLOAT, VERTEX_SIZE_BYTES, TEXTURE_ID_STRIDE);
+        triVao.vertexAttribPointer(POSITION_LOC, POSITION_SIZE, BufferDataType.FLOAT, VERTEX_SIZE_BYTES, POSITION_POINTER);
+        triVao.vertexAttribPointer(COLOR_LOC, COLOR_SIZE, BufferDataType.FLOAT, VERTEX_SIZE_BYTES, COLOR_POINTER);
+        triVao.vertexAttribPointer(UV_LOC, UV_SIZE, BufferDataType.FLOAT, VERTEX_SIZE_BYTES, UV_POINTER);
+        triVao.vertexAttribPointer(TEXTURE_ID_LOC, TEXTURE_ID_SIZE, BufferDataType.FLOAT, VERTEX_SIZE_BYTES, TEXTURE_ID_POINTER);
+        triVao.disableVertexAttribArray(POSITION_LOC);
+        triVao.disableVertexAttribArray(COLOR_LOC);
+        triVao.disableVertexAttribArray(UV_LOC);
+        triVao.disableVertexAttribArray(TEXTURE_ID_LOC);
     }
 
     /**
@@ -83,8 +88,6 @@ public class RenderBatch extends Batch {
      */
     @Override
     public void flush() {
-        System.out.println("#################################################");
-
         float[] triangleVertices = new float[VERTEX_SIZE * triVertices.size()];
 
         for (int i = 0; i < triangleVertices.length; i+=Vertex.VERTEX_SIZE) {
@@ -93,12 +96,6 @@ public class RenderBatch extends Batch {
             System.arraycopy(array, 0, triangleVertices, i, array.length);
         }
 
-        for (int i = 0; i < triangleVertices.length; i++) {
-            if (i % VERTEX_SIZE == 0) System.out.println();
-            System.out.print(triangleVertices[i] + ((i + 1) % VERTEX_SIZE != 0 ? ", " : ""));
-        }
-
-        triVao.bind();
         triBuffer.data(triangleVertices, Buffer.BufferUsage.DYNAMIC_DRAW);
 
         shader.bind();
@@ -107,11 +104,21 @@ public class RenderBatch extends Batch {
         shader.uploadUniformMat4f(Shader.VIEW_MAT_NAME, viewMatrix);
 
         triVao.bind();
-        triBuffer.bind();
-        glDrawArrays(GL_TRIANGLES, 0, triangleVertices.length);
+        triVao.enableVertexAttributeArray(POSITION_LOC);
+        triVao.enableVertexAttributeArray(COLOR_LOC);
+        triVao.enableVertexAttributeArray(UV_LOC);
+        triVao.enableVertexAttributeArray(TEXTURE_ID_LOC);
+        glDrawArrays(GL_TRIANGLES, 0, triVertices.size());
         final int error = glGetError();
         if (error != GL_NO_ERROR)
             throw new RuntimeException("GL Error code: " + error);
+        triVao.disableVertexAttribArray(POSITION_LOC);
+        triVao.disableVertexAttribArray(COLOR_LOC);
+        triVao.disableVertexAttribArray(UV_LOC);
+        triVao.disableVertexAttribArray(TEXTURE_ID_LOC);
+        triVao.unbind();
+
+        shader.unbind();
     }
 
     /**

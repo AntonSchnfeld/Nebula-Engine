@@ -41,10 +41,10 @@ public class TextureRegion {
     public TextureRegion(Texture texture, float startX, float startY, float width, float height) {
         this.texture = texture;
         this.uvs = new float[]{
-                startX, startY - height,     // Lower left
-                startX + width, startY - height, // Lower right
-                startX, startY,              // Upper left
-                startX + width, startY       // Upper right
+                startX, startY,     // Lower left
+                startX + width, startY, // Lower right
+                startX, startY + height,              // Upper left
+                startX + width, startY + height      // Upper right
         };
     }
 

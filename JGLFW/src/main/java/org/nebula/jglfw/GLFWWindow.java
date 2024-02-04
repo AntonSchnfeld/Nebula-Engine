@@ -104,12 +104,23 @@ public class GLFWWindow implements IDisposable
 
     public void loop ()
     {
+        long now;
+        long then = System.currentTimeMillis();
+        int frame = 0;
+
         while (!glfwWindowShouldClose(windowObject))
         {
-
             glfwSwapBuffers(windowObject);
 
             renderListener.render();
+            frame++;
+            now = System.currentTimeMillis();
+            if (now - then >= 1000)
+            {
+                System.out.print("\rFPS: " + frame);
+                frame = 0;
+                then = System.currentTimeMillis();
+            }
 
             // Poll for window events. The key callback above will only be invoked during this call.
             glfwPollEvents();

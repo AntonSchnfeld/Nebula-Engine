@@ -195,6 +195,12 @@ public abstract class Batch implements IDisposable
     {
         this.color = color;
     }
+    public void setColor(float r, float g, float b, float a) {
+        color.setRed(r);
+        color.setGreen(g);
+        color.setBlue(b);
+        color.setAlpha(a);
+    }
     /**
      * Enables or disables blending for subsequent rendering operations.
      *

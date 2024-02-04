@@ -51,13 +51,13 @@ public class RenderBatchTest
             """;
 
     public RenderBatchTest() {
-        camera = new Camera(new Vector2f(0, 0));
+        final float size = 1;
+        camera = new Camera(new Vector2f(0, 0), -size, size, -size, size, -size, size);
         window = new GLFWWindow(getClass().getName());
-        window.setRenderer(this::drawTriangle);
+        window.setRenderer(this::draw);
         window.createGLCapabilities();
 
         this.batch = new RenderBatch();
-        batch.setColor(Color.CYAN);
         Shader shader = new Shader(vertex, fragment);
         batch.setShader(shader);
 
@@ -66,7 +66,7 @@ public class RenderBatchTest
         batch.dispose();
     }
 
-    private void drawTriangle() {
+    private void draw() {
         Vector2f winSize = window.getSize();
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -76,7 +76,12 @@ public class RenderBatchTest
         batch.setViewMatrix(camera.getView());
         batch.setProjectionMatrix(camera.getProjection());
         batch.begin();
-        batch.triangle(new Vector2f(-0.5f, -0.5f), new Vector2f(0.5f, -0.5f), new Vector2f(0, 0.5f));
+        batch.setColor(Color.WHITE);
+        batch.quad(-0.75f, -0.75f, -0.75f, 0.75f, 0.75f, 0.75f, 0.75f, -0.75f);
+        batch.setColor(Color.BLACK);
+        batch.line(-0.75f, -0.75f, 0.75f, 0.75f);
+        batch.setColor(Color.GRAY);
+        batch.triangle(-1f, -1f, 1f, -1f, 0, 1f);
         batch.end();
     }
 

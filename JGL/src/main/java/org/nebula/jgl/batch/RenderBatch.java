@@ -2,6 +2,7 @@ package org.nebula.jgl.batch;
 
 import org.joml.Vector2f;
 import org.nebula.jgl.JGL;
+import org.nebula.jgl.data.Color;
 import org.nebula.jgl.data.Shader;
 import org.nebula.jgl.data.Vertex;
 import org.nebula.jgl.data.buffer.Buffer;
@@ -24,6 +25,7 @@ public class RenderBatch extends Batch {
     private final List<Texture> textures;
     private final int maxTextures;
     private boolean rendering;
+    private float z;
 
     public RenderBatch(int maxTextures) {
         super();
@@ -46,6 +48,8 @@ public class RenderBatch extends Batch {
 
         rendering = false;
 
+        z = 0;
+
         init();
     }
 
@@ -57,6 +61,12 @@ public class RenderBatch extends Batch {
         initVertexArray(triVao, triBuffer);
         initVertexArray(quadVao, quadBuffer);
         initVertexArray(lineVao, lineBuffer);
+
+        glEnable(GL_DEPTH_TEST);
+        glDepthFunc(GL_LESS);
+
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     }
 
     private void initVertexArray(VertexArray vertexArray, Buffer buffer)
@@ -87,6 +97,8 @@ public class RenderBatch extends Batch {
         quadVertices.clear();
         lineVertices.clear();
         textures.clear();
+
+        z = 0f;
     }
 
     /**
@@ -106,6 +118,8 @@ public class RenderBatch extends Batch {
      */
     @Override
     public void flush() {
+        glLineWidth(lineWidth);
+
         float[] triangleVertices = getVerticesFromList(triVertices);
         float[] quadVertices = getVerticesFromList(this.quadVertices);
         float[] lineVertices = getVerticesFromList(this.lineVertices);
@@ -151,7 +165,6 @@ public class RenderBatch extends Batch {
         lineVao.enableVertexAttributeArray(COLOR_LOC);
         lineVao.enableVertexAttributeArray(UV_LOC);
         lineVao.enableVertexAttributeArray(TEXTURE_ID_LOC);
-        glLineWidth(lineWidth);
         glDrawArrays(GL_LINES, 0, this.lineVertices.size());
         JGL.checkForOpenGLError();
         lineVao.disableVertexAttribArray(POSITION_LOC);
@@ -221,6 +234,7 @@ public class RenderBatch extends Batch {
         quadVertices.add(new Vertex(topLeft, color, new Vector2f(uvs[2], uvs[3]), texId));
         quadVertices.add(new Vertex(topRight, color, new Vector2f(uvs[4], uvs[5]), texId));
         quadVertices.add(new Vertex(bottomRight, color, new Vector2f(uvs[6], uvs[7]), texId));
+        incrementZ();
     }
 
     /**
@@ -253,12 +267,11 @@ public class RenderBatch extends Batch {
      */
     @Override
     public void quad(float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4) {
-        final float r = color.getRed(), g = color.getGreen(), b = color.getBlue(),
-                a = color.getAlpha();
-        quadVertices.add(new Vertex(x1, y1, r, g, b, a, -1, -1, -1));
-        quadVertices.add(new Vertex(x2, y2, r, g, b, a, -1, -1, -1));
-        quadVertices.add(new Vertex(x3, y3, r, g, b, a, -1, -1, -1));
-        quadVertices.add(new Vertex(x4, y4, r, g, b, a, -1, -1, -1));
+        quadVertices.add(new Vertex(x1, y1, z, color, -1, -1, -1));
+        quadVertices.add(new Vertex(x2, y2, z, color, -1, -1, -1));
+        quadVertices.add(new Vertex(x3, y3, z, color, -1, -1, -1));
+        quadVertices.add(new Vertex(x4, y4, z, color, -1, -1, -1));
+        incrementZ();
     }
 
     /**
@@ -288,9 +301,10 @@ public class RenderBatch extends Batch {
         final float[] uvs = texture.getUvs();
         final int texId = tex.getId();
 
-        triVertices.add(new Vertex(x1, y1, color, uvs[0], uvs[1], texId));
-        triVertices.add(new Vertex(x2, y2, color, uvs[2], uvs[3], texId));
-        triVertices.add(new Vertex(x3, y3, color, uvs[4], uvs[5], texId));
+        triVertices.add(new Vertex(x1, y1, z, color, uvs[0], uvs[1], texId));
+        triVertices.add(new Vertex(x2, y2, z, color, uvs[2], uvs[3], texId));
+        triVertices.add(new Vertex(x3, y3, z, color, uvs[4], uvs[5], texId));
+        incrementZ();
     }
 
     /**
@@ -306,9 +320,10 @@ public class RenderBatch extends Batch {
      */
     @Override
     public void triangle(float x1, float y1, float x2, float y2, float x3, float y3) {
-        triVertices.add(new Vertex(x1, y1, color, -1, -1, -1));
-        triVertices.add(new Vertex(x2, y2, color, -1, -1, -1));
-        triVertices.add(new Vertex(x3, y3, color, -1, -1, -1));
+        triVertices.add(new Vertex(x1, y1, z, color, -1, -1, -1));
+        triVertices.add(new Vertex(x2, y2, z, color, -1, -1, -1));
+        triVertices.add(new Vertex(x3, y3, z, color, -1, -1, -1));
+        incrementZ();
     }
 
     /**
@@ -324,7 +339,13 @@ public class RenderBatch extends Batch {
      */
     @Override
     public void line(float x1, float y1, float x2, float y2) {
-        line(new Vector2f(x1, y1), new Vector2f(x2, y2));
+        lineVertices.add(new Vertex(x1, y1, z, color, -1, -1, -1));
+        lineVertices.add(new Vertex(x2, y2, z, color, -1, -1, -1));
+        incrementZ();
+    }
+
+    private void incrementZ() {
+        z+=0.05f;
     }
 
     /**
@@ -332,14 +353,11 @@ public class RenderBatch extends Batch {
      */
     @Override
     public void line(Vector2f v1, Vector2f v2) {
-        lineVertices.add(new Vertex(v1, color, new Vector2f(-1, -1), -1));
-        lineVertices.add(new Vertex(v2, color, new Vector2f(-1, -1), -1));
+        line(v1.x, v1.y, v2.x, v2.y);
     }
 
     public boolean canFit(Texture texture) {
-        if (!textures.contains(texture) && textures.size() >= maxTextures)
-            return false;
-        return true;
+        return textures.contains(texture) || textures.size() < maxTextures;
     }
 
     public boolean canFit(TextureRegion texture) {

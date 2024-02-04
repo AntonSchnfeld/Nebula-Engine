@@ -9,7 +9,6 @@ import org.nebula.jgl.data.texture.Texture;
 import org.nebula.jgl.data.texture.TextureRegion;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import static org.lwjgl.opengl.GL33C.*;
@@ -17,9 +16,9 @@ import static org.nebula.jgl.data.buffer.Buffer.*;
 import static org.nebula.jgl.data.Vertex.*;
 
 public class RenderBatch extends Batch {
-    private final VertexArray triVao;
-    private final Buffer triBuffer;
-    private final List<Vertex> triVertices;
+    private final VertexArray triVao, quadVao, lineVao;
+    private final Buffer triBuffer, quadBuffer, quadElementBuffer, lineBuffer;
+    private final List<Vertex> triVertices, quadVertices, lineVertices;
 
     private final List<Texture> textures;
     private final int maxTextures;
@@ -28,9 +27,19 @@ public class RenderBatch extends Batch {
     public RenderBatch(int maxTextures) {
         super();
         this.maxTextures = maxTextures;
+
         triVao = new VertexArray();
+        quadVao = new VertexArray();
+        lineVao = new VertexArray();
+
         triBuffer = new Buffer(Buffer.BufferType.ARRAY_BUFFER);
+        quadBuffer = new Buffer(BufferType.ARRAY_BUFFER);
+        quadElementBuffer = new Buffer(BufferType.ELEMENT_ARRAY_BUFFER);
+        lineBuffer = new Buffer(BufferType.ARRAY_BUFFER);
+
         triVertices = new ArrayList<>();
+        quadVertices = new ArrayList<>();
+        lineVertices = new ArrayList<>();
 
         textures = new ArrayList<>();
 
@@ -44,17 +53,23 @@ public class RenderBatch extends Batch {
     }
 
     private void init() {
-        triVao.bind();
-        triBuffer.bind();
+        initVertexArray(triVao, triBuffer);
+        initVertexArray(quadVao, quadBuffer);
+        initVertexArray(lineVao, lineBuffer);
+    }
 
-        triVao.vertexAttribPointer(POSITION_LOC, POSITION_SIZE, BufferDataType.FLOAT, VERTEX_SIZE_BYTES, POSITION_POINTER);
-        triVao.vertexAttribPointer(COLOR_LOC, COLOR_SIZE, BufferDataType.FLOAT, VERTEX_SIZE_BYTES, COLOR_POINTER);
-        triVao.vertexAttribPointer(UV_LOC, UV_SIZE, BufferDataType.FLOAT, VERTEX_SIZE_BYTES, UV_POINTER);
-        triVao.vertexAttribPointer(TEXTURE_ID_LOC, TEXTURE_ID_SIZE, BufferDataType.FLOAT, VERTEX_SIZE_BYTES, TEXTURE_ID_POINTER);
-        triVao.disableVertexAttribArray(POSITION_LOC);
-        triVao.disableVertexAttribArray(COLOR_LOC);
-        triVao.disableVertexAttribArray(UV_LOC);
-        triVao.disableVertexAttribArray(TEXTURE_ID_LOC);
+    private void initVertexArray(VertexArray vertexArray, Buffer buffer)
+    {
+        vertexArray.bind();
+        buffer.bind();
+        vertexArray.vertexAttribPointer(POSITION_LOC, POSITION_SIZE, BufferDataType.FLOAT, VERTEX_SIZE_BYTES, POSITION_POINTER);
+        vertexArray.vertexAttribPointer(COLOR_LOC, COLOR_SIZE, BufferDataType.FLOAT, VERTEX_SIZE_BYTES, COLOR_POINTER);
+        vertexArray.vertexAttribPointer(UV_LOC, UV_SIZE, BufferDataType.FLOAT, VERTEX_SIZE_BYTES, UV_POINTER);
+        vertexArray.vertexAttribPointer(TEXTURE_ID_LOC, TEXTURE_ID_SIZE, BufferDataType.FLOAT, VERTEX_SIZE_BYTES, TEXTURE_ID_POINTER);
+        vertexArray.disableVertexAttribArray(POSITION_LOC);
+        vertexArray.disableVertexAttribArray(COLOR_LOC);
+        vertexArray.disableVertexAttribArray(UV_LOC);
+        vertexArray.disableVertexAttribArray(TEXTURE_ID_LOC);
     }
 
     /**
@@ -68,6 +83,8 @@ public class RenderBatch extends Batch {
         rendering = true;
 
         triVertices.clear();
+        quadVertices.clear();
+        lineVertices.clear();
         textures.clear();
     }
 
@@ -88,13 +105,7 @@ public class RenderBatch extends Batch {
      */
     @Override
     public void flush() {
-        float[] triangleVertices = new float[VERTEX_SIZE * triVertices.size()];
-
-        for (int i = 0; i < triangleVertices.length; i+=Vertex.VERTEX_SIZE) {
-            Vertex vertex = triVertices.get(i / VERTEX_SIZE);
-            float[] array = vertex.toArray();
-            System.arraycopy(array, 0, triangleVertices, i, array.length);
-        }
+        float[] triangleVertices = getVerticesFromList(triVertices);
 
         triBuffer.data(triangleVertices, Buffer.BufferUsage.DYNAMIC_DRAW);
 
@@ -121,6 +132,18 @@ public class RenderBatch extends Batch {
         shader.unbind();
     }
 
+    private float[] getVerticesFromList(List<Vertex> vertexList) {
+        float[] vertices = new float[VERTEX_SIZE * vertexList.size()];
+
+        for (int i = 0; i < vertices.length; i+=Vertex.VERTEX_SIZE) {
+            Vertex vertex = triVertices.get(i / VERTEX_SIZE);
+            float[] array = vertex.toArray();
+            System.arraycopy(array, 0, vertices, i, array.length);
+        }
+
+        return vertices;
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -134,7 +157,7 @@ public class RenderBatch extends Batch {
      */
     @Override
     public void texture(Texture texture, float x, float y, float width, float height) {
-
+        texture(new TextureRegion(texture), x, y, width, height);
     }
 
     /**
@@ -142,7 +165,8 @@ public class RenderBatch extends Batch {
      */
     @Override
     public void texture(Texture texture, float x, float y) {
-
+        TextureRegion region = new TextureRegion(texture);
+        texture(region, x, y, texture.getWidth(), texture.getHeight());
     }
 
     /**
@@ -150,7 +174,7 @@ public class RenderBatch extends Batch {
      */
     @Override
     public void quad(float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4) {
-
+        quad(new Vector2f(x1, y1), new Vector2f(x2, y2), new Vector2f(x3, y3), new Vector2f(x4, y4));
     }
 
     /**
@@ -158,7 +182,6 @@ public class RenderBatch extends Batch {
      */
     @Override
     public void quad(Vector2f v1, Vector2f v2, Vector2f v3, Vector2f v4) {
-
     }
 
     /**
@@ -207,7 +230,7 @@ public class RenderBatch extends Batch {
      */
     @Override
     public void line(float x1, float y1, float x2, float y2) {
-
+        line(new Vector2f(x1, y1), new Vector2f(x2, y2));
     }
 
     /**
@@ -215,12 +238,21 @@ public class RenderBatch extends Batch {
      */
     @Override
     public void line(Vector2f v1, Vector2f v2) {
-
+        lineVertices.add(new Vertex(v1, color, new Vector2f(-1, -1), -1));
+        lineVertices.add(new Vertex(v2, color, new Vector2f(-1, -1), -1));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void dispose() {
         triVao.dispose();
+        quadVao.dispose();
+        lineVao.dispose();
         triBuffer.dispose();
+        quadBuffer.dispose();
+        quadElementBuffer.dispose();
+        lineBuffer.dispose();
     }
 }

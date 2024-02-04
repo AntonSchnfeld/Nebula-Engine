@@ -5,7 +5,6 @@ import org.nebula.jgl.Camera;
 import org.nebula.jgl.batch.RenderBatch;
 import org.nebula.jgl.data.Color;
 import org.nebula.jgl.data.Shader;
-import org.nebula.jgl.data.buffer.VertexArray;
 import org.nebula.jglfw.GLFWWindow;
 
 import static org.lwjgl.opengl.GL33C.*;

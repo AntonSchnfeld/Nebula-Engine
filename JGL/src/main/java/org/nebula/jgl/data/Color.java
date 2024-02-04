@@ -39,6 +39,7 @@ public class Color {
 
     /** Constant for the color cyan (fully opaque). */
     public static final Color CYAN = new Color(0, 1, 1, 1);
+    public static final Color GRAY = new Color(0.5f, 0.5f, 0.5f, 1f);
 
     private float red, green, blue, alpha;
 

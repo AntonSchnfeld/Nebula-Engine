@@ -36,11 +36,13 @@ public abstract class Batch implements IDisposable
     protected Shader shader;
     protected boolean blendingEnabled;
     protected Matrix4f projectionMatrix;
+    protected float lineWidth;
 
     protected Matrix4f viewMatrix;
 
     public Batch ()
     {
+        this.lineWidth = 10;
         this.color = Color.WHITE;
         this.blendingEnabled = true;
         this.projectionMatrix = new Matrix4f();
@@ -195,6 +197,15 @@ public abstract class Batch implements IDisposable
     {
         this.color = color;
     }
+
+    public void setLineWidth(float width) {
+        this.lineWidth = width;
+    }
+
+    public float getLineWidth() {
+        return lineWidth;
+    }
+
     public void setColor(float r, float g, float b, float a) {
         color.setRed(r);
         color.setGreen(g);

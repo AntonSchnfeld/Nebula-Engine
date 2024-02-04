@@ -1,6 +1,7 @@
 package org.nebula.jgl.batch;
 
 import org.joml.Vector2f;
+import org.nebula.jgl.JGL;
 import org.nebula.jgl.data.Shader;
 import org.nebula.jgl.data.Vertex;
 import org.nebula.jgl.data.buffer.Buffer;
@@ -109,9 +110,9 @@ public class RenderBatch extends Batch {
         float[] quadVertices = getVerticesFromList(this.quadVertices);
         float[] lineVertices = getVerticesFromList(this.lineVertices);
 
-        triBuffer.data(triangleVertices, Buffer.BufferUsage.DYNAMIC_DRAW);
-        quadBuffer.data(quadVertices, BufferUsage.DYNAMIC_DRAW);
-        lineBuffer.data(lineVertices, BufferUsage.DYNAMIC_DRAW);
+        triBuffer.data(triangleVertices, BufferUsage.STATIC_DRAW);
+        quadBuffer.data(quadVertices, BufferUsage.STATIC_DRAW);
+        lineBuffer.data(lineVertices, BufferUsage.STATIC_DRAW);
 
         shader.bind();
 
@@ -124,9 +125,7 @@ public class RenderBatch extends Batch {
         triVao.enableVertexAttributeArray(UV_LOC);
         triVao.enableVertexAttributeArray(TEXTURE_ID_LOC);
         glDrawArrays(GL_TRIANGLES, 0, triVertices.size());
-        int error = glGetError();
-        if (error != GL_NO_ERROR)
-            throw new RuntimeException("GL Error code: " + error);
+        JGL.checkForOpenGLError();
         triVao.disableVertexAttribArray(POSITION_LOC);
         triVao.disableVertexAttribArray(COLOR_LOC);
         triVao.disableVertexAttribArray(UV_LOC);
@@ -134,14 +133,13 @@ public class RenderBatch extends Batch {
         triVao.unbind();
 
         quadVao.bind();
+        generateQuadElementBuffer();
         quadVao.enableVertexAttributeArray(POSITION_LOC);
         quadVao.enableVertexAttributeArray(COLOR_LOC);
         quadVao.enableVertexAttributeArray(UV_LOC);
         quadVao.enableVertexAttributeArray(TEXTURE_ID_LOC);
-        glDrawElements(GL_TRIANGLES, this.quadVertices.size(), GL_UNSIGNED_INT, 0);
-        error = glGetError();
-        if (error != GL_NO_ERROR)
-            throw new RuntimeException("GL Error code: " + error);
+        glDrawElements(GL_TRIANGLES, (int) (this.quadVertices.size() * 1.5f), GL_UNSIGNED_INT, 0);
+        JGL.checkForOpenGLError();
         quadVao.disableVertexAttribArray(POSITION_LOC);
         quadVao.disableVertexAttribArray(COLOR_LOC);
         quadVao.disableVertexAttribArray(UV_LOC);
@@ -153,10 +151,9 @@ public class RenderBatch extends Batch {
         lineVao.enableVertexAttributeArray(COLOR_LOC);
         lineVao.enableVertexAttributeArray(UV_LOC);
         lineVao.enableVertexAttributeArray(TEXTURE_ID_LOC);
+        glLineWidth(lineWidth);
         glDrawArrays(GL_LINES, 0, this.lineVertices.size());
-        error = glGetError();
-        if (error != GL_NO_ERROR)
-            throw new RuntimeException("GL Error code: " + error);
+        JGL.checkForOpenGLError();
         lineVao.disableVertexAttribArray(POSITION_LOC);
         lineVao.disableVertexAttribArray(COLOR_LOC);
         lineVao.disableVertexAttribArray(UV_LOC);
@@ -166,11 +163,33 @@ public class RenderBatch extends Batch {
         shader.unbind();
     }
 
+    private void generateQuadElementBuffer() {
+        int[] indices = new int[(int) (quadVertices.size() * 1.5)];
+
+        for (int i = 0; i < indices.length; i+=6) {
+            int offsetArrayIndex = 6 * i;
+            int offset = 4 * i;
+
+            // 3, 2, 0, 0, 2, 1        7, 6, 4, 4, 6, 5
+            // Triangle 1
+            indices[offsetArrayIndex] = offset + 3;
+            indices[offsetArrayIndex + 1] = offset + 2;
+            indices[offsetArrayIndex + 2] = offset + 0;
+
+            // Triangle 2
+            indices[offsetArrayIndex + 3] = offset + 0;
+            indices[offsetArrayIndex + 4] = offset + 2;
+            indices[offsetArrayIndex + 5] = offset + 1;
+        }
+
+        quadElementBuffer.data(indices, BufferUsage.STATIC_DRAW);
+    }
+
     private float[] getVerticesFromList(List<Vertex> vertexList) {
         float[] vertices = new float[VERTEX_SIZE * vertexList.size()];
 
         for (int i = 0; i < vertices.length; i+=Vertex.VERTEX_SIZE) {
-            Vertex vertex = triVertices.get(i / VERTEX_SIZE);
+            Vertex vertex = vertexList.get(i / VERTEX_SIZE);
             float[] array = vertex.toArray();
             System.arraycopy(array, 0, vertices, i, array.length);
         }

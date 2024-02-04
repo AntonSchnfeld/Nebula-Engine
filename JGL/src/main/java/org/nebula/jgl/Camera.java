@@ -9,7 +9,12 @@ public class Camera
 {
     private Matrix4f projection, view;
     public Vector2f position;
-    private float left, right, bottom, top, zNear, zFar;
+    private float left;
+    private float right;
+    private float bottom;
+    private float top;
+    private float zNear;
+    private float zFar;
 
     public Camera(Vector2f position, float left, float right, float bottom, float top, float zNear, float zFar) {
         this.position = position;
@@ -32,10 +37,7 @@ public class Camera
     }
 
     public void updateView() {
-        Vector3f eye = new Vector3f(position, zFar);
-        Vector3f center = new Vector3f(position.x, position.y, -1f);
-        Vector3f up = new Vector3f(0, 1, 0);
-        view.setLookAt(eye, center, up);
+        view.translate(position.x, position.y, 0);
     }
 
     public Matrix4f getProjection() {
@@ -44,5 +46,53 @@ public class Camera
 
     public Matrix4f getView() {
         return view;
+    }
+
+    public float getLeft() {
+        return left;
+    }
+
+    public void setLeft(float left) {
+        this.left = left;
+    }
+
+    public float getRight() {
+        return right;
+    }
+
+    public void setRight(float right) {
+        this.right = right;
+    }
+
+    public float getBottom() {
+        return bottom;
+    }
+
+    public void setBottom(float bottom) {
+        this.bottom = bottom;
+    }
+
+    public float getTop() {
+        return top;
+    }
+
+    public void setTop(float top) {
+        this.top = top;
+    }
+
+    public float getzNear() {
+        return zNear;
+    }
+
+    public void setzNear(float zNear) {
+        this.zNear = zNear;
+    }
+
+    public float getzFar() {
+        return zFar;
+    }
+
+    public void setzFar(float zFar) {
+        this.zFar = zFar;
     }
 }

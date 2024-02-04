@@ -139,4 +139,26 @@ public class Color {
     public void setAlpha(float alpha) {
         this.alpha = alpha;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Color color = (Color) o;
+
+        if (Float.compare(red, color.red) != 0) return false;
+        if (Float.compare(green, color.green) != 0) return false;
+        if (Float.compare(blue, color.blue) != 0) return false;
+        return Float.compare(alpha, color.alpha) == 0;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = (red != 0.0f ? Float.floatToIntBits(red) : 0);
+        result = 31 * result + (green != 0.0f ? Float.floatToIntBits(green) : 0);
+        result = 31 * result + (blue != 0.0f ? Float.floatToIntBits(blue) : 0);
+        result = 31 * result + (alpha != 0.0f ? Float.floatToIntBits(alpha) : 0);
+        return result;
+    }
 }

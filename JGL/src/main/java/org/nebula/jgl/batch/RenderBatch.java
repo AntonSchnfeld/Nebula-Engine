@@ -156,6 +156,14 @@ public class RenderBatch extends Batch {
      * {@inheritDoc}
      */
     @Override
+    public void texture(TextureRegion texture, float x, float y) {
+        texture(texture, x, y, texture.getTexture().getWidth(), texture.getTexture().getHeight());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void texture(Texture texture, float x, float y, float width, float height) {
         texture(new TextureRegion(texture), x, y, width, height);
     }

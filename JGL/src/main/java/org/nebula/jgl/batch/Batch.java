@@ -79,6 +79,15 @@ public abstract class Batch implements IDisposable
      * @param height  the height of the quad
      */
     public abstract void texture(TextureRegion texture, float x, float y, float width, float height);
+
+    /**
+     * Renders a textured quad with the specified coordinates and texture coordinates, using the width and height
+     * of the texture region.
+     * @param texture the texture to be rendered
+     * @param x the x-coordinate of the quad's position
+     * @param y the y-coordinate of the quad's position
+     */
+    public abstract void texture(TextureRegion texture, float x, float y);
     /**
      * Renders a textured quad with specified coordinates.
      *

@@ -57,7 +57,7 @@ public class RenderBatchTest
         window.createGLCapabilities();
 
         this.batch = new RenderBatch();
-        batch.setColor(Color.ORANGE);
+        batch.setColor(Color.CYAN);
         Shader shader = new Shader(vertex, fragment);
         batch.setShader(shader);
 

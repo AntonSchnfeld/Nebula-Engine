@@ -21,7 +21,7 @@ public class RenderBatchTest
             uniform mat4 uProjection;
             uniform mat4 uView;
 
-            layout(location = 0) in vec2 vPos;
+            layout(location = 0) in vec3 vPos;
             layout(location = 1) in vec4 vCol;
             layout(location = 2) in vec2 vUv;
             layout(location = 3) in float vTexId;
@@ -35,7 +35,7 @@ public class RenderBatchTest
                 fUv = vUv;
                 fTexId = vTexId;
 
-                gl_Position = uView * uProjection * vec4(vPos, 1.0, 1.0);
+                gl_Position = uView * uProjection * vec4(vPos, 1.0);
             }
             """;
     private static final String fragment = """
@@ -78,10 +78,11 @@ public class RenderBatchTest
         batch.begin();
         batch.setColor(Color.WHITE);
         batch.quad(-0.75f, -0.75f, -0.75f, 0.75f, 0.75f, 0.75f, 0.75f, -0.75f);
-        batch.setColor(Color.BLACK);
-        batch.line(-0.75f, -0.75f, 0.75f, 0.75f);
         batch.setColor(Color.GRAY);
         batch.triangle(-1f, -1f, 1f, -1f, 0, 1f);
+        batch.setColor(new Color(1, 0, 0, 0.5f));
+        batch.line(-0.75f, -0.75f, 0.75f, 0.75f);
+        batch.line(-0.75f, 0.75f, 0.75f, -0.75f);
         batch.end();
     }
 

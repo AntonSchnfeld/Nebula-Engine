@@ -3,7 +3,6 @@ package org.nebula.jgl.data;
 import org.joml.Vector2f;
 
 public class Vertex {
-
     public static final int POSITION_LOC = 0;
     public static final int POSITION_SIZE = 2;
     public static final int POSITION_SIZE_BYTES = POSITION_SIZE * Float.BYTES;
@@ -27,55 +26,93 @@ public class Vertex {
     public static final int VERTEX_SIZE = POSITION_SIZE + COLOR_SIZE + UV_SIZE + TEXTURE_ID_SIZE;
     public static final int VERTEX_SIZE_BYTES = TEXTURE_ID_POINTER + TEXTURE_ID_SIZE_BYTES;
 
-    private Vector2f position;
-    private Color color;
-    private Vector2f uv;
+    private float x, y;
+    private float red, green, blue, alpha;
+    private float u, v;
     private float textureId;
 
-    public Vertex(Vector2f position, Color color, Vector2f uv, float textureId) {
-        this.position = position;
-        this.color = color;
-        this.uv = uv;
+    public Vertex(float x, float y, float red, float green, float blue, float alpha, float u, float v, float textureId) {
+        this.x = x;
+        this.y = y;
+        this.red = red;
+        this.green = green;
+        this.blue = blue;
+        this.alpha = alpha;
+        this.u = u;
+        this.v = v;
         this.textureId = textureId;
     }
 
-    public Vector2f getPosition() {
-        return position;
+    public Vertex(float x, float y, Color color, float u, float v, float textureId) {
+        this(x, y, color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha(), u, v, textureId);
     }
 
-    public void setPosition(Vector2f position) {
-        this.position = position;
+    public Vertex(Vector2f position, Color color, Vector2f uv, float textureId) {
+        this(position.x, position.y, color.getRed(), color.getGreen(), color.getGreen(), color.getAlpha()
+                , uv.x, uv.y, textureId);
     }
 
-    public Color getColor() {
-        return color;
+    public float getX() {
+        return x;
     }
-
-    public void setColor(Color color) {
-        this.color = color;
+    public float getY() {
+        return y;
     }
-
-    public Vector2f getUv() {
-        return uv;
+    public void setX(float x) {
+        this.x = x;
     }
-
-    public void setUv(Vector2f uv) {
-        this.uv = uv;
+    public void setY(float y) {
+        this.y = y;
     }
-
+    public float getRed() {
+        return red;
+    }
+    public void setRed(float red) {
+        this.red = red;
+    }
+    public float getGreen() {
+        return green;
+    }
+    public void setGreen(float green) {
+        this.green = green;
+    }
+    public float getBlue() {
+        return blue;
+    }
+    public void setBlue(float blue) {
+        this.blue = blue;
+    }
+    public float getAlpha() {
+        return alpha;
+    }
+    public void setAlpha(float alpha) {
+        this.alpha = alpha;
+    }
+    public float getU() {
+        return u;
+    }
+    public void setU(float u)
+    {
+        this.u = u;
+    }
+    public float getV() {
+        return v;
+    }
+    public void setV(float v) {
+        this.v = v;
+    }
     public float getTextureId() {
         return textureId;
     }
-
     public void setTextureId(float textureId) {
         this.textureId = textureId;
     }
 
     public float[] toArray() {
         return new float[] {
-                position.x, position.y,
-                color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha(),
-                uv.x, uv.y,
+                x, y,
+                red, green, blue, alpha,
+                u, v,
                 textureId
         };
     }

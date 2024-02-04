@@ -106,8 +106,12 @@ public class RenderBatch extends Batch {
     @Override
     public void flush() {
         float[] triangleVertices = getVerticesFromList(triVertices);
+        float[] quadVertices = getVerticesFromList(this.quadVertices);
+        float[] lineVertices = getVerticesFromList(this.lineVertices);
 
         triBuffer.data(triangleVertices, Buffer.BufferUsage.DYNAMIC_DRAW);
+        quadBuffer.data(quadVertices, BufferUsage.DYNAMIC_DRAW);
+        lineBuffer.data(lineVertices, BufferUsage.DYNAMIC_DRAW);
 
         shader.bind();
 
@@ -120,7 +124,7 @@ public class RenderBatch extends Batch {
         triVao.enableVertexAttributeArray(UV_LOC);
         triVao.enableVertexAttributeArray(TEXTURE_ID_LOC);
         glDrawArrays(GL_TRIANGLES, 0, triVertices.size());
-        final int error = glGetError();
+        int error = glGetError();
         if (error != GL_NO_ERROR)
             throw new RuntimeException("GL Error code: " + error);
         triVao.disableVertexAttribArray(POSITION_LOC);
@@ -128,6 +132,36 @@ public class RenderBatch extends Batch {
         triVao.disableVertexAttribArray(UV_LOC);
         triVao.disableVertexAttribArray(TEXTURE_ID_LOC);
         triVao.unbind();
+
+        quadVao.bind();
+        quadVao.enableVertexAttributeArray(POSITION_LOC);
+        quadVao.enableVertexAttributeArray(COLOR_LOC);
+        quadVao.enableVertexAttributeArray(UV_LOC);
+        quadVao.enableVertexAttributeArray(TEXTURE_ID_LOC);
+        glDrawElements(GL_TRIANGLES, this.quadVertices.size(), GL_UNSIGNED_INT, 0);
+        error = glGetError();
+        if (error != GL_NO_ERROR)
+            throw new RuntimeException("GL Error code: " + error);
+        quadVao.disableVertexAttribArray(POSITION_LOC);
+        quadVao.disableVertexAttribArray(COLOR_LOC);
+        quadVao.disableVertexAttribArray(UV_LOC);
+        quadVao.disableVertexAttribArray(TEXTURE_ID_LOC);
+        quadVao.unbind();
+
+        lineVao.bind();
+        lineVao.enableVertexAttributeArray(POSITION_LOC);
+        lineVao.enableVertexAttributeArray(COLOR_LOC);
+        lineVao.enableVertexAttributeArray(UV_LOC);
+        lineVao.enableVertexAttributeArray(TEXTURE_ID_LOC);
+        glDrawArrays(GL_LINES, 0, this.lineVertices.size());
+        error = glGetError();
+        if (error != GL_NO_ERROR)
+            throw new RuntimeException("GL Error code: " + error);
+        lineVao.disableVertexAttribArray(POSITION_LOC);
+        lineVao.disableVertexAttribArray(COLOR_LOC);
+        lineVao.disableVertexAttribArray(UV_LOC);
+        lineVao.disableVertexAttribArray(TEXTURE_ID_LOC);
+        lineVao.unbind();
 
         shader.unbind();
     }
@@ -149,7 +183,25 @@ public class RenderBatch extends Batch {
      */
     @Override
     public void texture(TextureRegion texture, float x, float y, float width, float height) {
+        final Vector2f bottomLeft = new Vector2f(x, y),
+        bottomRight = new Vector2f(x + width, y),
+        topLeft = new Vector2f(x, y + width),
+        topRight = new Vector2f(x + width, y + height);
+        if (texture == null) {
+            quad(bottomLeft, topLeft, topRight, bottomRight);
+            return;
+        }
 
+        if (!canFit(texture))
+            throw new RuntimeException("Tried to add texture to RenderBatch even though there was no space");
+
+        final float[] uvs = texture.getUvs();
+        final int texId = texture.getTexture().getId();
+
+        quadVertices.add(new Vertex(bottomLeft, color, new Vector2f(uvs[0], uvs[1]), texId));
+        quadVertices.add(new Vertex(topLeft, color, new Vector2f(uvs[2], uvs[3]), texId));
+        quadVertices.add(new Vertex(topRight, color, new Vector2f(uvs[4], uvs[5]), texId));
+        quadVertices.add(new Vertex(bottomRight, color, new Vector2f(uvs[6], uvs[7]), texId));
     }
 
     /**
@@ -182,7 +234,12 @@ public class RenderBatch extends Batch {
      */
     @Override
     public void quad(float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4) {
-        quad(new Vector2f(x1, y1), new Vector2f(x2, y2), new Vector2f(x3, y3), new Vector2f(x4, y4));
+        final float r = color.getRed(), g = color.getGreen(), b = color.getBlue(),
+                a = color.getAlpha();
+        quadVertices.add(new Vertex(x1, y1, r, g, b, a, -1, -1, -1));
+        quadVertices.add(new Vertex(x2, y2, r, g, b, a, -1, -1, -1));
+        quadVertices.add(new Vertex(x3, y3, r, g, b, a, -1, -1, -1));
+        quadVertices.add(new Vertex(x4, y4, r, g, b, a, -1, -1, -1));
     }
 
     /**
@@ -190,6 +247,7 @@ public class RenderBatch extends Batch {
      */
     @Override
     public void quad(Vector2f v1, Vector2f v2, Vector2f v3, Vector2f v4) {
+        quad(v1.x, v1.y, v2.x, v2.y, v3.x, v3.y, v4.x, v4.y);
     }
 
     /**
@@ -197,7 +255,23 @@ public class RenderBatch extends Batch {
      */
     @Override
     public void texturedTriangle(TextureRegion texture, float x1, float y1, float x2, float y2, float x3, float y3) {
-        texturedTriangle(texture, new Vector2f(x1, y1), new Vector2f(x2, y2), new Vector2f(x3, y3));
+        // Using this function without a texture is virtually the same as triangle
+        if (texture == null) {
+            triangle(x1, y1, x2, y2, x3, y3);
+            return;
+        }
+
+        final Texture tex = texture.getTexture();
+        if (!canFit(tex))
+            throw new RuntimeException("Tried to add texture to RenderBatch even though there was no space");
+        textures.add(tex);
+
+        final float[] uvs = texture.getUvs();
+        final int texId = tex.getId();
+
+        triVertices.add(new Vertex(x1, y1, color, uvs[0], uvs[1], texId));
+        triVertices.add(new Vertex(x2, y2, color, uvs[2], uvs[3], texId));
+        triVertices.add(new Vertex(x3, y3, color, uvs[4], uvs[5], texId));
     }
 
     /**
@@ -205,14 +279,7 @@ public class RenderBatch extends Batch {
      */
     @Override
     public void texturedTriangle(TextureRegion texture, Vector2f v1, Vector2f v2, Vector2f v3) {
-        // Using this function without a texture is virtually the same as triangle
-        if (texture == null) {
-            triangle(v1, v2, v3);
-            return;
-        }
-
-        if (!textures.contains(texture.getTexture()) && textures.size() >= maxTextures)
-            throw new RuntimeException("Tried to add texture to RenderBatch even though there was no space");
+        texturedTriangle(texture, v1.x, v1.y, v2.x, v2.y, v3.x, v3.y);
     }
 
     /**
@@ -220,7 +287,9 @@ public class RenderBatch extends Batch {
      */
     @Override
     public void triangle(float x1, float y1, float x2, float y2, float x3, float y3) {
-        triangle(new Vector2f(x1, y1), new Vector2f(x2, y2), new Vector2f(x3, y3));
+        triVertices.add(new Vertex(x1, y1, color, -1, -1, -1));
+        triVertices.add(new Vertex(x2, y2, color, -1, -1, -1));
+        triVertices.add(new Vertex(x3, y3, color, -1, -1, -1));
     }
 
     /**
@@ -228,9 +297,7 @@ public class RenderBatch extends Batch {
      */
     @Override
     public void triangle(Vector2f v1, Vector2f v2, Vector2f v3) {
-        triVertices.add(new Vertex(v1, color, new Vector2f(-1, -1), -1));
-        triVertices.add(new Vertex(v2, color, new Vector2f(-1, -1), -1));
-        triVertices.add(new Vertex(v3, color, new Vector2f(-1, -1), -1));
+        triangle(v1.x, v1.y, v2.x, v2.y, v3.x, v3.y);
     }
 
     /**
@@ -248,6 +315,16 @@ public class RenderBatch extends Batch {
     public void line(Vector2f v1, Vector2f v2) {
         lineVertices.add(new Vertex(v1, color, new Vector2f(-1, -1), -1));
         lineVertices.add(new Vertex(v2, color, new Vector2f(-1, -1), -1));
+    }
+
+    public boolean canFit(Texture texture) {
+        if (!textures.contains(texture) && textures.size() >= maxTextures)
+            return false;
+        return true;
+    }
+
+    public boolean canFit(TextureRegion texture) {
+        return canFit(texture.getTexture());
     }
 
     /**

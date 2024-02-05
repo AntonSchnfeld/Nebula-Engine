@@ -2,7 +2,6 @@ package org.nebula.jgl.batch;
 
 import org.joml.Vector2f;
 import org.nebula.jgl.JGL;
-import org.nebula.jgl.data.Color;
 import org.nebula.jgl.data.Shader;
 import org.nebula.jgl.data.Vertex;
 import org.nebula.jgl.data.buffer.Buffer;
@@ -54,7 +53,7 @@ public class RenderBatch extends Batch {
     }
 
     public RenderBatch() {
-        this(8);
+        this(JGL.getMaxTextureImageUnits());
     }
 
     private void init() {
@@ -228,7 +227,7 @@ public class RenderBatch extends Batch {
             throw new RuntimeException("Tried to add texture to RenderBatch even though there was no space");
 
         final float[] uvs = texture.getUvs();
-        final int texId = texture.getTexture().getId();
+        final int texId = textures.indexOf(texture.getTexture());
 
         quadVertices.add(new Vertex(bottomLeft, color, new Vector2f(uvs[0], uvs[1]), texId));
         quadVertices.add(new Vertex(topLeft, color, new Vector2f(uvs[2], uvs[3]), texId));
@@ -299,7 +298,7 @@ public class RenderBatch extends Batch {
         textures.add(tex);
 
         final float[] uvs = texture.getUvs();
-        final int texId = tex.getId();
+        final int texId = textures.indexOf(texture.getTexture());
 
         triVertices.add(new Vertex(x1, y1, z, color, uvs[0], uvs[1], texId));
         triVertices.add(new Vertex(x2, y2, z, color, uvs[2], uvs[3], texId));
@@ -345,7 +344,7 @@ public class RenderBatch extends Batch {
     }
 
     private void incrementZ() {
-        z+=0.05f;
+        z+=0.0000001f;
     }
 
     /**

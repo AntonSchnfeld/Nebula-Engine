@@ -3,7 +3,7 @@
 uniform mat4 uProjection;
 uniform mat4 uView;
 
-layout(location = 0) in vec2 vPos;
+layout(location = 0) in vec3 vPos;
 layout(location = 1) in vec4 vCol;
 layout(location = 2) in vec2 vUv;
 layout(location = 3) in float vTexId;
@@ -17,5 +17,5 @@ void main() {
     fUv = vUv;
     fTexId = vTexId;
 
-    gl_Position = uView * uProjection * vec4(vPos, 0.0, 1.0);
+    gl_Position = uView * uProjection * vec4(vPos, 1.0);
 }

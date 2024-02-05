@@ -1,11 +1,18 @@
 package org.nebula;
 
 import org.joml.Vector2f;
+import org.nebula.io.ByteBufferedImage;
+import org.nebula.io.Files;
 import org.nebula.jgl.Camera;
 import org.nebula.jgl.batch.RenderBatch;
 import org.nebula.jgl.data.Color;
 import org.nebula.jgl.data.Shader;
+import org.nebula.jgl.data.texture.Texture;
+import org.nebula.jgl.data.texture.TextureRegion;
 import org.nebula.jglfw.GLFWWindow;
+
+import java.io.File;
+import java.util.Arrays;
 
 import static org.lwjgl.opengl.GL33C.*;
 
@@ -15,40 +22,7 @@ public class RenderBatchTest
     private final GLFWWindow window;
     private final Camera camera;
 
-    private static final String vertex = """
-            #version 330 core
-
-            uniform mat4 uProjection;
-            uniform mat4 uView;
-
-            layout(location = 0) in vec3 vPos;
-            layout(location = 1) in vec4 vCol;
-            layout(location = 2) in vec2 vUv;
-            layout(location = 3) in float vTexId;
-
-            out vec4 fCol;
-            out vec2 fUv;
-            out float fTexId;
-
-            void main() {
-                fCol = vCol;
-                fUv = vUv;
-                fTexId = vTexId;
-
-                gl_Position = uView * uProjection * vec4(vPos, 1.0);
-            }
-            """;
-    private static final String fragment = """
-            #version 330 core
-
-            in vec4 fCol;
-            in vec2 fUv;
-            in float fTexId;
-
-            void main() {
-                gl_FragColor = fCol;
-            }
-            """;
+    private final TextureRegion texture;
 
     public RenderBatchTest() {
         final float size = 1;
@@ -58,12 +32,17 @@ public class RenderBatchTest
         window.createGLCapabilities();
 
         this.batch = new RenderBatch();
-        Shader shader = new Shader(vertex, fragment);
+        Shader shader = new Shader(Files.readResourceAsString("default.vert"),
+                Files.readResourceAsString("default.frag"));
         batch.setShader(shader);
+
+        window.setWindowIcon(Files.readImageFromResource("nebula.png"));
+        texture = new TextureRegion(new Texture(Files.readImageFromResource("nebula.png")));
 
         window.loop();
         window.dispose();
         batch.dispose();
+        texture.getTexture().dispose();
     }
 
     private void draw() {
@@ -77,12 +56,7 @@ public class RenderBatchTest
         batch.setProjectionMatrix(camera.getProjection());
         batch.begin();
         batch.setColor(Color.WHITE);
-        batch.quad(-0.75f, -0.75f, -0.75f, 0.75f, 0.75f, 0.75f, 0.75f, -0.75f);
-        batch.setColor(Color.GRAY);
-        batch.triangle(-1f, -1f, 1f, -1f, 0, 1f);
-        batch.setColor(new Color(1, 0, 0, 0.5f));
-        batch.line(-0.75f, -0.75f, 0.75f, 0.75f);
-        batch.line(-0.75f, 0.75f, 0.75f, -0.75f);
+        batch.texture(texture, -0.75f, -0.75f, 1.5f, 1.5f);
         batch.end();
     }
 

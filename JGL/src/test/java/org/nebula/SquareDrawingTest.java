@@ -1,7 +1,5 @@
 package org.nebula;
 
-import org.lwjgl.BufferUtils;
-import org.nebula.io.Files;
 import org.nebula.jgl.data.buffer.Buffer;
 import org.nebula.jgl.data.Shader;
 import org.nebula.jgl.data.buffer.VertexArray;

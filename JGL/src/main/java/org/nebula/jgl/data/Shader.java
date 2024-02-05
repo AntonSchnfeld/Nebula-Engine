@@ -2,6 +2,8 @@ package org.nebula.jgl.data;
 
 import org.joml.*;
 import org.nebula.base.interfaces.IDisposable;
+import org.nebula.jgl.JGL;
+import org.nebula.jgl.data.texture.Texture;
 
 import java.util.HashMap;
 
@@ -284,6 +286,18 @@ public class Shader implements IDisposable {
         bind();
         final int uniformLoc = uniformVariables.get(uniformName);
         glUniformMatrix4fv(uniformLoc, false, value.get(new float[16]));
+    }
+
+    public void uploadUniformTextureArray(final String uniformName, final Texture[] value) {
+        if (!uniformVariables.containsKey(uniformName))
+            uniformVariables.put(uniformName, getUniformLocation(uniformName));
+
+        bind();
+        final int uniformLoc = uniformVariables.get(uniformName);
+        glUniform1i(uniformLoc, 0);
+
+        glActiveTexture(0);
+        glBindTexture(GL_TEXTURE_2D, value[0].getId());
     }
 
     /**

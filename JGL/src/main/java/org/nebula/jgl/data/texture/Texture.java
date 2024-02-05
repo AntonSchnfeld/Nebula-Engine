@@ -10,6 +10,10 @@ public class Texture implements IDisposable {
     private final int id, width, height, channels;
 
     public Texture(final String filepath) {
+        this(Files.readImageFromResource(filepath));
+    }
+
+    public Texture(final ByteBufferedImage image) {
         id = glGenTextures();
         glBindTexture(GL_TEXTURE_2D, id);
 
@@ -18,8 +22,6 @@ public class Texture implements IDisposable {
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-
-        ByteBufferedImage image = Files.readImage(filepath);
 
         width = image.getWidth();
         height = image.getHeight();

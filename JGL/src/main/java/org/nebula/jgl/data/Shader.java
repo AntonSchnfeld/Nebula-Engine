@@ -288,16 +288,13 @@ public class Shader implements IDisposable {
         glUniformMatrix4fv(uniformLoc, false, value.get(new float[16]));
     }
 
-    public void uploadUniformTextureArray(final String uniformName, final Texture[] value) {
+    public void uploadIntArray(String uniformName, int[] value) {
         if (!uniformVariables.containsKey(uniformName))
             uniformVariables.put(uniformName, getUniformLocation(uniformName));
 
         bind();
         final int uniformLoc = uniformVariables.get(uniformName);
-        glUniform1i(uniformLoc, 0);
-
-        glActiveTexture(0);
-        glBindTexture(GL_TEXTURE_2D, value[0].getId());
+        glUniform1iv(uniformLoc, value);
     }
 
     /**

@@ -82,6 +82,10 @@ public abstract class Batch implements IDisposable
      */
     public abstract void texture(TextureRegion texture, float x, float y, float width, float height);
 
+    public abstract void texture(TextureRegion texture, Vector2f v1, Vector2f v2, Vector2f v3, Vector2f v4);
+
+    public abstract void texture(TextureRegion texture, float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4);
+
     /**
      * Renders a textured quad with the specified coordinates and texture coordinates, using the width and height
      * of the texture region.
@@ -130,6 +134,11 @@ public abstract class Batch implements IDisposable
      * @param v4 the position of the fourth vertex
      */
     public abstract void quad(Vector2f v1, Vector2f v2, Vector2f v3, Vector2f v4);
+
+    public abstract void quad(Vector2f positon, Vector2f dimensions);
+
+    public abstract void quad(float x, float y, float width, float height);
+
     /**
      * Renders a textured triangle with specified coordinates and texture coordinates.
      *

@@ -22,13 +22,19 @@ public class RenderBatch extends Batch {
     private final List<Vertex> triVertices, quadVertices, lineVertices;
 
     private final List<Texture> textures;
+    private int[] slots;
     private final int maxTextures;
     private boolean rendering;
     private float z;
+    private boolean wireframeEnabled;
 
     public RenderBatch(int maxTextures) {
         super();
         this.maxTextures = maxTextures;
+
+        slots = new int[maxTextures];
+        for (int i = 0; i < maxTextures; i++)
+            slots[i] = i;
 
         triVao = new VertexArray();
         quadVao = new VertexArray();
@@ -46,6 +52,8 @@ public class RenderBatch extends Batch {
         textures = new ArrayList<>();
 
         rendering = false;
+
+        wireframeEnabled = false;
 
         z = 0;
 
@@ -128,6 +136,13 @@ public class RenderBatch extends Batch {
         lineBuffer.data(lineVertices, BufferUsage.STATIC_DRAW);
 
         shader.bind();
+
+        shader.uploadIntArray("uTextures", slots);
+        for (int i = 0; i < textures.size(); i++) {
+            Texture texture = textures.get(i);
+            if (texture != null)
+                texture.bindToSlot(i);
+        }
 
         shader.uploadUniformMat4f(Shader.PROJECTION_MAT_NAME, projectionMatrix);
         shader.uploadUniformMat4f(Shader.VIEW_MAT_NAME, viewMatrix);
@@ -214,17 +229,28 @@ public class RenderBatch extends Batch {
      */
     @Override
     public void texture(TextureRegion texture, float x, float y, float width, float height) {
-        final Vector2f bottomLeft = new Vector2f(x, y),
-        bottomRight = new Vector2f(x + width, y),
-        topLeft = new Vector2f(x, y + width),
-        topRight = new Vector2f(x + width, y + height);
+        texture(texture, x, y, x + width, y, x, y + width, x + width, y + height);
+    }
+
+    @Override
+    public void texture(TextureRegion texture, Vector2f v1, Vector2f v2, Vector2f v3, Vector2f v4) {
+        texture(texture, v1.x, v1.y, v2.x, v2.y, v3.x, v3.y, v4.x, v4.y);
+    }
+
+    @Override
+    public void texture(TextureRegion texture, float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4) {
+        final Vector2f bottomLeft = new Vector2f(x1, y1),
+                bottomRight = new Vector2f(x2, y2),
+                topLeft = new Vector2f(x3, y3),
+                topRight = new Vector2f(x4, y4);
         if (texture == null) {
             quad(bottomLeft, topLeft, topRight, bottomRight);
             return;
         }
 
-        if (!canFit(texture))
-            throw new RuntimeException("Tried to add texture to RenderBatch even though there was no space");
+        final Texture tex = texture.getTexture();
+
+        addTexture(tex);
 
         final float[] uvs = texture.getUvs();
         final int texId = textures.indexOf(texture.getTexture());
@@ -233,6 +259,7 @@ public class RenderBatch extends Batch {
         quadVertices.add(new Vertex(topLeft, color, new Vector2f(uvs[2], uvs[3]), texId));
         quadVertices.add(new Vertex(topRight, color, new Vector2f(uvs[4], uvs[5]), texId));
         quadVertices.add(new Vertex(bottomRight, color, new Vector2f(uvs[6], uvs[7]), texId));
+
         incrementZ();
     }
 
@@ -281,6 +308,16 @@ public class RenderBatch extends Batch {
         quad(v1.x, v1.y, v2.x, v2.y, v3.x, v3.y, v4.x, v4.y);
     }
 
+    @Override
+    public void quad(Vector2f position, Vector2f dimensions) {
+        quad(position.x, position.y, dimensions.x, dimensions.y);
+    }
+
+    @Override
+    public void quad(float x, float y, float width, float height) {
+        quad(x, y, x + width, y, x, y + width, x + width, y + height);
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -293,9 +330,8 @@ public class RenderBatch extends Batch {
         }
 
         final Texture tex = texture.getTexture();
-        if (!canFit(tex))
-            throw new RuntimeException("Tried to add texture to RenderBatch even though there was no space");
-        textures.add(tex);
+
+        addTexture(tex);
 
         final float[] uvs = texture.getUvs();
         final int texId = textures.indexOf(texture.getTexture());
@@ -304,6 +340,13 @@ public class RenderBatch extends Batch {
         triVertices.add(new Vertex(x2, y2, z, color, uvs[2], uvs[3], texId));
         triVertices.add(new Vertex(x3, y3, z, color, uvs[4], uvs[5], texId));
         incrementZ();
+    }
+
+    private void addTexture(Texture texture) {
+        if (!textures.contains(texture) && canFit(texture))
+            textures.add(texture);
+        else if (!textures.contains(texture) && !canFit(texture))
+            throw new RuntimeException("Tried to add texture to RenderBatch even though there was no space");
     }
 
     /**
@@ -361,6 +404,16 @@ public class RenderBatch extends Batch {
 
     public boolean canFit(TextureRegion texture) {
         return canFit(texture.getTexture());
+    }
+
+    public void setWireFrameEnabled(boolean wireframeEnabled) {
+        this.wireframeEnabled = wireframeEnabled;
+        if (wireframeEnabled) glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+        else glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    }
+
+    public boolean isWireFrameEnabled() {
+        return wireframeEnabled;
     }
 
     /**

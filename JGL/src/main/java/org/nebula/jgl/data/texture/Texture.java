@@ -3,6 +3,7 @@ package org.nebula.jgl.data.texture;
 import org.nebula.base.interfaces.IDisposable;
 import org.nebula.io.Files;
 import org.nebula.io.ByteBufferedImage;
+import org.nebula.jgl.JGL;
 
 import static org.lwjgl.opengl.GL33C.*;
 
@@ -32,6 +33,11 @@ public class Texture implements IDisposable {
                 0, colorMode, GL_UNSIGNED_BYTE, image.getBytes());
 
         image.dispose();
+    }
+
+    public void bindToSlot(int slot) {
+        glActiveTexture(GL_TEXTURE0 + slot);
+        glBindTexture(GL_TEXTURE_2D, id);
     }
 
     public int getId() {

@@ -1,6 +1,7 @@
 package org.nebula;
 
 import org.joml.Vector2f;
+import org.joml.Vector2i;
 import org.nebula.jgl.data.Shader;
 import org.nebula.jgl.data.buffer.Buffer;
 import org.nebula.jgl.data.buffer.VertexArray;
@@ -72,7 +73,7 @@ public class VertexArrayAndBufferTest
     }
 
     private void drawTriangle() {
-        Vector2f winSize = window.getSize();
+        Vector2i winSize = window.getSize();
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glViewport(0, 0, (int) winSize.x, (int) winSize.y);

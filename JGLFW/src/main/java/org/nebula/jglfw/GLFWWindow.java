@@ -1,6 +1,7 @@
 package org.nebula.jglfw;
 
 import org.joml.Vector2f;
+import org.joml.Vector2i;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.GL;
@@ -8,6 +9,7 @@ import org.lwjgl.opengl.GLCapabilities;
 import org.lwjgl.opengl.GLX;
 import org.lwjgl.opengl.GLXCapabilities;
 import org.lwjgl.system.MemoryStack;
+import org.lwjgl.system.MemoryUtil;
 import org.nebula.base.interfaces.IDisposable;
 import org.nebula.io.ByteBufferedImage;
 import org.nebula.jglfw.listeners.IGLFWInputListener;
@@ -133,7 +135,7 @@ public class GLFWWindow implements IDisposable
         if (vidMode == null)
             throw new IllegalStateException("Could not retrieve glfw vid mode");
 
-        Vector2f size = getSize();
+        Vector2i size = getSize();
 
         setPosition((int) ((vidMode.width() - size.x) / 2), (int) ((vidMode.height() - size.y) / 2));
     }
@@ -199,14 +201,23 @@ public class GLFWWindow implements IDisposable
     {
         return renderListener;
     }
-    public Vector2f getSize ()
+    public Vector2i getSize ()
     {
+        return getSize(new Vector2i());
+    }
+    public Vector2i getSize(Vector2i vector) {
         IntBuffer width = BufferUtils.createIntBuffer(1);
         IntBuffer height = BufferUtils.createIntBuffer(1);
 
         glfwGetWindowSize(windowObject, width, height);
 
-        return new Vector2f(width.get(), height.get());
+        vector.x = width.get();
+        vector.y = height.get();
+
+        MemoryUtil.memFree(width);
+        MemoryUtil.memFree(height);
+
+        return vector;
     }
     public String getTitle ()
     {

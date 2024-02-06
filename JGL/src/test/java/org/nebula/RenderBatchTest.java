@@ -1,6 +1,7 @@
 package org.nebula;
 
 import org.joml.Vector2f;
+import org.joml.Vector2i;
 import org.nebula.io.ByteBufferedImage;
 import org.nebula.io.Files;
 import org.nebula.jgl.Camera;
@@ -21,7 +22,7 @@ public class RenderBatchTest
     private final RenderBatch batch;
     private final GLFWWindow window;
     private final Camera camera;
-
+    private Vector2i windowSize;
     private final TextureRegion texture, triangleTexture;
 
     public RenderBatchTest() {
@@ -36,6 +37,8 @@ public class RenderBatchTest
                 Files.readResourceAsString("default.frag"));
         batch.setShader(shader);
 
+        windowSize = new Vector2i();
+
         window.setWindowIcon(Files.readImageFromResource("nebula.png"));
         Texture nebula = new Texture(Files.readImageFromResource("nebula.png"));
         texture = new TextureRegion(nebula);
@@ -49,10 +52,10 @@ public class RenderBatchTest
     }
 
     private void draw() {
-        Vector2f winSize = window.getSize();
+        windowSize = window.getSize(windowSize);
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        glViewport(0, 0, (int) winSize.x, (int) winSize.y);
+        glViewport(0, 0, windowSize.x, windowSize.y);
         glClearColor(0, 0, 0, 1);
 
         batch.setViewMatrix(camera.getView());

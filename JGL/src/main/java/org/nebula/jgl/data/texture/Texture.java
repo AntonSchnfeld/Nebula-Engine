@@ -10,19 +10,25 @@ import static org.lwjgl.opengl.GL33C.*;
 public class Texture implements IDisposable {
     private final int id, width, height, channels;
 
-    public Texture(final String filepath) {
-        this(Files.readImageFromResource(filepath));
+    public Texture(final String resourceName) {
+        this(Files.readImageFromResource(resourceName), false);
     }
-
     public Texture(final ByteBufferedImage image) {
+        this(image, false);
+    }
+    public Texture(final String resourceName, boolean useAntiAliasing) {
+        this(Files.readImageFromResource(resourceName), useAntiAliasing);
+    }
+    public Texture(final ByteBufferedImage image, boolean useAntiAliasing) {
         id = glGenTextures();
         glBindTexture(GL_TEXTURE_2D, id);
 
         // Set texture parameters
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT); // Repeat texture when stretched
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        final int magFilter = useAntiAliasing ? GL_LINEAR : GL_NEAREST;
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, magFilter);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, magFilter);
 
         width = image.getWidth();
         height = image.getHeight();

@@ -137,7 +137,7 @@ public class GLFWWindow implements IDisposable
 
         Vector2i size = getSize();
 
-        setPosition((int) ((vidMode.width() - size.x) / 2), (int) ((vidMode.height() - size.y) / 2));
+        setPosition(((vidMode.width() - size.x) / 2), ((vidMode.height() - size.y) / 2));
     }
 
     public void setWindowListener (IGLFWWindowListener listener)
@@ -206,31 +206,36 @@ public class GLFWWindow implements IDisposable
         return getSize(new Vector2i());
     }
     public Vector2i getSize(Vector2i vector) {
-        IntBuffer width = BufferUtils.createIntBuffer(1);
-        IntBuffer height = BufferUtils.createIntBuffer(1);
+        try (MemoryStack stack = stackPush()) {
+            IntBuffer width = stack.mallocInt(1);
+            IntBuffer height = stack.mallocInt(1);
 
-        glfwGetWindowSize(windowObject, width, height);
+            glfwGetWindowSize(windowObject, width, height);
 
-        vector.x = width.get();
-        vector.y = height.get();
-
-        MemoryUtil.memFree(width);
-        MemoryUtil.memFree(height);
-
+            vector.x = width.get();
+            vector.y = height.get();
+        }
         return vector;
     }
     public String getTitle ()
     {
         return title;
     }
-    public Vector2f getPosition ()
-    {
-        IntBuffer x = BufferUtils.createIntBuffer(1);
-        IntBuffer y = BufferUtils.createIntBuffer(1);
+    public Vector2i getPosition() {
+        return getPosition(new Vector2i());
+    }
+    public Vector2i getPosition(Vector2i position) {
+        try (MemoryStack stack = stackPush()) {
+            IntBuffer x = stack.mallocInt(1);
+            IntBuffer y = stack.mallocInt(1);
 
-        glfwGetWindowPos(windowObject, x, y);
+            glfwGetWindowPos(windowObject, x, y);
 
-        return new Vector2f(x.get(), y.get());
+            position.x = x.get();
+            position.y = y.get();
+        }
+
+        return position;
     }
     @Override
     public void dispose ()

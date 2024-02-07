@@ -1,6 +1,8 @@
 package org.nebula.jgl.data.buffer;
 
 import org.lwjgl.BufferUtils;
+import org.lwjgl.system.JNI;
+import org.lwjgl.system.MemoryUtil;
 import org.nebula.base.interfaces.IDisposable;
 
 import java.nio.FloatBuffer;
@@ -88,7 +90,6 @@ public class Buffer implements IDisposable
 
     public final int id;
     private final int bufferType;
-    protected VertexArray vertexArray;
 
     /**
      * Constructs a Buffer object with the specified buffer type (e.g., GL_ARRAY_BUFFER, GL_ELEMENT_ARRAY_BUFFER).
@@ -98,10 +99,6 @@ public class Buffer implements IDisposable
     public Buffer(BufferType type) {
         id = glGenBuffers();
         this.bufferType = type.getGlConstant();
-    }
-
-    public VertexArray getVertexArray() {
-        return vertexArray;
     }
 
     /**
@@ -165,7 +162,7 @@ public class Buffer implements IDisposable
     public void subData(float[] data, long offset)
     {
         bind();
-        glBufferSubData(bufferType, offset, BufferUtils.createFloatBuffer(data.length).put(data));
+        glBufferSubData(bufferType, offset, data);
     }
 
     public void subData(FloatBuffer data, long offset)
@@ -177,7 +174,7 @@ public class Buffer implements IDisposable
     public void subData(int[] data, long offset)
     {
         bind();
-        glBufferSubData(bufferType, offset, BufferUtils.createIntBuffer(data.length).put(data));
+        glBufferSubData(bufferType, offset, data);
     }
 
     public void subData(IntBuffer data, long offset)

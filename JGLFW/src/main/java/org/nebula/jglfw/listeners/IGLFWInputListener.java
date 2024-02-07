@@ -42,4 +42,3 @@ public interface IGLFWInputListener {
      */
     void onMouseButtonAction(GLFWWindow window, int button, int action, int mods);
 }
-

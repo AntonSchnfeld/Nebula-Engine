@@ -2,18 +2,13 @@ package org.nebula;
 
 import org.joml.Vector2f;
 import org.joml.Vector2i;
-import org.nebula.io.ByteBufferedImage;
 import org.nebula.io.Files;
 import org.nebula.jgl.Camera;
 import org.nebula.jgl.batch.RenderBatch;
-import org.nebula.jgl.data.Color;
 import org.nebula.jgl.data.Shader;
 import org.nebula.jgl.data.texture.Texture;
 import org.nebula.jgl.data.texture.TextureRegion;
 import org.nebula.jglfw.GLFWWindow;
-
-import java.io.File;
-import java.util.Arrays;
 
 import static org.lwjgl.opengl.GL33C.*;
 
@@ -40,10 +35,9 @@ public class RenderBatchTest
         windowSize = new Vector2i();
 
         window.setWindowIcon(Files.readImageFromResource("nebula.png"));
-        Texture nebula = new Texture(Files.readImageFromResource("nebula.png"));
+        Texture nebula = new Texture(Files.readImageFromResource("nebula.png"), true);
         texture = new TextureRegion(nebula);
         triangleTexture = new TextureRegion(nebula, new float[] {0, 0, 1, 0, 0.5f, 1});
-
 
         window.loop();
         window.dispose();

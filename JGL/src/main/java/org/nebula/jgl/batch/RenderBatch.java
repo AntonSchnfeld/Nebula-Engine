@@ -324,7 +324,7 @@ public class RenderBatch extends Batch {
     @Override
     public void texturedTriangle(TextureRegion texture, float x1, float y1, float x2, float y2, float x3, float y3) {
         // Using this function without a texture is virtually the same as triangle
-        if (texture == null) {
+        if (texture == null || texture.getTexture() == null) {
             triangle(x1, y1, x2, y2, x3, y3);
             return;
         }

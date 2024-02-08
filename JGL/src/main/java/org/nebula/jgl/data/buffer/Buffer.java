@@ -75,7 +75,10 @@ public class Buffer implements IDisposable
         FLOAT(GL_FLOAT),
         UNSIGNED_INT(GL_UNSIGNED_INT),
         UNSIGNED_SHORT(GL_UNSIGNED_SHORT),
-        UNSIGNED_BYTE(GL_UNSIGNED_BYTE);
+        UNSIGNED_BYTE(GL_UNSIGNED_BYTE),
+        INT(GL_INT),
+        BOOLEAN(GL_BOOL),
+        DOUBLE(GL_DOUBLE);
 
         private final int glConstant;
 
@@ -121,10 +124,10 @@ public class Buffer implements IDisposable
      * @param data   The float array data to be stored in the buffer.
      * @param usage  The buffer usage pattern indicating how the data will be accessed and modified.
      */
-        public void data(float[] data, BufferUsage usage) {
-            bind();
-            glBufferData(bufferType, data, usage.getGlConstant());
-        }
+    public void data(float[] data, BufferUsage usage) {
+        bind();
+        glBufferData(bufferType, data, usage.getGlConstant());
+    }
 
     /**
      * Stores the specified FloatBuffer data in the buffer with the given usage pattern.
@@ -155,6 +158,11 @@ public class Buffer implements IDisposable
      * @param usage  The buffer usage pattern indicating how the data will be accessed and modified.
      */
     public void data(IntBuffer data, BufferUsage usage) {
+        bind();
+        glBufferData(bufferType, data, usage.getGlConstant());
+    }
+
+    public void data(int data, BufferUsage usage) {
         bind();
         glBufferData(bufferType, data, usage.getGlConstant());
     }

@@ -3,8 +3,13 @@ package org.nebula.jgl.data.shader;
 import org.joml.*;
 import org.nebula.base.interfaces.IDisposable;
 import org.nebula.jgl.data.ShaderException;
+import org.nebula.jgl.data.buffer.Buffer;
 
+import java.util.AbstractMap;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static org.lwjgl.opengl.GL33C.*;
 
@@ -34,10 +39,61 @@ import static org.lwjgl.opengl.GL33C.*;
  * @see org.joml.Matrix4f
  */
 public class Shader implements IDisposable {
+    private record GLSLDatatype(int size, int bytes, Buffer.BufferDataType dataType) {}
+    private static final Map<String, GLSLDatatype> glslDatatypeMap = Map.ofEntries(
+            entry("float", new GLSLDatatype(1, Float.BYTES, Buffer.BufferDataType.FLOAT)),
+            entry("vec2", new GLSLDatatype(2, 2 * Float.BYTES, Buffer.BufferDataType.FLOAT)),
+            entry("vec3", new GLSLDatatype(3, 3 * Float.BYTES, Buffer.BufferDataType.FLOAT)),
+            entry("vec4", new GLSLDatatype(4, 4 * Float.BYTES, Buffer.BufferDataType.FLOAT)),
+            entry("double", new GLSLDatatype(1, Double.BYTES, Buffer.BufferDataType.DOUBLE)),
+            entry("dvec2", new GLSLDatatype(2, 2 * Double.BYTES, Buffer.BufferDataType.DOUBLE)),
+            entry("dvec3", new GLSLDatatype(3, 3 * Double.BYTES, Buffer.BufferDataType.DOUBLE)),
+            entry("dvec4", new GLSLDatatype(4, 4 * Double.BYTES, Buffer.BufferDataType.DOUBLE)),
+            entry("int", new GLSLDatatype(1, Integer.BYTES, Buffer.BufferDataType.INT)),
+            entry("ivec2", new GLSLDatatype(2, 2 * Integer.BYTES, Buffer.BufferDataType.INT)),
+            entry("ivec3", new GLSLDatatype(3, 3 * Integer.BYTES, Buffer.BufferDataType.INT)),
+            entry("ivec4", new GLSLDatatype(4, 4 * Integer.BYTES, Buffer.BufferDataType.INT)),
+            entry("uint", new GLSLDatatype(1, Integer.BYTES, Buffer.BufferDataType.UNSIGNED_INT)),
+            entry("uvec2", new GLSLDatatype(2, 2 * Integer.BYTES, Buffer.BufferDataType.UNSIGNED_INT)),
+            entry("uvec3", new GLSLDatatype(3, 3 * Integer.BYTES, Buffer.BufferDataType.UNSIGNED_INT)),
+            entry("uvec4", new GLSLDatatype(4, 4 * Integer.BYTES, Buffer.BufferDataType.UNSIGNED_INT)),
+            entry("ushort", new GLSLDatatype(1, Short.BYTES, Buffer.BufferDataType.UNSIGNED_SHORT)),
+            entry("usvec2", new GLSLDatatype(2, 2 * Short.BYTES, Buffer.BufferDataType.UNSIGNED_SHORT)),
+            entry("usvec3", new GLSLDatatype(3, 3 * Short.BYTES, Buffer.BufferDataType.UNSIGNED_SHORT)),
+            entry("usvec4", new GLSLDatatype(4, 4 * Short.BYTES, Buffer.BufferDataType.UNSIGNED_SHORT)),
+            entry("ubyte", new GLSLDatatype(1, Byte.BYTES, Buffer.BufferDataType.UNSIGNED_BYTE)),
+            entry("ubvec2", new GLSLDatatype(2, 2 * Byte.BYTES, Buffer.BufferDataType.UNSIGNED_BYTE)),
+            entry("ubvec3", new GLSLDatatype(3, 3 * Byte.BYTES, Buffer.BufferDataType.UNSIGNED_BYTE)),
+            entry("ubvec4", new GLSLDatatype(4, 4 * Byte.BYTES, Buffer.BufferDataType.UNSIGNED_BYTE)),
+            entry("bool", new GLSLDatatype(1, Byte.BYTES, Buffer.BufferDataType.BOOLEAN)),
+            entry("bvec2", new GLSLDatatype(2, 2 * Byte.BYTES, Buffer.BufferDataType.BOOLEAN)),
+            entry("bvec3", new GLSLDatatype(3, 3 * Byte.BYTES, Buffer.BufferDataType.BOOLEAN)),
+            entry("bvec4", new GLSLDatatype(4, 4 * Byte.BYTES, Buffer.BufferDataType.BOOLEAN)),
+            entry("mat2", new GLSLDatatype(2 * 2, 2 * 2 * Float.BYTES, Buffer.BufferDataType.FLOAT)),
+            entry("mat3", new GLSLDatatype(3 * 3, 3 * 3 * Float.BYTES, Buffer.BufferDataType.FLOAT)),
+            entry("mat4", new GLSLDatatype(4 * 4, 4 * 4 * Float.BYTES, Buffer.BufferDataType.FLOAT)),
+            entry("mat2x2", new GLSLDatatype(2 * 2, 2 * 2 * Float.BYTES, Buffer.BufferDataType.FLOAT)),
+            entry("mat2x3", new GLSLDatatype(2 * 3, 2 * 3 * Float.BYTES, Buffer.BufferDataType.FLOAT)),
+            entry("mat2x4", new GLSLDatatype(2 * 4, 2 * 4 * Float.BYTES, Buffer.BufferDataType.FLOAT)),
+            entry("mat3x2", new GLSLDatatype(3 * 2, 3 * 2 * Float.BYTES, Buffer.BufferDataType.FLOAT)),
+            entry("mat3x3", new GLSLDatatype(3 * 3, 3 * 3 * Float.BYTES, Buffer.BufferDataType.FLOAT)),
+            entry("mat3x4", new GLSLDatatype(3 * 4, 3 * 4 * Float.BYTES, Buffer.BufferDataType.FLOAT)),
+            entry("mat4x2", new GLSLDatatype(4 * 2, 4 * 2 * Float.BYTES, Buffer.BufferDataType.FLOAT)),
+            entry("mat4x3", new GLSLDatatype(4 * 3, 4 * 3 * Float.BYTES, Buffer.BufferDataType.FLOAT)),
+            entry("mat4x4", new GLSLDatatype(4 * 4, 4 * 4 * Float.BYTES, Buffer.BufferDataType.FLOAT)),
+            entry("sampler2D", new GLSLDatatype(1, Integer.BYTES, Buffer.BufferDataType.INT)),
+            entry("samplerCube", new GLSLDatatype(1, Integer.BYTES, Buffer.BufferDataType.INT))
+    );
+
+    private static AbstractMap.SimpleEntry<String, GLSLDatatype> entry(String name, GLSLDatatype datatype) {
+        return new AbstractMap.SimpleEntry<>(name, datatype);
+    }
+
     public static final String PROJECTION_MAT_NAME = "uProjection";
     public static final String VIEW_MAT_NAME = "uView";
 
     private final int id;
+    private final VertexAttribs vertexAttribs;
     private final HashMap<String, Integer> uniformLocations, attribLocations;
 
     /**
@@ -49,6 +105,8 @@ public class Shader implements IDisposable {
     public Shader(final String vertexSource, final String fragmentSource) {
         uniformLocations = new HashMap<>();
         attribLocations = new HashMap<>();
+
+        this.vertexAttribs = parseAttribs(vertexSource);
 
         id = glCreateProgram();
 
@@ -83,6 +141,49 @@ public class Shader implements IDisposable {
             throw new ShaderException(glGetProgramInfoLog(id));
     }
 
+    public static VertexAttribs parseAttribs(String vertexSource) {
+        String[] lines = vertexSource.split("\\r?\\n");
+
+        StringBuilder sb = new StringBuilder();
+
+        for (String line : lines) {
+            if (line.matches("^\\s*layout.*")) {
+                sb.append(line).append("\n");
+            }
+        }
+
+        String[] attribDeclarations = sb.toString().split("\\n");
+        VertexAttrib[] vertexAttribs = new VertexAttrib[attribDeclarations.length];
+
+        Pattern pattern = Pattern.compile("layout\\(location=(\\d+)\\)\\s+in\\s+(\\w+)\\s+(\\w+);");
+
+        for (int i = 0; i < vertexAttribs.length; i++) {
+            String attribDeclaration = attribDeclarations[i];
+
+            VertexAttrib attrib = new VertexAttrib();
+
+            Matcher matcher = pattern.matcher(attribDeclaration);
+            if (!matcher.matches()) {
+                throw new RuntimeException("Invalid vertex attribute declaration: " + attribDeclaration);
+            }
+
+            int location = Integer.parseInt(matcher.group(1));
+            String datatype = matcher.group(2);
+            String name = matcher.group(3);
+
+            attrib.setLocation(location);
+            attrib.setName(name);
+            GLSLDatatype glslDatatype = glslDatatypeMap.get(datatype);
+            attrib.setBytes(glslDatatype.bytes);
+            attrib.setSize(glslDatatype.size);
+            attrib.setDataType(glslDatatype.dataType);
+
+            vertexAttribs[i] = attrib;
+        }
+
+        return new VertexAttribs(vertexAttribs);
+    }
+
     /**
      * Binds the shader for use in rendering.
      * <p>
@@ -105,6 +206,11 @@ public class Shader implements IDisposable {
         }
 
         return attribLocations.get(attribLocation);
+    }
+
+
+    public VertexAttribs getVertexAttribs() {
+        return vertexAttribs;
     }
 
     /**
@@ -298,7 +404,7 @@ public class Shader implements IDisposable {
         glUniformMatrix4fv(uniformLoc, false, value.get(new float[16]));
     }
 
-    public void uploadIntArray(String uniformName, int[] value) {
+    public void uploadUniformIntArray(String uniformName, int[] value) {
         if (!uniformLocations.containsKey(uniformName))
             uniformLocations.put(uniformName, getUniformLocation(uniformName));
 

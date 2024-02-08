@@ -6,10 +6,27 @@ import org.nebula.io.ByteBufferedImage;
 import org.nebula.jgl.JGL;
 
 import static org.lwjgl.opengl.GL33C.*;
+import static org.lwjgl.system.MemoryUtil.NULL;
 
 public class Texture implements IDisposable {
     private final int id, width, height, channels;
 
+
+    public Texture(int width, int height) {
+        this.id = glGenTextures();
+        this.width = width;
+        this.height = height;
+        this.channels = 3;
+
+        bind();
+        glTexImage2D(
+                GL_TEXTURE_2D, 0, GL_RGB, width, height, 0,
+                GL_RGB, GL_UNSIGNED_BYTE, NULL
+        );
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        unbind();
+    }
     public Texture(final String resourceName) {
         this(Files.readImageFromResource(resourceName), false);
     }
@@ -41,6 +58,9 @@ public class Texture implements IDisposable {
         image.dispose();
     }
 
+    public void bind() {
+        glBindTexture(GL_TEXTURE_2D, id);
+    }
     public void bindToSlot(int slot) {
         glActiveTexture(GL_TEXTURE0 + slot);
         glBindTexture(GL_TEXTURE_2D, id);
@@ -65,5 +85,9 @@ public class Texture implements IDisposable {
     @Override
     public void dispose() {
         glDeleteTextures(id);
+    }
+
+    public void unbind() {
+        glBindTexture(GL_TEXTURE_2D, 0);
     }
 }

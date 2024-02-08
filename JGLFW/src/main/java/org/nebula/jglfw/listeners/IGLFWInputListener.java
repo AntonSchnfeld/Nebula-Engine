@@ -12,7 +12,6 @@ import org.nebula.jglfw.GLFWWindow;
  * @see GLFWWindow
  */
 public interface IGLFWInputListener {
-
     /**
      * Called when the cursor position changes within the GLFW window.
      *

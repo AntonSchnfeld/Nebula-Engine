@@ -137,7 +137,7 @@ public class RenderBatch extends Batch {
 
         shader.bind();
 
-        shader.uploadIntArray("uTextures", slots);
+        shader.uploadUniformIntArray("uTextures", slots);
         for (int i = 0; i < textures.size(); i++) {
             Texture texture = textures.get(i);
             if (texture != null)

@@ -14,7 +14,6 @@ import org.nebula.jglfw.listeners.RenderListener;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.system.MemoryStack.stackPush;
@@ -188,7 +187,6 @@ public class GLFWWindow implements IDisposable
     public void removeInputListener(IGLFWInputListener inputListener) {
         inputListeners.remove(inputListener);
     }
-
     public void setResizable(boolean resizable) {
         if (!resizable)
             windowListeners.add(resizableListener);

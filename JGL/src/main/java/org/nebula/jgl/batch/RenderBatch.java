@@ -2,7 +2,7 @@ package org.nebula.jgl.batch;
 
 import org.joml.Vector2f;
 import org.nebula.jgl.JGL;
-import org.nebula.jgl.data.Shader;
+import org.nebula.jgl.data.shader.Shader;
 import org.nebula.jgl.data.Vertex;
 import org.nebula.jgl.data.buffer.Buffer;
 import org.nebula.jgl.data.buffer.VertexArray;

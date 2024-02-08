@@ -5,7 +5,7 @@ import org.joml.Vector2i;
 import org.nebula.io.Files;
 import org.nebula.jgl.Camera;
 import org.nebula.jgl.batch.RenderBatch;
-import org.nebula.jgl.data.Shader;
+import org.nebula.jgl.data.shader.Shader;
 import org.nebula.jgl.data.texture.Texture;
 import org.nebula.jgl.data.texture.TextureRegion;
 import org.nebula.jglfw.GLFWWindow;

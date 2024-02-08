@@ -4,7 +4,7 @@ import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.nebula.base.interfaces.IDisposable;
 import org.nebula.jgl.data.Color;
-import org.nebula.jgl.data.Shader;
+import org.nebula.jgl.data.shader.Shader;
 import org.nebula.jgl.data.texture.Texture;
 import org.nebula.jgl.data.texture.TextureRegion;
 

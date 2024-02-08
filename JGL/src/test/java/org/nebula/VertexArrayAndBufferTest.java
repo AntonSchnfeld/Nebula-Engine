@@ -1,8 +1,7 @@
 package org.nebula;
 
-import org.joml.Vector2f;
 import org.joml.Vector2i;
-import org.nebula.jgl.data.Shader;
+import org.nebula.jgl.data.shader.Shader;
 import org.nebula.jgl.data.buffer.Buffer;
 import org.nebula.jgl.data.buffer.VertexArray;
 import org.nebula.jglfw.GLFWWindow;

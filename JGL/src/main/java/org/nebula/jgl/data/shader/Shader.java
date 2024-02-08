@@ -1,9 +1,8 @@
-package org.nebula.jgl.data;
+package org.nebula.jgl.data.shader;
 
 import org.joml.*;
 import org.nebula.base.interfaces.IDisposable;
-import org.nebula.jgl.JGL;
-import org.nebula.jgl.data.texture.Texture;
+import org.nebula.jgl.data.ShaderException;
 
 import java.util.HashMap;
 
@@ -39,7 +38,7 @@ public class Shader implements IDisposable {
     public static final String VIEW_MAT_NAME = "uView";
 
     private final int id;
-    private final HashMap<String, Integer> uniformVariables;
+    private final HashMap<String, Integer> uniformLocations, attribLocations;
 
     /**
      * Creates a new Shader with specified vertex and fragment shader sources.
@@ -48,7 +47,8 @@ public class Shader implements IDisposable {
      * @param fragmentSource the source code for the fragment shader
      */
     public Shader(final String vertexSource, final String fragmentSource) {
-        uniformVariables = new HashMap<>();
+        uniformLocations = new HashMap<>();
+        attribLocations = new HashMap<>();
 
         id = glCreateProgram();
 
@@ -97,6 +97,16 @@ public class Shader implements IDisposable {
         glUseProgram(0);
     }
 
+    public int getAttribLocation(final String attribLocation) {
+        if (!attribLocations.containsKey(attribLocation)) {
+            int loc = glGetAttribLocation(id, attribLocation);
+            attribLocations.put(attribLocation, loc);
+            return loc;
+        }
+
+        return attribLocations.get(attribLocation);
+    }
+
     /**
      * Retrieves the location of the specified uniform variable.
      *
@@ -114,11 +124,11 @@ public class Shader implements IDisposable {
      * @param value       the float value to upload
      */
     public void uploadUniformFloat(final String uniformName, final float value) {
-        if (!uniformVariables.containsKey(uniformName))
-            uniformVariables.put(uniformName, getUniformLocation(uniformName));
+        if (!uniformLocations.containsKey(uniformName))
+            uniformLocations.put(uniformName, getUniformLocation(uniformName));
 
         bind();
-        final int uniformLoc = uniformVariables.get(uniformName);
+        final int uniformLoc = uniformLocations.get(uniformName);
         glUniform1f(uniformLoc, value);
     }
 
@@ -129,11 +139,11 @@ public class Shader implements IDisposable {
      * @param value       the integer value to upload
      */
     public void uploadUniformInt(final String uniformName, final int value) {
-        if (!uniformVariables.containsKey(uniformName))
-            uniformVariables.put(uniformName, getUniformLocation(uniformName));
+        if (!uniformLocations.containsKey(uniformName))
+            uniformLocations.put(uniformName, getUniformLocation(uniformName));
 
         bind();
-        final int uniformLoc = uniformVariables.get(uniformName);
+        final int uniformLoc = uniformLocations.get(uniformName);
         glUniform1i(uniformLoc, value);
     }
 
@@ -144,11 +154,11 @@ public class Shader implements IDisposable {
      * @param value       the Vector2f value to upload
      */
     public void uploadUniformVec2f(final String uniformName, final Vector2f value) {
-        if (!uniformVariables.containsKey(uniformName))
-            uniformVariables.put(uniformName, getUniformLocation(uniformName));
+        if (!uniformLocations.containsKey(uniformName))
+            uniformLocations.put(uniformName, getUniformLocation(uniformName));
 
         bind();
-        final int uniformLoc = uniformVariables.get(uniformName);
+        final int uniformLoc = uniformLocations.get(uniformName);
         glUniform2f(uniformLoc, value.x, value.y);
     }
 
@@ -159,11 +169,11 @@ public class Shader implements IDisposable {
      * @param value       the Vector3f value to upload
      */
     public void uploadUniformVec3f(final String uniformName, final Vector3f value) {
-        if (!uniformVariables.containsKey(uniformName))
-            uniformVariables.put(uniformName, getUniformLocation(uniformName));
+        if (!uniformLocations.containsKey(uniformName))
+            uniformLocations.put(uniformName, getUniformLocation(uniformName));
 
         bind();
-        final int uniformLoc = uniformVariables.get(uniformName);
+        final int uniformLoc = uniformLocations.get(uniformName);
         glUniform3f(uniformLoc, value.x, value.y, value.z);
     }
 
@@ -174,11 +184,11 @@ public class Shader implements IDisposable {
      * @param value       the Vector4f value to upload
      */
     public void uploadUniformVec4f(final String uniformName, final Vector4f value) {
-        if (!uniformVariables.containsKey(uniformName))
-            uniformVariables.put(uniformName, getUniformLocation(uniformName));
+        if (!uniformLocations.containsKey(uniformName))
+            uniformLocations.put(uniformName, getUniformLocation(uniformName));
 
         bind();
-        final int uniformLoc = uniformVariables.get(uniformName);
+        final int uniformLoc = uniformLocations.get(uniformName);
         glUniform4f(uniformLoc, value.x, value.y, value.z, value.w);
     }
 
@@ -190,11 +200,11 @@ public class Shader implements IDisposable {
      * @param value       the boolean value to upload
      */
     public void uploadUniformBool(final String uniformName, final boolean value) {
-        if (!uniformVariables.containsKey(uniformName))
-            uniformVariables.put(uniformName, getUniformLocation(uniformName));
+        if (!uniformLocations.containsKey(uniformName))
+            uniformLocations.put(uniformName, getUniformLocation(uniformName));
 
         bind();
-        final int uniformLoc = uniformVariables.get(uniformName);
+        final int uniformLoc = uniformLocations.get(uniformName);
         glUniform1i(uniformLoc, value ? 1 : 0);
     }
 
@@ -205,11 +215,11 @@ public class Shader implements IDisposable {
      * @param value       the Vector2i value to upload
      */
     public void uploadUniformVec2i(final String uniformName, final Vector2i value) {
-        if (!uniformVariables.containsKey(uniformName))
-            uniformVariables.put(uniformName, getUniformLocation(uniformName));
+        if (!uniformLocations.containsKey(uniformName))
+            uniformLocations.put(uniformName, getUniformLocation(uniformName));
 
         bind();
-        final int uniformLoc = uniformVariables.get(uniformName);
+        final int uniformLoc = uniformLocations.get(uniformName);
         glUniform2i(uniformLoc, value.x, value.y);
     }
 
@@ -220,11 +230,11 @@ public class Shader implements IDisposable {
      * @param value       the Vector3i value to upload
      */
     public void uploadUniformVec3i(final String uniformName, final Vector3i value) {
-        if (!uniformVariables.containsKey(uniformName))
-            uniformVariables.put(uniformName, getUniformLocation(uniformName));
+        if (!uniformLocations.containsKey(uniformName))
+            uniformLocations.put(uniformName, getUniformLocation(uniformName));
 
         bind();
-        final int uniformLoc = uniformVariables.get(uniformName);
+        final int uniformLoc = uniformLocations.get(uniformName);
         glUniform3i(uniformLoc, value.x, value.y, value.z);
     }
 
@@ -235,11 +245,11 @@ public class Shader implements IDisposable {
      * @param value       the Vector4i value to upload
      */
     public void uploadUniformVec4i(final String uniformName, final Vector4i value) {
-        if (!uniformVariables.containsKey(uniformName))
-            uniformVariables.put(uniformName, getUniformLocation(uniformName));
+        if (!uniformLocations.containsKey(uniformName))
+            uniformLocations.put(uniformName, getUniformLocation(uniformName));
 
         bind();
-        final int uniformLoc = uniformVariables.get(uniformName);
+        final int uniformLoc = uniformLocations.get(uniformName);
         glUniform4i(uniformLoc, value.x, value.y, value.z, value.w);
     }
 
@@ -250,11 +260,11 @@ public class Shader implements IDisposable {
      * @param value       the Matrix2f value to upload
      */
     public void uploadUniformMat2f(final String uniformName, final Matrix2f value) {
-        if (!uniformVariables.containsKey(uniformName))
-            uniformVariables.put(uniformName, getUniformLocation(uniformName));
+        if (!uniformLocations.containsKey(uniformName))
+            uniformLocations.put(uniformName, getUniformLocation(uniformName));
 
         bind();
-        final int uniformLoc = uniformVariables.get(uniformName);
+        final int uniformLoc = uniformLocations.get(uniformName);
         glUniformMatrix2fv(uniformLoc, false, value.get(new float[4]));
     }
 
@@ -265,11 +275,11 @@ public class Shader implements IDisposable {
      * @param value       the Matrix3f value to upload
      */
     public void uploadUniformMat3f(final String uniformName, final Matrix3f value) {
-        if (!uniformVariables.containsKey(uniformName))
-            uniformVariables.put(uniformName, getUniformLocation(uniformName));
+        if (!uniformLocations.containsKey(uniformName))
+            uniformLocations.put(uniformName, getUniformLocation(uniformName));
 
         bind();
-        final int uniformLoc = uniformVariables.get(uniformName);
+        final int uniformLoc = uniformLocations.get(uniformName);
         glUniformMatrix3fv(uniformLoc, false, value.get(new float[9]));
     }
 
@@ -280,20 +290,20 @@ public class Shader implements IDisposable {
      * @param value       the Matrix4f value to upload
      */
     public void uploadUniformMat4f(final String uniformName, final Matrix4f value) {
-        if (!uniformVariables.containsKey(uniformName))
-            uniformVariables.put(uniformName, getUniformLocation(uniformName));
+        if (!uniformLocations.containsKey(uniformName))
+            uniformLocations.put(uniformName, getUniformLocation(uniformName));
 
         bind();
-        final int uniformLoc = uniformVariables.get(uniformName);
+        final int uniformLoc = uniformLocations.get(uniformName);
         glUniformMatrix4fv(uniformLoc, false, value.get(new float[16]));
     }
 
     public void uploadIntArray(String uniformName, int[] value) {
-        if (!uniformVariables.containsKey(uniformName))
-            uniformVariables.put(uniformName, getUniformLocation(uniformName));
+        if (!uniformLocations.containsKey(uniformName))
+            uniformLocations.put(uniformName, getUniformLocation(uniformName));
 
         bind();
-        final int uniformLoc = uniformVariables.get(uniformName);
+        final int uniformLoc = uniformLocations.get(uniformName);
         glUniform1iv(uniformLoc, value);
     }
 

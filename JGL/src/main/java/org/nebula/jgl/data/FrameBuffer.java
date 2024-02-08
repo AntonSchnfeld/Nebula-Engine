@@ -1,36 +1,61 @@
 package org.nebula.jgl.data;
 
+import org.nebula.jgl.data.texture.Texture;
+
 import static org.lwjgl.opengl.GL33C.*;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
 public class FrameBuffer {
-    public static final FrameBuffer DEFAULT_FRAMEBUFFER = new FrameBuffer(0);
-
     private final int id;
-    private final int texture;
+    private final Texture texture;
+    private final int renderBuffer;
 
-    private FrameBuffer(int id) {
-        this.id = id;
-        this.texture = glGenTextures();
-        glBindTexture(GL_TEXTURE_2D, texture);
-        glTexImage2D(
-                GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, 800, 600, 0,
-                GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, NULL
-        );
+    public FrameBuffer(int width, int height) {
+        this.id = glGenFramebuffers();
 
         glBindFramebuffer(GL_FRAMEBUFFER, id);
 
+        texture = new Texture(width, height);
+
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture.getId(), 0);
+        texture.unbind();
+
+        this.renderBuffer = glGenRenderbuffers();
+        glBindRenderbuffer(GL_RENDERBUFFER, renderBuffer);
+        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);
+        glBindRenderbuffer(GL_RENDERBUFFER, 0);
+
+        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, renderBuffer);
 
         if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-            throw new IllegalStateException("FrameBuffer construction was not completed");
+            throw new IllegalStateException("FrameBuffer construction was not completed | FrameBuffer status: " + glCheckFramebufferStatus(GL_FRAMEBUFFER));
+
+        unbind();
     }
 
-    public FrameBuffer() {
-        this(glGenFramebuffers());
+    public Texture getTexture() {
+        return texture;
+    }
+
+    public int getRenderBuffer() {
+        return renderBuffer;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void bind() {
+        glBindFramebuffer(GL_FRAMEBUFFER, id);
+    }
+
+    public void unbind() {
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 
     public void dispose() {
         glDeleteFramebuffers(id);
-        glDeleteTextures(texture);
+        texture.dispose();
+        glDeleteRenderbuffers(renderBuffer);
     }
 }

@@ -32,12 +32,27 @@ public class GLFWWindow implements IDisposable
     private String title;
     private final List<IGLFWWindowListener> windowListeners;
     private final List<IGLFWInputListener> inputListeners;
+    private boolean resizable;
+    private final IGLFWWindowListener resizableListener;
 
     public GLFWWindow(final String title, final int x, final int y, final int width, final int height) {
         JGLFW.init();
         this.title = title;
         windowListeners = new ArrayList<>();
         inputListeners = new ArrayList<>();
+        resizable = true;
+        resizableListener = new IGLFWWindowListener() {
+            @Override
+            public void onWindowResize(GLFWWindow window, int w, int h) {
+                window.setSize(width, height);
+            }
+            @Override
+            public void onFrameBufferResize(GLFWWindow window, int width, int height) {}
+            @Override
+            public void onWindowPositionChange(GLFWWindow window, int x, int y) {}
+            @Override
+            public void onClose(GLFWWindow window) {}
+        };
         init(title, x, y, width, height);
     }
     public GLFWWindow(final String title, final int width, final int height) {
@@ -174,6 +189,14 @@ public class GLFWWindow implements IDisposable
         inputListeners.remove(inputListener);
     }
 
+    public void setResizable(boolean resizable) {
+        if (!resizable)
+            windowListeners.add(resizableListener);
+        else windowListeners.remove(resizableListener);
+    }
+    public boolean isResizable() {
+        return resizable;
+    }
     public void setSize(int width, int height)
     {
         glfwSetWindowSize(windowObject, width, height);

@@ -29,7 +29,6 @@ import static org.lwjgl.opengl.GL33C.*;
  * </p>
  *
  * @author Anton Schoenfeld
- *
  * @see IDisposable
  * @see org.joml.Vector2f
  * @see org.joml.Vector3f
@@ -39,7 +38,8 @@ import static org.lwjgl.opengl.GL33C.*;
  * @see org.joml.Matrix4f
  */
 public class Shader implements IDisposable {
-    private record GLSLDatatype(int size, int bytes, Buffer.BufferDataType dataType) {}
+    public static final String PROJECTION_MAT_NAME = "uProjection";
+    public static final String VIEW_MAT_NAME = "uView";
     private static final Map<String, GLSLDatatype> glslDatatypeMap = Map.ofEntries(
             entry("float", new GLSLDatatype(1, Float.BYTES, Buffer.BufferDataType.FLOAT)),
             entry("vec2", new GLSLDatatype(2, 2 * Float.BYTES, Buffer.BufferDataType.FLOAT)),
@@ -84,18 +84,9 @@ public class Shader implements IDisposable {
             entry("sampler2D", new GLSLDatatype(1, Integer.BYTES, Buffer.BufferDataType.INT)),
             entry("samplerCube", new GLSLDatatype(1, Integer.BYTES, Buffer.BufferDataType.INT))
     );
-
-    private static AbstractMap.SimpleEntry<String, GLSLDatatype> entry(String name, GLSLDatatype datatype) {
-        return new AbstractMap.SimpleEntry<>(name, datatype);
-    }
-
-    public static final String PROJECTION_MAT_NAME = "uProjection";
-    public static final String VIEW_MAT_NAME = "uView";
-
     private final int id;
     private final VertexAttribs vertexAttribs;
     private final HashMap<String, Integer> uniformLocations, attribLocations;
-
     /**
      * Creates a new Shader with specified vertex and fragment shader sources.
      *
@@ -141,6 +132,10 @@ public class Shader implements IDisposable {
             throw new ShaderException(glGetProgramInfoLog(id));
     }
 
+    private static AbstractMap.SimpleEntry<String, GLSLDatatype> entry(String name, GLSLDatatype datatype) {
+        return new AbstractMap.SimpleEntry<>(name, datatype);
+    }
+
     public static VertexAttribs parseAttribs(String vertexSource) {
         String[] lines = vertexSource.split("\\r?\\n");
 
@@ -155,7 +150,8 @@ public class Shader implements IDisposable {
         String[] attribDeclarations = sb.toString().split("\\n");
         VertexAttrib[] vertexAttribs = new VertexAttrib[attribDeclarations.length];
 
-        Pattern pattern = Pattern.compile("layout\\(location=(\\d+)\\)\\s+in\\s+(\\w+)\\s+(\\w+);");
+        Pattern pattern = Pattern.compile(
+                "\\s*layout\\s*\\(\\s*location\\s*=\\s*(\\d+)\\s*\\)\\s*in\\s+(\\w+)\\s+(\\w+)\\s*;");
 
         for (int i = 0; i < vertexAttribs.length; i++) {
             String attribDeclaration = attribDeclarations[i];
@@ -207,7 +203,6 @@ public class Shader implements IDisposable {
 
         return attribLocations.get(attribLocation);
     }
-
 
     public VertexAttribs getVertexAttribs() {
         return vertexAttribs;
@@ -297,7 +292,6 @@ public class Shader implements IDisposable {
         final int uniformLoc = uniformLocations.get(uniformName);
         glUniform4f(uniformLoc, value.x, value.y, value.z, value.w);
     }
-
 
     /**
      * Uploads a boolean value to the specified uniform variable.
@@ -444,5 +438,8 @@ public class Shader implements IDisposable {
     @Override
     public void dispose() {
         glDeleteProgram(id);
+    }
+
+    private record GLSLDatatype(int size, int bytes, Buffer.BufferDataType dataType) {
     }
 }

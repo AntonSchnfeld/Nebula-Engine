@@ -12,13 +12,12 @@ import org.nebula.jglfw.GLFWWindow;
 
 import static org.lwjgl.opengl.GL33C.*;
 
-public class RenderBatchTest
-{
+public class RenderBatchTest {
     private final RenderBatch batch;
     private final GLFWWindow window;
     private final Camera camera;
-    private Vector2i windowSize;
     private final TextureRegion texture, triangleTexture;
+    private Vector2i windowSize;
 
     public RenderBatchTest() {
         final float size = 1;
@@ -37,12 +36,16 @@ public class RenderBatchTest
         window.setWindowIcon(Files.readImageFromResource("nebula.png"));
         Texture nebula = new Texture(Files.readImageFromResource("nebula.png"), true);
         texture = new TextureRegion(nebula);
-        triangleTexture = new TextureRegion(nebula, new float[] {0, 0, 1, 0, 0.5f, 1});
+        triangleTexture = new TextureRegion(nebula, new float[]{0, 0, 1, 0, 0.5f, 1});
 
         window.loop();
         window.dispose();
         batch.dispose();
         texture.getTexture().dispose();
+    }
+
+    public static void main(String[] args) {
+        new RenderBatchTest();
     }
 
     private void draw() {
@@ -58,9 +61,5 @@ public class RenderBatchTest
         batch.texture(texture, -0.75f, -0.75f, 1.5f, 1.5f);
         batch.texturedTriangle(triangleTexture, -0.5f, -0.5f, 0.5f, -0.5f, 0, 0.5f);
         batch.end();
-    }
-
-    public static void main(String[] args) {
-        new RenderBatchTest();
     }
 }

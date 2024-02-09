@@ -2,10 +2,10 @@ package org.nebula.jgl.batch;
 
 import org.joml.Vector2f;
 import org.nebula.jgl.JGL;
-import org.nebula.jgl.data.shader.Shader;
 import org.nebula.jgl.data.Vertex;
 import org.nebula.jgl.data.buffer.Buffer;
 import org.nebula.jgl.data.buffer.VertexArray;
+import org.nebula.jgl.data.shader.Shader;
 import org.nebula.jgl.data.texture.Texture;
 import org.nebula.jgl.data.texture.TextureRegion;
 
@@ -13,8 +13,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.lwjgl.opengl.GL33C.*;
-import static org.nebula.jgl.data.buffer.Buffer.*;
 import static org.nebula.jgl.data.Vertex.*;
+import static org.nebula.jgl.data.buffer.Buffer.*;
 
 public class RenderBatch extends Batch {
     private final VertexArray triVao, quadVao, lineVao;
@@ -22,8 +22,8 @@ public class RenderBatch extends Batch {
     private final List<Vertex> triVertices, quadVertices, lineVertices;
 
     private final List<Texture> textures;
-    private int[] slots;
     private final int maxTextures;
+    private int[] slots;
     private boolean rendering;
     private float z;
     private boolean wireframeEnabled;
@@ -76,8 +76,7 @@ public class RenderBatch extends Batch {
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     }
 
-    private void initVertexArray(VertexArray vertexArray, Buffer buffer)
-    {
+    private void initVertexArray(VertexArray vertexArray, Buffer buffer) {
         vertexArray.bind();
         buffer.bind();
         vertexArray.vertexAttribPointer(POSITION_LOC, POSITION_SIZE, BufferDataType.FLOAT, VERTEX_SIZE_BYTES, POSITION_POINTER);
@@ -193,7 +192,7 @@ public class RenderBatch extends Batch {
     private void generateQuadElementBuffer() {
         int[] indices = new int[(int) (quadVertices.size() * 1.5)];
 
-        for (int i = 0; i < indices.length; i+=6) {
+        for (int i = 0; i < indices.length; i += 6) {
             int offsetArrayIndex = 6 * i;
             int offset = 4 * i;
 
@@ -215,7 +214,7 @@ public class RenderBatch extends Batch {
     private float[] getVerticesFromList(List<Vertex> vertexList) {
         float[] vertices = new float[VERTEX_SIZE * vertexList.size()];
 
-        for (int i = 0; i < vertices.length; i+=Vertex.VERTEX_SIZE) {
+        for (int i = 0; i < vertices.length; i += Vertex.VERTEX_SIZE) {
             Vertex vertex = vertexList.get(i / VERTEX_SIZE);
             float[] array = vertex.toArray();
             System.arraycopy(array, 0, vertices, i, array.length);
@@ -387,7 +386,7 @@ public class RenderBatch extends Batch {
     }
 
     private void incrementZ() {
-        z+=0.0000001f;
+        z += 0.0000001f;
     }
 
     /**
@@ -406,14 +405,14 @@ public class RenderBatch extends Batch {
         return canFit(texture.getTexture());
     }
 
+    public boolean isWireFrameEnabled() {
+        return wireframeEnabled;
+    }
+
     public void setWireFrameEnabled(boolean wireframeEnabled) {
         this.wireframeEnabled = wireframeEnabled;
         if (wireframeEnabled) glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
         else glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    }
-
-    public boolean isWireFrameEnabled() {
-        return wireframeEnabled;
     }
 
     /**

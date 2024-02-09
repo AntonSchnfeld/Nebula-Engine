@@ -6,17 +6,25 @@ import java.util.Arrays;
 
 public class VertexAttribs {
     private final VertexAttrib[] vertexAttribs;
-    private final int vertexSize;
+    private final int vertexSize, vertexSizeBytes;
 
     public VertexAttribs(VertexAttrib[] vertexAttribs) {
         this.vertexAttribs = vertexAttribs;
 
-        int size = 0;
-        for (VertexAttrib va : vertexAttribs)
-            size += va.getBytes();
+        int size = 0, bytes = 0;
+        for (VertexAttrib va : vertexAttribs) {
+            size += va.getSize();
+            bytes += va.getBytes();
+        }
+        vertexSizeBytes = bytes;
         vertexSize = size;
 
+
         Arrays.sort(vertexAttribs);
+    }
+
+    public int getVertexSizeBytes() {
+        return vertexSizeBytes;
     }
 
     public int getVertexSize() {
@@ -31,14 +39,14 @@ public class VertexAttribs {
         int pointer = 0;
 
         for (VertexAttrib va : vertexAttribs) {
-            vertexArray.vertexAttribPointer(va.getLocation(), va.getSize(), va.getDataType(), vertexSize, pointer);
+            vertexArray.vertexAttribPointer(va.getLocation(), va.getSize(), va.getDataType(), vertexSizeBytes, pointer);
             pointer += va.getBytes();
         }
     }
 
     public void enable(VertexArray vertexArray) {
         for (VertexAttrib va : vertexAttribs)
-            vertexArray.disableVertexAttribArray(va.getLocation());
+            vertexArray.enableVertexAttributeArray(va.getLocation());
     }
 
     public void disable(VertexArray vertexArray) {

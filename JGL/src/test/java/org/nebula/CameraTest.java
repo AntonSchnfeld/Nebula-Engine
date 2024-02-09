@@ -2,9 +2,9 @@ package org.nebula;
 
 import org.joml.Vector2i;
 import org.nebula.jgl.Camera;
-import org.nebula.jgl.data.shader.Shader;
 import org.nebula.jgl.data.buffer.Buffer;
 import org.nebula.jgl.data.buffer.VertexArray;
+import org.nebula.jgl.data.shader.Shader;
 import org.nebula.jglfw.GLFWWindow;
 
 import static org.lwjgl.opengl.GL11C.*;
@@ -62,6 +62,10 @@ public class CameraTest {
         vertexArray.dispose();
     }
 
+    public static void main(String[] args) {
+        new CameraTest();
+    }
+
     private void init() {
         vertexArray.bind();
         buffer.bind();
@@ -105,9 +109,5 @@ public class CameraTest {
 
         vertexArray.unbind();
         shader.unbind();
-    }
-
-    public static void main(String[] args) {
-        new CameraTest();
     }
 }

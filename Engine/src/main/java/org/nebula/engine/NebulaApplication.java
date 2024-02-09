@@ -3,13 +3,11 @@ package org.nebula.engine;
 import org.nebula.io.Files;
 import org.nebula.jglfw.GLFWWindow;
 
-public class NebulaApplication
-{
-    private ApplicationListener applicationListener;
+public class NebulaApplication {
     private final GLFWWindow window;
+    private ApplicationListener applicationListener;
 
-    public NebulaApplication (String title, int width, int height, ApplicationListener listener)
-    {
+    public NebulaApplication(String title, int width, int height, ApplicationListener listener) {
         window = new GLFWWindow(title, width, height);
         window.center();
         window.setRenderer(listener::render);
@@ -23,8 +21,7 @@ public class NebulaApplication
         window.loop();
     }
 
-    public void update ()
-    {
+    public void update() {
         applicationListener.update();
     }
 }

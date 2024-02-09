@@ -6,16 +6,15 @@ import org.nebula.jglfw.GLFWWindow;
  * <br>
  * <h2>RenderListener</h2>
  * <br>
- *
+ * <p>
  * Functional interface for rendering logic in a GLFW window. The {@link RenderListener#render()}
  * method will be called whenever the associated window is rendering.
  *
- * @see GLFWWindow
  * @author Anton Schoenfeld
+ * @see GLFWWindow
  */
 @FunctionalInterface
-public interface RenderListener
-{
+public interface RenderListener {
 
     /**
      * Renders content within a GLFW window.

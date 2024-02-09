@@ -3,7 +3,6 @@ package org.nebula.jgl.data;
 import org.nebula.jgl.data.texture.Texture;
 
 import static org.lwjgl.opengl.GL33C.*;
-import static org.lwjgl.system.MemoryUtil.NULL;
 
 public class FrameBuffer {
     private final int id;

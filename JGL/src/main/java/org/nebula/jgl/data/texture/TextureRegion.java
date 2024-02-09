@@ -7,11 +7,14 @@ package org.nebula.jgl.data.texture;
  * Represents a region within a texture defined by UV coordinates.
  * The UV coordinates are specified in the range [0, 1], where (0, 0) is the lower-left corner
  * and (1, 1) is the upper-right corner of the texture.
+ *
  * @author Anton Schoenfeld
  */
 public class TextureRegion {
 
-    /** The texture containing the region. */
+    /**
+     * The texture containing the region.
+     */
     private final Texture texture;
 
     /**
@@ -25,7 +28,7 @@ public class TextureRegion {
      * </pre>
      * The UVs are specified as an array of floats in the order:
      * [lower-left x, lower-left y, lower-right x, lower-right y,
-     *  upper-left x, upper-left y, upper-right x, upper-right y]
+     * upper-left x, upper-left y, upper-right x, upper-right y]
      */
     private final float[] uvs;
 
@@ -55,7 +58,7 @@ public class TextureRegion {
      * @param uvs     The custom UV coordinates defining the region.
      *                The UVs are specified as an array of floats in the order:
      *                [lower-left x, lower-left y, lower-right x, lower-right y,
-     *                 upper-left x, upper-left y, upper-right x, upper-right y]
+     *                upper-left x, upper-left y, upper-right x, upper-right y]
      *                Values are automatically clamped to the range [0, 1].
      */
     public TextureRegion(Texture texture, float[] uvs) {

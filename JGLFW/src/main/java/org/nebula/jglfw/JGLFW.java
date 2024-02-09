@@ -1,6 +1,7 @@
 package org.nebula.jglfw;
 
-import static org.lwjgl.glfw.GLFW.*;
+import static org.lwjgl.glfw.GLFW.glfwInit;
+import static org.lwjgl.glfw.GLFW.glfwTerminate;
 
 /**
  * <br>
@@ -10,11 +11,10 @@ import static org.lwjgl.glfw.GLFW.*;
  * GLFW is a library for creating windows with OpenGL contexts and managing input.
  * This class ensures that GLFW is initialized and terminated in a controlled manner.
  *
- * @see org.lwjgl.glfw.GLFW
  * @author Anton Schoenfeld
+ * @see org.lwjgl.glfw.GLFW
  */
-public class JGLFW
-{
+public class JGLFW {
 
     private static boolean initialized = false;
     private static boolean terminated = true;
@@ -27,10 +27,8 @@ public class JGLFW
      *
      * @throws IllegalStateException If the GLFW library cannot be initialized.
      */
-    public synchronized static void init()
-    {
-        if (!initialized)
-        {
+    public synchronized static void init() {
+        if (!initialized) {
             if (!glfwInit())
                 throw new IllegalStateException("Could not initialize GLFW library");
 
@@ -47,10 +45,8 @@ public class JGLFW
      * This method should be called when GLFW is no longer needed.
      * If the library is already terminated, this method has no effect.
      */
-    public synchronized static void terminate()
-    {
-        if (!terminated)
-        {
+    public synchronized static void terminate() {
+        if (!terminated) {
             glfwTerminate();
             terminated = true;
             initialized = false;

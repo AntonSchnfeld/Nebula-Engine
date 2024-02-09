@@ -2,17 +2,17 @@ package org.nebula.jglfw.listeners;
 
 import org.nebula.jglfw.GLFWWindow;
 
-/**<br>
+/**
+ * <br>
  * <h2>GLFWWindow</h2>
  * <br>
- *
+ * <p>
  * The interface for listeners that handle GLFW window events.
  *
  * @author Anton Schoenfeld
  * @see GLFWWindow
  */
-public interface IGLFWWindowListener
-{
+public interface IGLFWWindowListener {
 
     /**
      * Called when the GLFW window is resized.

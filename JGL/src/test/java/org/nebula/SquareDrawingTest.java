@@ -1,14 +1,24 @@
 package org.nebula;
 
 import org.nebula.jgl.data.buffer.Buffer;
-import org.nebula.jgl.data.shader.Shader;
 import org.nebula.jgl.data.buffer.VertexArray;
+import org.nebula.jgl.data.shader.Shader;
 import org.nebula.jglfw.GLFWWindow;
 
 import static org.lwjgl.opengl.GL33C.*;
 
 public class SquareDrawingTest {
 
+    public static final String fragment = """
+            #version 330 core
+
+            in vec4 fCol;
+
+            out vec4 FragColor;
+
+            void main() {
+                FragColor = fCol;
+            }""";
     private static final String vertex = """
             #version 330 core
             layout (location = 0) in vec3 aPos;
@@ -20,18 +30,6 @@ public class SquareDrawingTest {
                 fCol = aCol;
                 gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);
             }""";
-    public static final String fragment = """
-            #version 330 core
-
-            in vec4 fCol;
-
-            out vec4 FragColor;
-
-            void main() {
-                FragColor = fCol;
-            }""";
-
-
     private final GLFWWindow window;
     private final Shader shader;
     private final VertexArray VAO;
@@ -55,12 +53,16 @@ public class SquareDrawingTest {
         dispose();
     }
 
+    public static void main(String[] args) {
+        new SquareDrawingTest();
+    }
+
     private void init() {
         float[] vertices = {
-                0.5f,  0.5f, 0.0f,  1, 0, 0, 1, // top right
-                0.5f, -0.5f, 0.0f,  0, 1, 0, 1,  // bottom right
+                0.5f, 0.5f, 0.0f, 1, 0, 0, 1, // top right
+                0.5f, -0.5f, 0.0f, 0, 1, 0, 1,  // bottom right
                 -0.5f, -0.5f, 0.0f, 0, 0, 1, 1,  // bottom left
-                -0.5f,  0.5f, 0.0f, 0.5f, 0, 0.5f, 1   // top left
+                -0.5f, 0.5f, 0.0f, 0.5f, 0, 0.5f, 1   // top left
         };
         int[] indices = {
                 0, 1, 3,   // first triangle
@@ -102,9 +104,5 @@ public class SquareDrawingTest {
         VAO.unbind();
         EBO.unbind();
         shader.unbind();
-    }
-
-    public static void main(String[] args) {
-        new SquareDrawingTest();
     }
 }

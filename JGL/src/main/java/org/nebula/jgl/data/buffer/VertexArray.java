@@ -5,6 +5,7 @@ import org.nebula.base.interfaces.IDisposable;
 import static org.lwjgl.opengl.GL33C.*;
 
 public class VertexArray implements IDisposable {
+    private static VertexArray current;
     public final int id;
 
     public VertexArray() {
@@ -12,11 +13,16 @@ public class VertexArray implements IDisposable {
     }
 
     public void bind() {
-        glBindVertexArray(id);
+        if (!isBound()) {
+            glBindVertexArray(id);
+            current = this;
+        }
     }
 
     public void unbind() {
-        glBindVertexArray(0);
+        if (isBound()) {
+            glBindVertexArray(0);
+        }
     }
 
     public void enableVertexAttributeArray(int position) {
@@ -33,6 +39,10 @@ public class VertexArray implements IDisposable {
     public void disableVertexAttribArray(int position) {
         bind();
         glDisableVertexAttribArray(position);
+    }
+
+    private boolean isBound() {
+        return current == this;
     }
 
     @Override

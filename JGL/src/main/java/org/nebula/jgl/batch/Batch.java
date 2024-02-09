@@ -23,15 +23,13 @@ import org.nebula.jgl.data.texture.TextureRegion;
  * </p>
  *
  * @author Anton Schoenfeld
- *
  * @see Texture
  * @see Color
  * @see org.joml.Matrix4f
  * @see org.joml.Vector2f
  * @see org.joml.Vector4f
  */
-public abstract class Batch implements IDisposable
-{
+public abstract class Batch implements IDisposable {
     protected Color color;
     protected Shader shader;
     protected boolean blendingEnabled;
@@ -40,8 +38,7 @@ public abstract class Batch implements IDisposable
 
     protected Matrix4f viewMatrix;
 
-    public Batch ()
-    {
+    public Batch() {
         this.lineWidth = 10;
         this.color = Color.WHITE;
         this.blendingEnabled = true;
@@ -89,11 +86,13 @@ public abstract class Batch implements IDisposable
     /**
      * Renders a textured quad with the specified coordinates and texture coordinates, using the width and height
      * of the texture region.
+     *
      * @param texture the texture to be rendered
-     * @param x the x-coordinate of the quad's position
-     * @param y the y-coordinate of the quad's position
+     * @param x       the x-coordinate of the quad's position
+     * @param y       the y-coordinate of the quad's position
      */
     public abstract void texture(TextureRegion texture, float x, float y);
+
     /**
      * Renders a textured quad with specified coordinates.
      *
@@ -104,6 +103,7 @@ public abstract class Batch implements IDisposable
      * @param height  the height of the quad
      */
     public abstract void texture(Texture texture, float x, float y, float width, float height);
+
     /**
      * Renders a textured quad with specified coordinates.
      *
@@ -112,6 +112,7 @@ public abstract class Batch implements IDisposable
      * @param y       the y-coordinate of the quad's position
      */
     public abstract void texture(Texture texture, float x, float y);
+
     /**
      * Renders a quad with specified coordinates.
      *
@@ -125,6 +126,7 @@ public abstract class Batch implements IDisposable
      * @param y4 the y-coordinate of the fourth vertex
      */
     public abstract void quad(float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4);
+
     /**
      * Renders a quad with specified coordinates using {@link Vector2f} vertices.
      *
@@ -152,6 +154,7 @@ public abstract class Batch implements IDisposable
      */
     public abstract void texturedTriangle(TextureRegion texture, float x1, float y1, float x2, float y2,
                                           float x3, float y3);
+
     /**
      * Renders a textured triangle with specified {@link Vector2f} vertices and texture coordinates.
      *
@@ -161,6 +164,7 @@ public abstract class Batch implements IDisposable
      * @param xy3     the position of the third vertex
      */
     public abstract void texturedTriangle(TextureRegion texture, Vector2f xy1, Vector2f xy2, Vector2f xy3);
+
     /**
      * Renders a triangle with specified coordinates.
      *
@@ -172,6 +176,7 @@ public abstract class Batch implements IDisposable
      * @param y3 the y-coordinate of the third vertex
      */
     public abstract void triangle(float x1, float y1, float x2, float y2, float x3, float y3);
+
     /**
      * Renders a triangle with specified {@link Vector2f} vertices.
      *
@@ -180,6 +185,7 @@ public abstract class Batch implements IDisposable
      * @param v3 the position of the third vertex
      */
     public abstract void triangle(Vector2f v1, Vector2f v2, Vector2f v3);
+
     /**
      * Renders a line between two specified coordinates.
      *
@@ -189,6 +195,7 @@ public abstract class Batch implements IDisposable
      * @param y2 the y-coordinate of the ending point
      */
     public abstract void line(float x1, float y1, float x2, float y2);
+
     /**
      * Renders a line between two specified {@link Vector2f} points.
      *
@@ -197,22 +204,12 @@ public abstract class Batch implements IDisposable
      */
     public abstract void line(Vector2f v1, Vector2f v2);
 
-    /**
-     * Sets the color for subsequent rendering operations.
-     *
-     * @param color the color to be set
-     */
-    public void setColor(Color color)
-    {
-        this.color = color;
+    public float getLineWidth() {
+        return lineWidth;
     }
 
     public void setLineWidth(float width) {
         this.lineWidth = width;
-    }
-
-    public float getLineWidth() {
-        return lineWidth;
     }
 
     public void setColor(float r, float g, float b, float a) {
@@ -221,61 +218,74 @@ public abstract class Batch implements IDisposable
         color.setBlue(b);
         color.setAlpha(a);
     }
-    /**
-     * Enables or disables blending for subsequent rendering operations.
-     *
-     * @param enabled true to enable blending, false to disable
-     */
-    public void setBlendingEnabled(boolean enabled)
-    {
-        this.blendingEnabled = enabled;
-    }
-    /**
-     * Sets the projection matrix for subsequent rendering operations.
-     *
-     * @param projectionMatrix the projection matrix to be set
-     */
-    public void setProjectionMatrix(Matrix4f projectionMatrix)
-    {
-        this.projectionMatrix = projectionMatrix;
-    }
-    public void setViewMatrix(Matrix4f viewMatrix) {
-        this.viewMatrix = viewMatrix;
-    }
-    public void setShader (Shader shader) {
-        this.shader = shader;
-    }
+
     public Matrix4f getViewMatrix() {
         return viewMatrix;
     }
+
+    public void setViewMatrix(Matrix4f viewMatrix) {
+        this.viewMatrix = viewMatrix;
+    }
+
     public Shader getShader() {
         return shader;
     }
+
+    public void setShader(Shader shader) {
+        this.shader = shader;
+    }
+
     /**
      * Retrieves the current color used for rendering.
      *
      * @return the current color
      */
-    public Color getColor()
-    {
+    public Color getColor() {
         return color;
     }
+
+    /**
+     * Sets the color for subsequent rendering operations.
+     *
+     * @param color the color to be set
+     */
+    public void setColor(Color color) {
+        this.color = color;
+    }
+
     /**
      * Checks if blending is currently enabled for rendering operations.
      *
      * @return true if blending is enabled, false otherwise
      */
-    public boolean isBlendingEnabled()
-    {
+    public boolean isBlendingEnabled() {
         return blendingEnabled;
     }
+
+    /**
+     * Enables or disables blending for subsequent rendering operations.
+     *
+     * @param enabled true to enable blending, false to disable
+     */
+    public void setBlendingEnabled(boolean enabled) {
+        this.blendingEnabled = enabled;
+    }
+
     /**
      * Retrieves the current projection matrix used for rendering.
      *
      * @return the current projection matrix
      */
-    public Matrix4f getProjectionMatrix()
-    {
+    public Matrix4f getProjectionMatrix() {
         return projectionMatrix;
+    }
+
+    /**
+     * Sets the projection matrix for subsequent rendering operations.
+     *
+     * @param projectionMatrix the projection matrix to be set
+     */
+    public void setProjectionMatrix(Matrix4f projectionMatrix) {
+        this.projectionMatrix = projectionMatrix;
     }
 }

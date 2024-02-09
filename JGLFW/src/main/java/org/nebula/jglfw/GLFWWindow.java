@@ -1,7 +1,9 @@
 package org.nebula.jglfw;
 
 import org.joml.Vector2i;
-import org.lwjgl.glfw.*;
+import org.lwjgl.glfw.GLFWErrorCallback;
+import org.lwjgl.glfw.GLFWImage;
+import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GLCapabilities;
 import org.lwjgl.system.MemoryStack;
@@ -19,20 +21,18 @@ import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.system.MemoryStack.stackPush;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
-public class GLFWWindow implements IDisposable
-{
+public class GLFWWindow implements IDisposable {
     public static final int DEFAULT_WIDTH = 500;
     public static final int DEFAULT_HEIGHT = 500;
-
+    private final List<IGLFWWindowListener> windowListeners;
+    private final List<IGLFWInputListener> inputListeners;
+    private final IGLFWWindowListener resizableListener;
     private long windowObject;
     private RenderListener renderListener;
     private GLFWErrorCallback errorCallback;
     private ByteBufferedImage currentIcon;
     private String title;
-    private final List<IGLFWWindowListener> windowListeners;
-    private final List<IGLFWInputListener> inputListeners;
     private boolean resizable;
-    private final IGLFWWindowListener resizableListener;
 
     public GLFWWindow(final String title, final int x, final int y, final int width, final int height) {
         JGLFW.init();
@@ -45,20 +45,28 @@ public class GLFWWindow implements IDisposable
             public void onWindowResize(GLFWWindow window, int w, int h) {
                 window.setSize(width, height);
             }
+
             @Override
-            public void onFrameBufferResize(GLFWWindow window, int width, int height) {}
+            public void onFrameBufferResize(GLFWWindow window, int width, int height) {
+            }
+
             @Override
-            public void onWindowPositionChange(GLFWWindow window, int x, int y) {}
+            public void onWindowPositionChange(GLFWWindow window, int x, int y) {
+            }
+
             @Override
-            public void onClose(GLFWWindow window) {}
+            public void onClose(GLFWWindow window) {
+            }
         };
         init(title, x, y, width, height);
     }
+
     public GLFWWindow(final String title, final int width, final int height) {
         this(title, 0, 0,
                 width, height);
         center();
     }
+
     public GLFWWindow(final String title) {
         this(title, DEFAULT_WIDTH, DEFAULT_HEIGHT);
     }
@@ -66,7 +74,8 @@ public class GLFWWindow implements IDisposable
     private void init(String title, int x, int y, int width, int height) {
         // Set up an error callback. The default implementation
         // will print the error message in System.err.
-        renderListener = () -> {};
+        renderListener = () -> {
+        };
         errorCallback = GLFWErrorCallback.createPrint(System.err);
         errorCallback.set();
 
@@ -111,8 +120,7 @@ public class GLFWWindow implements IDisposable
         });
 
         // Get the thread stack and push a new frame
-        try (MemoryStack stack = stackPush())
-        {
+        try (MemoryStack stack = stackPush()) {
             IntBuffer pWidth = stack.mallocInt(1); // int*
             IntBuffer pHeight = stack.mallocInt(1); // int*
 
@@ -138,25 +146,23 @@ public class GLFWWindow implements IDisposable
 
         glfwShowWindow(windowObject);
     }
-    public GLCapabilities createGLCapabilities()
-    {
+
+    public GLCapabilities createGLCapabilities() {
         return GL.createCapabilities();
     }
-    public void loop ()
-    {
+
+    public void loop() {
         long now;
         long then = System.currentTimeMillis();
         int frame = 0;
 
-        while (!glfwWindowShouldClose(windowObject))
-        {
+        while (!glfwWindowShouldClose(windowObject)) {
             glfwSwapBuffers(windowObject);
 
             renderListener.render();
             frame++;
             now = System.currentTimeMillis();
-            if (now - then >= 1000)
-            {
+            if (now - then >= 1000) {
                 System.out.print("\rFPS: " + frame);
                 frame = 0;
                 then = System.currentTimeMillis();
@@ -166,7 +172,8 @@ public class GLFWWindow implements IDisposable
             glfwPollEvents();
         }
     }
-    public void center () {
+
+    public void center() {
         GLFWVidMode vidMode = glfwGetVideoMode(glfwGetPrimaryMonitor());
         if (vidMode == null)
             throw new IllegalStateException("Could not retrieve glfw vid mode");
@@ -175,34 +182,41 @@ public class GLFWWindow implements IDisposable
 
         setPosition(((vidMode.width() - size.x) / 2), ((vidMode.height() - size.y) / 2));
     }
+
     public void addWindowListener(IGLFWWindowListener windowListener) {
         windowListeners.add(windowListener);
     }
+
     public void removeWindowListener(IGLFWWindowListener windowListener) {
         windowListeners.remove(windowListener);
     }
+
     public void addInputListener(IGLFWInputListener inputListener) {
         inputListeners.add(inputListener);
     }
+
     public void removeInputListener(IGLFWInputListener inputListener) {
         inputListeners.remove(inputListener);
     }
+
+    public boolean isResizable() {
+        return resizable;
+    }
+
     public void setResizable(boolean resizable) {
         if (!resizable)
             windowListeners.add(resizableListener);
         else windowListeners.remove(resizableListener);
     }
-    public boolean isResizable() {
-        return resizable;
-    }
-    public void setSize(int width, int height)
-    {
+
+    public void setSize(int width, int height) {
         glfwSetWindowSize(windowObject, width, height);
     }
-    public void setPosition(int x, int y)
-    {
+
+    public void setPosition(int x, int y) {
         glfwSetWindowPos(windowObject, x, y);
     }
+
     public void setWindowIcon(ByteBufferedImage icon) {
         // Dispose of previous icon if it exists
         if (currentIcon != null) currentIcon.dispose();
@@ -221,22 +235,19 @@ public class GLFWWindow implements IDisposable
         imageBuffer.free();
         glfwImage.free();
     }
-    public void setTitle(String title) {
-        this.title = title;
-        glfwSetWindowTitle(windowObject, title);
-    }
-    public void setRenderer (RenderListener renderListener)
-    {
-        this.renderListener = renderListener;
-    }
-    public RenderListener getRenderer ()
-    {
+
+    public RenderListener getRenderer() {
         return renderListener;
     }
-    public Vector2i getSize ()
-    {
+
+    public void setRenderer(RenderListener renderListener) {
+        this.renderListener = renderListener;
+    }
+
+    public Vector2i getSize() {
         return getSize(new Vector2i());
     }
+
     public Vector2i getSize(Vector2i vector) {
         try (MemoryStack stack = stackPush()) {
             IntBuffer width = stack.mallocInt(1);
@@ -249,13 +260,20 @@ public class GLFWWindow implements IDisposable
         }
         return vector;
     }
-    public String getTitle ()
-    {
+
+    public String getTitle() {
         return title;
     }
+
+    public void setTitle(String title) {
+        this.title = title;
+        glfwSetWindowTitle(windowObject, title);
+    }
+
     public Vector2i getPosition() {
         return getPosition(new Vector2i());
     }
+
     public Vector2i getPosition(Vector2i position) {
         try (MemoryStack stack = stackPush()) {
             IntBuffer x = stack.mallocInt(1);
@@ -271,8 +289,7 @@ public class GLFWWindow implements IDisposable
     }
 
     @Override
-    public void dispose ()
-    {
+    public void dispose() {
         if (currentIcon != null) currentIcon.dispose();
         errorCallback.free();
         glfwDestroyWindow(windowObject);

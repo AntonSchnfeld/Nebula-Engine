@@ -2,9 +2,9 @@ package org.nebula.jgl;
 
 import static org.lwjgl.opengl.GL33C.*;
 
-public final class JGL
-{
-    private JGL() {}
+public final class JGL {
+    private JGL() {
+    }
 
     public static void checkForOpenGLError() {
         final int error = glGetError();

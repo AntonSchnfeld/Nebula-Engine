@@ -1,24 +1,21 @@
 package org.nebula.io;
 
-import org.lwjgl.BufferUtils;
 import org.lwjgl.system.MemoryStack;
-import org.lwjgl.system.MemoryUtil;
 
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.nio.file.Path;
-import java.util.MissingResourceException;
 import java.util.Objects;
 
 import static org.lwjgl.stb.STBImage.*;
 import static org.lwjgl.system.MemoryStack.stackPush;
 
-public class Files
-{
-    public static ByteBufferedImage readImage(String filePath)
-    {
+public class Files {
+    public static ByteBufferedImage readImage(String filePath) {
         ByteBufferedImage bbi;
 
         try (MemoryStack stack = stackPush()) {
@@ -54,8 +51,7 @@ public class Files
 
         ByteBufferedImage bbi;
 
-        try (MemoryStack stack = stackPush())
-        {
+        try (MemoryStack stack = stackPush()) {
             ByteBuffer byteBuffer = stack.malloc(byteArr.length);
             byteBuffer.put(byteArr, 0, byteArr.length);
             byteBuffer.flip();

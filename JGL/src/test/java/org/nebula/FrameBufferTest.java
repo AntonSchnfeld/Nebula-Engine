@@ -6,9 +6,9 @@ import org.nebula.jgl.JGL;
 import org.nebula.jgl.batch.Batch;
 import org.nebula.jgl.batch.RenderBatch;
 import org.nebula.jgl.data.FrameBuffer;
-import org.nebula.jgl.data.shader.Shader;
 import org.nebula.jgl.data.buffer.Buffer;
 import org.nebula.jgl.data.buffer.VertexArray;
+import org.nebula.jgl.data.shader.Shader;
 import org.nebula.jgl.data.texture.Texture;
 import org.nebula.jgl.data.texture.TextureRegion;
 import org.nebula.jglfw.GLFWWindow;
@@ -40,22 +40,22 @@ public class FrameBufferTest {
         postProcessVAO.bind();
         postProcessBuffer.bind();
         postProcessEBO.unbind();
-        postProcessVAO.vertexAttribPointer(0, 2, Buffer.BufferDataType.FLOAT, 0, 8 * Float.BYTES);
-        postProcessVAO.vertexAttribPointer(1, 2, Buffer.BufferDataType.UNSIGNED_INT, 2 * Float.BYTES, 8 * Float.BYTES);
-        postProcessVAO.vertexAttribPointer(2, 4, Buffer.BufferDataType.FLOAT, 4 * Float.BYTES, 8 * Float.BYTES);
+        postProcessVAO.vertexAttribPointer(0, 2, Buffer.BufferDataType.FLOAT, 8 * Float.BYTES, 0);
+        postProcessVAO.vertexAttribPointer(1, 2, Buffer.BufferDataType.UNSIGNED_INT, 8 * Float.BYTES, 2 * Float.BYTES);
+        postProcessVAO.vertexAttribPointer(2, 4, Buffer.BufferDataType.FLOAT, 8 * Float.BYTES, 4 * Float.BYTES);
         postProcessVAO.disableVertexAttribArray(0);
         postProcessVAO.disableVertexAttribArray(1);
         postProcessVAO.disableVertexAttribArray(2);
         postProcessBuffer.data(new float[]{
-                -1, -1,     0, 0,    1, 1, 1, 1, // Lower left
-                -1, 1,      0, 1,     1, 1, 1, 1, // Upper left
-                1, 1,       1, 1,      1, 1, 1, 1, // Upper right
-                1, -1,      1, 0,     1, 1, 1, 1  // Lower right
+                -1, -1, 0, 0, 1, 1, 1, 1, // Lower left
+                -1, 1, 0, 1, 1, 1, 1, 1, // Upper left
+                1, 1, 1, 1, 1, 1, 1, 1, // Upper right
+                1, -1, 1, 0, 1, 1, 1, 1  // Lower right
 
         }, Buffer.BufferUsage.STATIC_DRAW);
         postProcessEBO.data(new int[]{
-                3, 2, 0,
-                0, 2, 1
+                0, 1, 2,
+                2, 3, 0
         }, Buffer.BufferUsage.STATIC_DRAW);
 
         texture = new TextureRegion(new Texture(Files.readImageFromResource("nebula.png"), true));
@@ -71,6 +71,10 @@ public class FrameBufferTest {
         dispose();
     }
 
+    public static void main(String[] args) {
+        new FrameBufferTest();
+    }
+
     private void draw() {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glViewport(0, 0, 500, 500);
@@ -81,6 +85,10 @@ public class FrameBufferTest {
 
         // Render Texture to frame buffer
         frameBuffer.bind();
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glViewport(0, 0, 500, 500);
+        glClearColor(0, 0, 0, 1);
+
         batch.setShader(renderingShader);
         batch.begin();
         batch.texture(texture, -0.75f, -0.75f, 1.5f, 1.5f);
@@ -114,9 +122,5 @@ public class FrameBufferTest {
         postProcessBuffer.dispose();
         postProcessEBO.dispose();
         postProcessVAO.dispose();
-    }
-
-    public static void main(String[] args) {
-        new FrameBufferTest();
     }
 }

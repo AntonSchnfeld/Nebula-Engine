@@ -1,9 +1,8 @@
 package org.nebula.jgl.data.texture;
 
 import org.nebula.base.interfaces.IDisposable;
-import org.nebula.io.Files;
 import org.nebula.io.ByteBufferedImage;
-import org.nebula.jgl.JGL;
+import org.nebula.io.Files;
 
 import static org.lwjgl.opengl.GL33C.*;
 import static org.lwjgl.system.MemoryUtil.NULL;
@@ -23,19 +22,23 @@ public class Texture implements IDisposable {
                 GL_TEXTURE_2D, 0, GL_RGB, width, height, 0,
                 GL_RGB, GL_UNSIGNED_BYTE, NULL
         );
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         unbind();
     }
+
     public Texture(final String resourceName) {
         this(Files.readImageFromResource(resourceName), false);
     }
+
     public Texture(final ByteBufferedImage image) {
         this(image, false);
     }
+
     public Texture(final String resourceName, boolean useAntiAliasing) {
         this(Files.readImageFromResource(resourceName), useAntiAliasing);
     }
+
     public Texture(final ByteBufferedImage image, boolean useAntiAliasing) {
         id = glGenTextures();
         glBindTexture(GL_TEXTURE_2D, id);
@@ -61,6 +64,7 @@ public class Texture implements IDisposable {
     public void bind() {
         glBindTexture(GL_TEXTURE_2D, id);
     }
+
     public void bindToSlot(int slot) {
         glActiveTexture(GL_TEXTURE0 + slot);
         glBindTexture(GL_TEXTURE_2D, id);

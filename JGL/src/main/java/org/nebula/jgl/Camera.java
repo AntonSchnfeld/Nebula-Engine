@@ -2,13 +2,10 @@ package org.nebula.jgl;
 
 import org.joml.Matrix4f;
 import org.joml.Vector2f;
-import org.joml.Vector3f;
-import org.joml.Vector4f;
 
-public class Camera
-{
-    private Matrix4f projection, view;
+public class Camera {
     public Vector2f position;
+    private Matrix4f projection, view;
     private float left;
     private float right;
     private float bottom;

@@ -1,23 +1,22 @@
 package org.nebula;
 
 import org.joml.Vector2i;
-import org.nebula.jgl.data.shader.Shader;
 import org.nebula.jgl.data.buffer.Buffer;
 import org.nebula.jgl.data.buffer.VertexArray;
+import org.nebula.jgl.data.shader.Shader;
 import org.nebula.jglfw.GLFWWindow;
 
 import static org.lwjgl.opengl.GL33C.*;
 
-public class VertexArrayAndBufferTest
-{
+public class VertexArrayAndBufferTest {
     public static final String vertex = """
             #version 330 core
-            
+                        
             layout(location = 0) in vec2 vPos;
             layout(location = 1) in vec4 vCol;
-            
+                        
             out vec4 fCol;
-            
+                        
             void main() {
                 fCol = vCol;
                 gl_Position = vec4(vPos, 0.0, 1.0);
@@ -25,11 +24,11 @@ public class VertexArrayAndBufferTest
             """;
     public static final String fragment = """
             #version 330 core
-            
+                        
             in vec4 fCol;
-            
+                        
             out vec4 pixelCol;
-            
+                        
             void main() {
                 pixelCol = fCol;
             }
@@ -51,9 +50,9 @@ public class VertexArrayAndBufferTest
         this.buffer = new Buffer(Buffer.BufferType.ARRAY_BUFFER);
 
         vertices = new float[]{
-                -0.5f, -0.5f,     1, 0, 0, 1,
-                0.5f, -0.5f,      0, 1, 0, 1,
-                0, 0.5f,          0, 0, 1, 1
+                -0.5f, -0.5f, 1, 0, 0, 1,
+                0.5f, -0.5f, 0, 1, 0, 1,
+                0, 0.5f, 0, 0, 1, 1
         };
 
         vertexArray.bind();
@@ -71,6 +70,10 @@ public class VertexArrayAndBufferTest
         shader.dispose();
     }
 
+    public static void main(String[] args) {
+        new VertexArrayAndBufferTest();
+    }
+
     private void drawTriangle() {
         Vector2i winSize = window.getSize();
 
@@ -83,9 +86,5 @@ public class VertexArrayAndBufferTest
         final int error = glGetError();
         if (error != GL_NO_ERROR)
             throw new RuntimeException("GL Error code: " + error);
-    }
-
-    public static void main(String[] args) {
-        new VertexArrayAndBufferTest();
     }
 }

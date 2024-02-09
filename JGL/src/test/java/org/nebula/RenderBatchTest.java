@@ -5,6 +5,7 @@ import org.joml.Vector2i;
 import org.nebula.io.Files;
 import org.nebula.jgl.Camera;
 import org.nebula.jgl.batch.RenderBatch;
+import org.nebula.jgl.data.Color;
 import org.nebula.jgl.data.shader.Shader;
 import org.nebula.jgl.data.texture.Texture;
 import org.nebula.jgl.data.texture.TextureRegion;
@@ -58,7 +59,9 @@ public class RenderBatchTest {
         batch.setViewMatrix(camera.getView());
         batch.setProjectionMatrix(camera.getProjection());
         batch.begin();
+        batch.setColor(1, 1, 1, 0.5f);
         batch.texture(texture, -0.75f, -0.75f, 1.5f, 1.5f);
+        batch.setColor(Color.WHITE);
         batch.texturedTriangle(triangleTexture, -0.5f, -0.5f, 0.5f, -0.5f, 0, 0.5f);
         batch.end();
     }

@@ -23,7 +23,7 @@ public class RenderBatch extends Batch {
 
     private final List<Texture> textures;
     private final int maxTextures;
-    private int[] slots;
+    private final int[] slots;
     private boolean rendering;
     private float z;
     private boolean wireframeEnabled;
@@ -238,12 +238,8 @@ public class RenderBatch extends Batch {
 
     @Override
     public void texture(TextureRegion texture, float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4) {
-        final Vector2f bottomLeft = new Vector2f(x1, y1),
-                bottomRight = new Vector2f(x2, y2),
-                topLeft = new Vector2f(x3, y3),
-                topRight = new Vector2f(x4, y4);
         if (texture == null) {
-            quad(bottomLeft, topLeft, topRight, bottomRight);
+            quad(x1, y1, x3, y3, x4, y4, x2, y2);
             return;
         }
 
@@ -254,10 +250,10 @@ public class RenderBatch extends Batch {
         final float[] uvs = texture.getUvs();
         final int texId = textures.indexOf(texture.getTexture());
 
-        quadVertices.add(new Vertex(bottomLeft, color, new Vector2f(uvs[0], uvs[1]), texId));
-        quadVertices.add(new Vertex(topLeft, color, new Vector2f(uvs[2], uvs[3]), texId));
-        quadVertices.add(new Vertex(topRight, color, new Vector2f(uvs[4], uvs[5]), texId));
-        quadVertices.add(new Vertex(bottomRight, color, new Vector2f(uvs[6], uvs[7]), texId));
+        quadVertices.add(new Vertex(x1, y1, z, color, uvs[0], uvs[1], texId));
+        quadVertices.add(new Vertex(x3, y3, z, color, uvs[2], uvs[3], texId));
+        quadVertices.add(new Vertex(x4, y4, z, color, uvs[4], uvs[5], texId));
+        quadVertices.add(new Vertex(x2, y2, z, color, uvs[6], uvs[7], texId));
 
         incrementZ();
     }

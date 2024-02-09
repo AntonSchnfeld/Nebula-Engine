@@ -40,7 +40,7 @@ public abstract class Batch implements IDisposable {
 
     public Batch() {
         this.lineWidth = 10;
-        this.color = Color.WHITE;
+        this.color = new Color(1, 1, 1, 1);
         this.blendingEnabled = true;
         this.projectionMatrix = new Matrix4f();
         this.viewMatrix = new Matrix4f();
@@ -250,7 +250,7 @@ public abstract class Batch implements IDisposable {
      * @param color the color to be set
      */
     public void setColor(Color color) {
-        this.color = color;
+        this.color.set(color);
     }
 
     /**

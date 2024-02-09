@@ -177,4 +177,16 @@ public class Color {
         result = 31 * result + (alpha != 0.0f ? Float.floatToIntBits(alpha) : 0);
         return result;
     }
+
+    @Override
+    public String toString() {
+        return "Color[r: " + red + ", g: " + green + ", b: " + blue + ", a: " +alpha +"]";
+    }
+
+    public void set(Color that) {
+        this.red = that.red;
+        this.green = that.green;
+        this.blue = that.blue;
+        this.alpha = that.alpha;
+    }
 }

@@ -15,8 +15,7 @@ package org.nebula.base.interfaces;
  * @see java.lang.AutoCloseable
  */
 @FunctionalInterface
-public interface IDisposable
-{
+public interface IDisposable extends AutoCloseable {
 
     /**
      * Performs cleanup and releases associated resources.
@@ -25,4 +24,8 @@ public interface IDisposable
      * </p>
      */
     void dispose();
+
+    default void close() {
+        dispose();
+    }
 }

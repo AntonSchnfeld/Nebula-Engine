@@ -2,6 +2,7 @@ package org.nebula.jgl.data.buffer;
 
 import org.nebula.base.interfaces.IDisposable;
 
+import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
@@ -26,7 +27,7 @@ public class Buffer implements IDisposable {
      *
      * @param type The OpenGL buffer type.
      */
-    public Buffer(BufferType type) {
+    public Buffer(Type type) {
         id = glGenBuffers();
         this.bufferType = type.getGlConstant();
     }
@@ -93,7 +94,7 @@ public class Buffer implements IDisposable {
         glBufferData(bufferType, data, usage.getGlConstant());
     }
 
-    public void data(long data, BufferUsage usage, BufferDataType dataType) {
+    public void data(long data, BufferUsage usage, Datatype dataType) {
         bind();
         glBufferData(bufferType, data * dataType.bytes, usage.getGlConstant());
     }
@@ -116,6 +117,21 @@ public class Buffer implements IDisposable {
     public void subData(IntBuffer data, long offset) {
         bind();
         glBufferSubData(bufferType, offset * Integer.BYTES, data);
+    }
+
+    public ByteBuffer map(ReadPolicy readPolicy) {
+        bind();
+        return glMapBuffer(bufferType, readPolicy.glConstant);
+    }
+
+    public ByteBuffer mapRange(ReadPolicy readPolicy, long offset, int length) {
+        bind();
+        return glMapBufferRange(bufferType, offset, length, readPolicy.glConstant);
+    }
+
+    public ByteBuffer mapRange(ReadPolicy readPolicy, long offset, int length, ByteBuffer buffer) {
+        bind();
+        return glMapBufferRange(bufferType, offset, length, readPolicy.glConstant, buffer);
     }
 
     /**
@@ -158,13 +174,14 @@ public class Buffer implements IDisposable {
         }
     }
 
-    public enum BufferType {
+    public enum Type
+    {
         ARRAY_BUFFER(GL_ARRAY_BUFFER),
         ELEMENT_ARRAY_BUFFER(GL_ELEMENT_ARRAY_BUFFER);
 
         private final int glConstant;
 
-        BufferType(int glConstant) {
+        Type(int glConstant) {
             this.glConstant = glConstant;
         }
 
@@ -173,7 +190,8 @@ public class Buffer implements IDisposable {
         }
     }
 
-    public enum BufferDataType {
+    public enum Datatype
+    {
         FLOAT(GL_FLOAT, Float.BYTES),
         UNSIGNED_INT(GL_UNSIGNED_INT, Integer.BYTES),
         UNSIGNED_SHORT(GL_UNSIGNED_SHORT, Short.BYTES),
@@ -185,7 +203,7 @@ public class Buffer implements IDisposable {
         private final int glConstant;
         private final int bytes;
 
-        BufferDataType(int glConstant, int bytes) {
+        Datatype(int glConstant, int bytes) {
             this.glConstant = glConstant;
             this.bytes = bytes;
         }
@@ -196,6 +214,23 @@ public class Buffer implements IDisposable {
 
         public int getBytes() {
             return bytes;
+        }
+    }
+
+    public enum ReadPolicy {
+
+        READ_ONLY(GL_READ_ONLY),
+        WRITE_ONLY(GL_WRITE_ONLY),
+        READ_WRITE(GL_READ_WRITE);
+
+        private final int glConstant;
+
+        ReadPolicy(int glConstant) {
+            this.glConstant = glConstant;
+        }
+
+        public int getGlConstant() {
+            return glConstant;
         }
     }
 }

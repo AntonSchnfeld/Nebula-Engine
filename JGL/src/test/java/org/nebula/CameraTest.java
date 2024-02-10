@@ -49,7 +49,7 @@ public class CameraTest {
         window.createGLCapabilities();
 
         vertexArray = new VertexArray();
-        buffer = new Buffer(Buffer.BufferType.ARRAY_BUFFER);
+        buffer = new Buffer(Buffer.Type.ARRAY_BUFFER);
         shader = new Shader(vertex, fragment);
 
         camera = new Camera();
@@ -79,8 +79,8 @@ public class CameraTest {
                 0f, 0.35f, 1f, 1f, 0f, 1f
         }, Buffer.BufferUsage.STATIC_DRAW);
 
-        vertexArray.vertexAttribPointer(0, 2, Buffer.BufferDataType.FLOAT, 6 * Float.BYTES, 0);
-        vertexArray.vertexAttribPointer(1, 4, Buffer.BufferDataType.FLOAT, 6 * Float.BYTES, 2 * Float.BYTES);
+        vertexArray.vertexAttribPointer(0, 2, Buffer.Datatype.FLOAT, 6 * Float.BYTES, 0);
+        vertexArray.vertexAttribPointer(1, 4, Buffer.Datatype.FLOAT, 6 * Float.BYTES, 2 * Float.BYTES);
         vertexArray.disableVertexAttribArray(0);
         vertexArray.disableVertexAttribArray(1);
     }

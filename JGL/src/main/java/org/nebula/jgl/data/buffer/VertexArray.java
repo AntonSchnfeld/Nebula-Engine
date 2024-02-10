@@ -30,7 +30,7 @@ public class VertexArray implements IDisposable {
         glEnableVertexAttribArray(position);
     }
 
-    public void vertexAttribPointer(int index, int size, Buffer.BufferDataType dataType, int stride, int pointer) {
+    public void vertexAttribPointer(int index, int size, Buffer.Datatype dataType, int stride, int pointer) {
         bind();
         glVertexAttribPointer(index, size, dataType.getGlConstant(), false, stride, pointer);
         enableVertexAttributeArray(index);

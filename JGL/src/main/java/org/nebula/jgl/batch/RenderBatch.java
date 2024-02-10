@@ -40,10 +40,10 @@ public class RenderBatch extends Batch {
         quadVao = new VertexArray();
         lineVao = new VertexArray();
 
-        triBuffer = new Buffer(Buffer.BufferType.ARRAY_BUFFER);
-        quadBuffer = new Buffer(BufferType.ARRAY_BUFFER);
-        quadElementBuffer = new Buffer(BufferType.ELEMENT_ARRAY_BUFFER);
-        lineBuffer = new Buffer(BufferType.ARRAY_BUFFER);
+        triBuffer = new Buffer(Type.ARRAY_BUFFER);
+        quadBuffer = new Buffer(Type.ARRAY_BUFFER);
+        quadElementBuffer = new Buffer(Type.ELEMENT_ARRAY_BUFFER);
+        lineBuffer = new Buffer(Type.ARRAY_BUFFER);
 
         triVertices = new ArrayList<>();
         quadVertices = new ArrayList<>();
@@ -79,10 +79,10 @@ public class RenderBatch extends Batch {
     private void initVertexArray(VertexArray vertexArray, Buffer buffer) {
         vertexArray.bind();
         buffer.bind();
-        vertexArray.vertexAttribPointer(POSITION_LOC, POSITION_SIZE, BufferDataType.FLOAT, VERTEX_SIZE_BYTES, POSITION_POINTER);
-        vertexArray.vertexAttribPointer(COLOR_LOC, COLOR_SIZE, BufferDataType.FLOAT, VERTEX_SIZE_BYTES, COLOR_POINTER);
-        vertexArray.vertexAttribPointer(UV_LOC, UV_SIZE, BufferDataType.FLOAT, VERTEX_SIZE_BYTES, UV_POINTER);
-        vertexArray.vertexAttribPointer(TEXTURE_ID_LOC, TEXTURE_ID_SIZE, BufferDataType.FLOAT, VERTEX_SIZE_BYTES, TEXTURE_ID_POINTER);
+        vertexArray.vertexAttribPointer(POSITION_LOC, POSITION_SIZE, Datatype.FLOAT, VERTEX_SIZE_BYTES, POSITION_POINTER);
+        vertexArray.vertexAttribPointer(COLOR_LOC, COLOR_SIZE, Datatype.FLOAT, VERTEX_SIZE_BYTES, COLOR_POINTER);
+        vertexArray.vertexAttribPointer(UV_LOC, UV_SIZE, Datatype.FLOAT, VERTEX_SIZE_BYTES, UV_POINTER);
+        vertexArray.vertexAttribPointer(TEXTURE_ID_LOC, TEXTURE_ID_SIZE, Datatype.FLOAT, VERTEX_SIZE_BYTES, TEXTURE_ID_POINTER);
         vertexArray.disableVertexAttribArray(POSITION_LOC);
         vertexArray.disableVertexAttribArray(COLOR_LOC);
         vertexArray.disableVertexAttribArray(UV_LOC);

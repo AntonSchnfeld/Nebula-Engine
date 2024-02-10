@@ -8,9 +8,9 @@ public class VertexAttrib implements Comparable<VertexAttrib> {
     private String name;
     private int size, bytes;
     private int location;
-    private Buffer.BufferDataType dataType;
+    private Buffer.Datatype dataType;
 
-    public VertexAttrib(String name, int size, int bytes, int location, Buffer.BufferDataType dataType) {
+    public VertexAttrib(String name, int size, int bytes, int location, Buffer.Datatype dataType) {
         this.name = name;
         this.size = size;
         this.bytes = bytes;
@@ -54,11 +54,11 @@ public class VertexAttrib implements Comparable<VertexAttrib> {
         this.location = location;
     }
 
-    public Buffer.BufferDataType getDataType() {
+    public Buffer.Datatype getDataType() {
         return dataType;
     }
 
-    public void setDataType(Buffer.BufferDataType dataType) {
+    public void setDataType(Buffer.Datatype dataType) {
         this.dataType = dataType;
     }
 

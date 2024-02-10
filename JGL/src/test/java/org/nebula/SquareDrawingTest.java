@@ -42,8 +42,8 @@ public class SquareDrawingTest {
         shader = new Shader(vertex, fragment);
 
         VAO = new VertexArray();
-        EBO = new Buffer(Buffer.BufferType.ELEMENT_ARRAY_BUFFER);
-        VBO = new Buffer(Buffer.BufferType.ARRAY_BUFFER);
+        EBO = new Buffer(Buffer.Type.ELEMENT_ARRAY_BUFFER);
+        VBO = new Buffer(Buffer.Type.ARRAY_BUFFER);
 
         init();
 
@@ -75,9 +75,9 @@ public class SquareDrawingTest {
 
         EBO.data(indices, Buffer.BufferUsage.STATIC_DRAW);
 
-        VAO.vertexAttribPointer(0, 3, Buffer.BufferDataType.FLOAT, Float.BYTES * 7, 0);
+        VAO.vertexAttribPointer(0, 3, Buffer.Datatype.FLOAT, Float.BYTES * 7, 0);
         VAO.enableVertexAttributeArray(0);
-        VAO.vertexAttribPointer(1, 4, Buffer.BufferDataType.FLOAT, Float.BYTES * 7, Float.BYTES * 3);
+        VAO.vertexAttribPointer(1, 4, Buffer.Datatype.FLOAT, Float.BYTES * 7, Float.BYTES * 3);
         VAO.enableVertexAttributeArray(1);
     }
 

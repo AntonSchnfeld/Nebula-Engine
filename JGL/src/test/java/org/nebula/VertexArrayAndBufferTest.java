@@ -1,6 +1,7 @@
 package org.nebula;
 
 import org.joml.Vector2i;
+import org.nebula.jgl.JGL;
 import org.nebula.jgl.data.buffer.Buffer;
 import org.nebula.jgl.data.buffer.VertexArray;
 import org.nebula.jgl.data.shader.Shader;
@@ -35,10 +36,8 @@ public class VertexArrayAndBufferTest {
             """;
 
     private final VertexArray vertexArray;
-    private final Buffer buffer;
     private final GLFWWindow window;
     private final Shader shader;
-    private final float[] vertices;
 
     public VertexArrayAndBufferTest() {
         this.window = new GLFWWindow(getClass().getName());
@@ -47,21 +46,22 @@ public class VertexArrayAndBufferTest {
         this.shader = new Shader(vertex, fragment);
 
         this.vertexArray = new VertexArray();
-        this.buffer = new Buffer(Buffer.BufferType.ARRAY_BUFFER);
+        Buffer buffer = new Buffer(Buffer.Type.ARRAY_BUFFER);
 
-        vertices = new float[]{
-                -0.5f, -0.5f, 1, 0, 0, 1,
-                0.5f, -0.5f, 0, 1, 0, 1,
-                0, 0.5f, 0, 0, 1, 1
+        float[] vertices = new float[]{
+                -0.5f, -0.5f, 1, 1, 1, Float.MIN_NORMAL,
+                0.5f, -0.5f, 1, 1, 1, Float.MIN_NORMAL,
+                0, 0.5f, 1, 1, 1, 1
         };
 
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
         vertexArray.bind();
-        buffer.data(vertices, Buffer.BufferUsage.STATIC_DRAW);
-        vertexArray.vertexAttribPointer(0, 2, Buffer.BufferDataType.FLOAT, 6 * Float.BYTES, 0);
-        vertexArray.vertexAttribPointer(1, 4, Buffer.BufferDataType.FLOAT, 6 * Float.BYTES, 2 * Float.BYTES);
+        buffer.data(vertices, Buffer.Usage.STATIC_DRAW);
+        shader.getVertexAttribs().configure(vertexArray);
 
         window.setRenderer(this::drawTriangle);
-        shader.bind();
         window.loop();
 
         vertexArray.dispose();
@@ -81,10 +81,11 @@ public class VertexArrayAndBufferTest {
         glViewport(0, 0, (int) winSize.x, (int) winSize.y);
         glClearColor(0, 0, 0, 1);
 
-        vertexArray.bind();
+        shader.bind();
+        shader.getVertexAttribs().enable(vertexArray);
         glDrawArrays(GL_TRIANGLES, 0, 3);
-        final int error = glGetError();
-        if (error != GL_NO_ERROR)
-            throw new RuntimeException("GL Error code: " + error);
+        JGL.checkForOpenGLError();
+        shader.getVertexAttribs().disable(vertexArray);
+        shader.unbind();
     }
 }

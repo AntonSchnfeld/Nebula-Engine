@@ -56,7 +56,7 @@ public class Buffer implements IDisposable {
      * @param data  The float array data to be stored in the buffer.
      * @param usage The buffer usage pattern indicating how the data will be accessed and modified.
      */
-    public void data(float[] data, BufferUsage usage) {
+    public void data(float[] data, Usage usage) {
         bind();
         glBufferData(bufferType, data, usage.getGlConstant());
     }
@@ -67,7 +67,7 @@ public class Buffer implements IDisposable {
      * @param data  The FloatBuffer data to be stored in the buffer.
      * @param usage The buffer usage pattern indicating how the data will be accessed and modified.
      */
-    public void data(FloatBuffer data, BufferUsage usage) {
+    public void data(FloatBuffer data, Usage usage) {
         bind();
         glBufferData(bufferType, data, usage.getGlConstant());
     }
@@ -78,7 +78,7 @@ public class Buffer implements IDisposable {
      * @param data  The int array data to be stored in the buffer.
      * @param usage The buffer usage pattern indicating how the data will be accessed and modified.
      */
-    public void data(int[] data, BufferUsage usage) {
+    public void data(int[] data, Usage usage) {
         bind();
         glBufferData(bufferType, data, usage.getGlConstant());
     }
@@ -89,12 +89,12 @@ public class Buffer implements IDisposable {
      * @param data  The IntBuffer data to be stored in the buffer.
      * @param usage The buffer usage pattern indicating how the data will be accessed and modified.
      */
-    public void data(IntBuffer data, BufferUsage usage) {
+    public void data(IntBuffer data, Usage usage) {
         bind();
         glBufferData(bufferType, data, usage.getGlConstant());
     }
 
-    public void data(long data, BufferUsage usage, Datatype dataType) {
+    public void data(long data, Usage usage, Datatype dataType) {
         bind();
         glBufferData(bufferType, data * dataType.bytes, usage.getGlConstant());
     }
@@ -147,7 +147,7 @@ public class Buffer implements IDisposable {
      * Enum representing different buffer usage patterns, specifying how the data will be accessed and modified.
      * Each enum constant corresponds to an OpenGL constant for buffer usage.
      */
-    public enum BufferUsage {
+    public enum Usage {
         DYNAMIC_DRAW(GL_DYNAMIC_DRAW),
         DYNAMIC_COPY(GL_DYNAMIC_COPY),
         DYNAMIC_READ(GL_DYNAMIC_READ),
@@ -160,7 +160,7 @@ public class Buffer implements IDisposable {
 
         private final int glConstant;
 
-        BufferUsage(int glConstant) {
+        Usage(int glConstant) {
             this.glConstant = glConstant;
         }
 

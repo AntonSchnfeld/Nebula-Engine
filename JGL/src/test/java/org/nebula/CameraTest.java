@@ -77,7 +77,7 @@ public class CameraTest {
                 -0.4f, -0.45f, 0f, 1f, 1f, 1f,
                 0.4f, -0.45f, 1f, 0f, 1f, 1f,
                 0f, 0.35f, 1f, 1f, 0f, 1f
-        }, Buffer.BufferUsage.STATIC_DRAW);
+        }, Buffer.Usage.STATIC_DRAW);
 
         vertexArray.vertexAttribPointer(0, 2, Buffer.Datatype.FLOAT, 6 * Float.BYTES, 0);
         vertexArray.vertexAttribPointer(1, 4, Buffer.Datatype.FLOAT, 6 * Float.BYTES, 2 * Float.BYTES);

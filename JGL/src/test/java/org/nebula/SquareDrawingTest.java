@@ -71,9 +71,9 @@ public class SquareDrawingTest {
 
         VAO.bind();
 
-        VBO.data(vertices, Buffer.BufferUsage.STATIC_DRAW);
+        VBO.data(vertices, Buffer.Usage.STATIC_DRAW);
 
-        EBO.data(indices, Buffer.BufferUsage.STATIC_DRAW);
+        EBO.data(indices, Buffer.Usage.STATIC_DRAW);
 
         VAO.vertexAttribPointer(0, 3, Buffer.Datatype.FLOAT, Float.BYTES * 7, 0);
         VAO.enableVertexAttributeArray(0);

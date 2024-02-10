@@ -130,9 +130,9 @@ public class RenderBatch extends Batch {
         float[] quadVertices = getVerticesFromList(this.quadVertices);
         float[] lineVertices = getVerticesFromList(this.lineVertices);
 
-        triBuffer.data(triangleVertices, BufferUsage.STATIC_DRAW);
-        quadBuffer.data(quadVertices, BufferUsage.STATIC_DRAW);
-        lineBuffer.data(lineVertices, BufferUsage.STATIC_DRAW);
+        triBuffer.data(triangleVertices, Usage.STATIC_DRAW);
+        quadBuffer.data(quadVertices, Usage.STATIC_DRAW);
+        lineBuffer.data(lineVertices, Usage.STATIC_DRAW);
 
         shader.bind();
 
@@ -208,7 +208,7 @@ public class RenderBatch extends Batch {
             indices[offsetArrayIndex + 5] = offset + 1;
         }
 
-        quadElementBuffer.data(indices, BufferUsage.STATIC_DRAW);
+        quadElementBuffer.data(indices, Usage.STATIC_DRAW);
     }
 
     private float[] getVerticesFromList(List<Vertex> vertexList) {

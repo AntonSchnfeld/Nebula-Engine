@@ -22,9 +22,9 @@ public class FrameBuffer {
         this.renderBuffer = glGenRenderbuffers();
         glBindRenderbuffer(GL_RENDERBUFFER, renderBuffer);
         glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);
-        glBindRenderbuffer(GL_RENDERBUFFER, 0);
 
         glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, renderBuffer);
+        glBindRenderbuffer(GL_RENDERBUFFER, 0);
 
         if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
             throw new IllegalStateException("FrameBuffer construction was not completed | FrameBuffer status: " + glCheckFramebufferStatus(GL_FRAMEBUFFER));

@@ -1,7 +1,9 @@
 package org.nebula;
 
+import org.lwjgl.system.MemoryUtil;
 import org.nebula.io.Files;
 import org.nebula.jgl.Camera;
+import org.nebula.jgl.JGL;
 import org.nebula.jgl.batch.Batch;
 import org.nebula.jgl.batch.RenderBatch;
 import org.nebula.jgl.data.FrameBuffer;
@@ -12,12 +14,14 @@ import org.nebula.jgl.data.texture.Texture;
 import org.nebula.jgl.data.texture.TextureRegion;
 import org.nebula.jglfw.GLFWWindow;
 
+import java.nio.IntBuffer;
+
 import static org.lwjgl.opengl.GL33C.*;
 
 public class FrameBufferTest {
     private final GLFWWindow window;
     private final Batch batch;
-    private final Mesh mesh;
+    private Mesh mesh;
     private final FrameBuffer frameBuffer;
     private final Shader renderingShader, postProcessingShader;
     private final Camera camera;
@@ -32,27 +36,25 @@ public class FrameBufferTest {
         camera = new Camera();
 
 
-        float[] vertices = new float[]{
-                -1, -1,     1, 1, 1, 1,     1, 1, // Lower left
-                -1, 1,      1, 1, 1, 1,     1, 1, // Upper left
+        float[] vertices = new float[] {
+                //Pos       Color           Uvs
+                -1, -1,     1, 1, 1, 1,     0, 0, // Lower left
+                -1, 1,      1, 1, 1, 1,     0, 1, // Upper left
                 1, 1,       1, 1, 1, 1,     1, 1, // Upper right
 
                 1, 1,       1, 1, 1, 1,     1, 1, // Upper right
-                1, -1,      1, 1, 1, 1,     1, 1,  // Lower right
-                -1, -1,     1, 1, 1, 1,     1, 1 // Lower left
-
+                1, -1,      1, 1, 1, 1,     1, 0, // Lower right
+                -1, -1,     1, 1, 1, 1,     0, 0  // Lower left
         };
 
-        texture = new TextureRegion(new Texture(Files.readImageFromResource("nebula.png"), true));
+        texture = new TextureRegion(new Texture(
+                Files.readImageFromResource("nebula.png"), true));
         batch = new RenderBatch();
         frameBuffer = new FrameBuffer(500, 500);
         renderingShader = new Shader(Files.readResourceAsString("default.vert"),
                 Files.readResourceAsString("default.frag"));
         postProcessingShader = new Shader(Files.readResourceAsString("postprocess.vert"),
                 Files.readResourceAsString("postprocess.frag"));
-
-        mesh = new Mesh(postProcessingShader, vertices.length, Buffer.Usage.STATIC_DRAW);
-        mesh.setVertices(vertices);
 
         window.setRenderer(this::draw);
         window.loop();
@@ -81,10 +83,9 @@ public class FrameBufferTest {
         frameBuffer.unbind();
 
         // Apply post-processing to frame buffer texture
-        postProcessingShader.bind();
         postProcessingShader.uploadUniformInt("uScreen", 0);
         frameBuffer.getTexture().bindToSlot(0);
-        mesh.draw(GL_TRIANGLES);
+
         postProcessingShader.unbind();
     }
 

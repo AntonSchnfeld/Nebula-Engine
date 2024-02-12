@@ -14,11 +14,11 @@ import static org.lwjgl.opengl.GL11C.*;
 
 public class MeshTest {
     private Mesh mesh;
-    private Shader shader;
-    private GLFWWindow window;
-    private Camera camera;
-    private Texture texture;
-    private Vector2i windowSize;
+    private final Shader shader;
+    private final GLFWWindow window;
+    private final Camera camera;
+    private final Texture texture;
+    private final Vector2i windowSize;
 
     public MeshTest() {
         window = new GLFWWindow(getClass().getName());
@@ -37,8 +37,6 @@ public class MeshTest {
                 0.75f, -0.75f, 0,      1, 1, 1, 1,     1, 0,   0,
                 0, 0.75f, 0,           1, 1, 1, 1,     0.5f, 1,   0
         };
-        mesh = new Mesh(shader, vertices.length, Buffer.BufferUsage.STATIC_DRAW);
-        mesh.addVertices(vertices);
 
         window.setRenderer(this::drawTriangle);
 
@@ -71,6 +69,5 @@ public class MeshTest {
 
         shader.uploadUniformMat4f("uView", camera.getView());
         shader.uploadUniformMat4f("uProjection", camera.getProjection());
-        mesh.draw(GL_TRIANGLES);
     }
 }

@@ -1,70 +1,93 @@
 package org.nebula.jgl.data.buffer;
 
+import org.lwjgl.system.MemoryUtil;
 import org.nebula.base.interfaces.IDisposable;
 import org.nebula.jgl.JGL;
 import org.nebula.jgl.data.shader.Shader;
 import org.nebula.jgl.data.shader.VertexAttribs;
+import org.nebula.math.Transform;
+
+import java.nio.FloatBuffer;
 
 import static org.lwjgl.opengl.GL33C.glDrawArrays;
 
 public class Mesh implements IDisposable {
-    private final VertexArray vertexArray;
-    private final Buffer vertexBuffer;
-    private final Shader shader;
-    private final VertexAttribs vertexAttribs;
-    private final long maxSize;
-    private long vertexIndex;
 
-    public Mesh(Shader shader, long maxSize, Buffer.BufferUsage usage) {
-        this.shader = shader;
-        this.maxSize = maxSize;
-        this.vertexIndex = 0;
-        this.vertexAttribs = shader.getVertexAttribs();
+    private FloatBuffer vertices;
+    private Transform transform;
 
-        vertexArray = new VertexArray();
-        vertexBuffer = new Buffer(Buffer.BufferType.ARRAY_BUFFER);
-
-        vertexBuffer.data(maxSize, usage, Buffer.BufferDataType.FLOAT);
-        vertexAttribs.configure(vertexArray);
+    public Mesh(int size) {
+        vertices = MemoryUtil.memAllocFloat(size);
+        transform = new Transform();
     }
 
-    public void addVertices(float[] data) {
-        if ((data.length + vertexIndex) > maxSize)
-            throw new IllegalArgumentException("Mesh could not fit data");
-
-        vertexBuffer.subData(data, vertexIndex);
-        vertexIndex += data.length;
+    public Mesh(float[] vertices) {
+        this.vertices = MemoryUtil.memAllocFloat(vertices.length);
+        this.vertices.put(0, vertices);
+        transform = new Transform();
     }
 
-    public void setVertices(float[] data) {
-        if (data.length > maxSize)
-            throw new IllegalArgumentException("Mesh could not fit data");
-
-        vertexBuffer.subData(data, 0);
-        vertexIndex += data.length;
+    public Mesh(FloatBuffer vertices) {
+        final int capacity = vertices.capacity();
+        this.vertices = MemoryUtil.memAllocFloat(capacity);
+        this.vertices.put(0, vertices, 0, capacity);
+        transform = new Transform();
     }
 
-    public void draw(int mode, int first, int count) {
-        shader.bind();
-        vertexAttribs.enable(vertexArray);
-
-        glDrawArrays(mode, first, count);
-        JGL.checkForOpenGLError();
-
-        vertexAttribs.disable(vertexArray);
-        shader.unbind();
+    public Transform getTransform() {
+        return transform;
     }
 
-    public void draw(int mode) {
-        draw(mode, 0, (int) (vertexIndex / shader.getVertexAttribs().getVertexSize()));
+    public void setTransform(Transform transform) {
+        this.transform = transform;
     }
 
-    public Shader getShader() {
-        return shader;
+    public FloatBuffer getVertices() {
+        return vertices;
     }
 
+    public void setVertices(FloatBuffer vertices) {
+        if (vertices == this.vertices) return;
+        if (!vertices.isDirect())
+            throw new IllegalArgumentException("Tried to use indirect FloatBuffer as vertices for mesh");
+        MemoryUtil.memFree(vertices);
+        this.vertices = vertices;
+    }
+
+    public void setVertices(float[] vertices) {
+        FloatBuffer buffer = MemoryUtil.memAllocFloat(vertices.length);
+        buffer.put(0, vertices);
+        setVertices(buffer);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Mesh mesh = (Mesh) o;
+
+        if (!vertices.equals(mesh.vertices)) return false;
+        return transform.equals(mesh.transform);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = vertices.hashCode();
+        result = 31 * result + transform.hashCode();
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return "Mesh{" +
+                "vertices=" + vertices +
+                ", transform=" + transform +
+                '}';
+    }
+
+    @Override
     public void dispose() {
-        vertexBuffer.dispose();
-        vertexArray.dispose();
+        MemoryUtil.memFree(vertices);
     }
 }

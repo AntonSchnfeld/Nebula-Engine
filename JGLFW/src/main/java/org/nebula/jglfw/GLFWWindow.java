@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.lwjgl.glfw.GLFW.*;
+import static org.lwjgl.opengl.GL11C.*;
 import static org.lwjgl.system.MemoryStack.stackPush;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
@@ -156,8 +157,13 @@ public class GLFWWindow implements IDisposable {
         long then = System.currentTimeMillis();
         int frame = 0;
 
+        Vector2i size = new Vector2i();
         while (!glfwWindowShouldClose(windowObject)) {
+            getSize(size);
             glfwSwapBuffers(windowObject);
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            glViewport(0, 0, size.x, size.y);
+            glClearColor(0, 0, 0, 1);
 
             renderListener.render();
             frame++;

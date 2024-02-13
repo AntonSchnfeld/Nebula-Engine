@@ -6,7 +6,7 @@ import org.nebula.jgl.data.shader.VertexAttribs;
 
 public class ShaderTest {
     public static void main(String[] args) {
-        VertexAttribs attribs = Shader.parseAttribs(Files.readResourceAsString("default.vert"));
+        VertexAttribs attribs = Shader.parseAttribs(Files.readResourceAsString("shaders/default/default.vert"));
         System.out.println(attribs);
     }
 }

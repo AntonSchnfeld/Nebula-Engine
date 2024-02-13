@@ -2,7 +2,6 @@ package org.nebula;
 
 import org.nebula.io.Files;
 import org.nebula.jgl.Camera;
-import org.nebula.jgl.batch.Batch;
 import org.nebula.jgl.batch.RenderBatch;
 import org.nebula.jgl.data.FrameBuffer;
 import org.nebula.jgl.data.buffer.Mesh;
@@ -26,7 +25,7 @@ public class FrameBufferTest {
         this.window = new GLFWWindow(getClass().getName(), 500, 500);
         window.createGLCapabilities();
         window.setResizable(false);
-        window.setWindowIcon(Files.readImageFromResource("nebula.png"));
+        window.setWindowIcon(Files.readImageFromResource("images/nebula.png"));
 
         camera = new Camera();
 
@@ -43,13 +42,13 @@ public class FrameBufferTest {
         };
 
         texture = new TextureRegion(new Texture(
-                Files.readImageFromResource("nebula.png"), true));
+                Files.readImageFromResource("images/nebula.png"), true));
         batch = new RenderBatch();
         frameBuffer = new FrameBuffer(500, 500);
-        renderingShader = new Shader(Files.readResourceAsString("default.vert"),
-                Files.readResourceAsString("default.frag"));
-        postProcessingShader = new Shader(Files.readResourceAsString("postprocess.vert"),
-                Files.readResourceAsString("postprocess.frag"));
+        renderingShader = new Shader(Files.readResourceAsString("shaders/default/default.vert"),
+                Files.readResourceAsString("shaders/default/default.frag"));
+        postProcessingShader = new Shader(Files.readResourceAsString("shaders/postprocess/postprocess.vert"),
+                Files.readResourceAsString("shaders/postprocess/postprocess.frag"));
 
         window.setRenderer(this::draw);
         window.loop();

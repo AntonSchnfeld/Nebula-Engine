@@ -20,7 +20,7 @@ import java.nio.FloatBuffer;
 public class Mesh implements IDisposable {
 
     private FloatBuffer vertices;
-    private Transform transform;
+    private final Transform transform;
 
     /**
      * Constructs a Mesh object with the specified size for the vertex buffer.
@@ -49,9 +49,9 @@ public class Mesh implements IDisposable {
      * @param vertices The FloatBuffer containing the vertices of the mesh.
      */
     public Mesh(FloatBuffer vertices) {
-        final int capacity = vertices.capacity();
-        this.vertices = MemoryUtil.memAllocFloat(capacity);
-        this.vertices.put(0, vertices, 0, capacity);
+        if (!vertices.isDirect())
+            throw new IllegalArgumentException("Tried to use indirect FloatBuffer as vertices for mesh");
+        this.vertices = vertices;
         transform = new Transform();
     }
 
@@ -62,15 +62,6 @@ public class Mesh implements IDisposable {
      */
     public Transform getTransform() {
         return transform;
-    }
-
-    /**
-     * Sets the transformation for the mesh.
-     *
-     * @param transform The new transformation for the mesh.
-     */
-    public void setTransform(Transform transform) {
-        this.transform = transform;
     }
 
     /**

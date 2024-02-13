@@ -56,6 +56,17 @@ public class Transform {
         this.rotation = rotation;
     }
 
+    public Transform(Transform that) {
+        this();
+        set(that);
+    }
+
+    public void set(Transform that) {
+        this.translation.set(that.translation);
+        this.scale.set(that.scale);
+        this.rotation = that.rotation;
+    }
+
     /**
      * Gets the translation vector.
      *
@@ -71,7 +82,7 @@ public class Transform {
      * @param translation The new translation vector.
      */
     public void setTranslation(Vector2f translation) {
-        this.translation = translation;
+        this.translation.set(translation);
     }
 
     /**
@@ -89,7 +100,7 @@ public class Transform {
      * @param scale The new scaling vector.
      */
     public void setScale(Vector2f scale) {
-        this.scale = scale;
+        this.scale.set(scale);
     }
 
     /**

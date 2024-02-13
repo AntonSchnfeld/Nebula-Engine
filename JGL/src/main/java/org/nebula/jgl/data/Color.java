@@ -156,6 +156,20 @@ public class Color {
         this.alpha = alpha;
     }
 
+    public void set(Color that) {
+        this.red = that.red;
+        this.green = that.green;
+        this.blue = that.blue;
+        this.alpha = that.alpha;
+    }
+
+    public void set(float red, float green, float blue, float alpha) {
+        this.red = red;
+        this.green = green;
+        this.blue = blue;
+        this.alpha = alpha;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -180,13 +194,11 @@ public class Color {
 
     @Override
     public String toString() {
-        return "Color[r: " + red + ", g: " + green + ", b: " + blue + ", a: " + alpha + "]";
-    }
-
-    public void set(Color that) {
-        this.red = that.red;
-        this.green = that.green;
-        this.blue = that.blue;
-        this.alpha = that.alpha;
+        return "Color{" +
+                "red=" + red +
+                ", green=" + green +
+                ", blue=" + blue +
+                ", alpha=" + alpha +
+                '}';
     }
 }

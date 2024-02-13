@@ -5,7 +5,7 @@ import org.joml.Vector2f;
 
 public class Camera {
     public Vector2f position;
-    private Matrix4f projection, view;
+    private final Matrix4f projection, view;
     private float left;
     private float right;
     private float bottom;
@@ -91,5 +91,20 @@ public class Camera {
 
     public void setzFar(float zFar) {
         this.zFar = zFar;
+    }
+
+    @Override
+    public String toString() {
+        return "Camera{" +
+                "position=" + position +
+                ", projection=" + projection +
+                ", view=" + view +
+                ", left=" + left +
+                ", right=" + right +
+                ", bottom=" + bottom +
+                ", top=" + top +
+                ", zNear=" + zNear +
+                ", zFar=" + zFar +
+                '}';
     }
 }

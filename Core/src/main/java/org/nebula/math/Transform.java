@@ -9,6 +9,7 @@ import org.joml.Vector2f;
  * The Transform class represents a 2D transformation in graphics, including translation,
  * scaling, and rotation. It utilizes the Vector2f class from JOML for handling
  * 2D vector operations.
+ *
  * @author Anton Schoenfeld
  */
 public class Transform {

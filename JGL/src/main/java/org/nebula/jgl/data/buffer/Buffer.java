@@ -174,8 +174,7 @@ public class Buffer implements IDisposable {
         }
     }
 
-    public enum Type
-    {
+    public enum Type {
         ARRAY_BUFFER(GL_ARRAY_BUFFER),
         ELEMENT_ARRAY_BUFFER(GL_ELEMENT_ARRAY_BUFFER);
 
@@ -190,8 +189,7 @@ public class Buffer implements IDisposable {
         }
     }
 
-    public enum Datatype
-    {
+    public enum Datatype {
         FLOAT(GL_FLOAT, Float.BYTES),
         UNSIGNED_INT(GL_UNSIGNED_INT, Integer.BYTES),
         UNSIGNED_SHORT(GL_UNSIGNED_SHORT, Short.BYTES),

@@ -1,31 +1,26 @@
 package org.nebula;
 
-import org.lwjgl.system.MemoryUtil;
 import org.nebula.io.Files;
 import org.nebula.jgl.Camera;
-import org.nebula.jgl.JGL;
 import org.nebula.jgl.batch.Batch;
 import org.nebula.jgl.batch.RenderBatch;
 import org.nebula.jgl.data.FrameBuffer;
-import org.nebula.jgl.data.buffer.Buffer;
 import org.nebula.jgl.data.buffer.Mesh;
 import org.nebula.jgl.data.shader.Shader;
 import org.nebula.jgl.data.texture.Texture;
 import org.nebula.jgl.data.texture.TextureRegion;
 import org.nebula.jglfw.GLFWWindow;
 
-import java.nio.IntBuffer;
-
 import static org.lwjgl.opengl.GL33C.*;
 
 public class FrameBufferTest {
     private final GLFWWindow window;
     private final Batch batch;
-    private Mesh mesh;
     private final FrameBuffer frameBuffer;
     private final Shader renderingShader, postProcessingShader;
     private final Camera camera;
     private final TextureRegion texture;
+    private Mesh mesh;
 
     public FrameBufferTest() {
         this.window = new GLFWWindow(getClass().getName(), 500, 500);
@@ -36,15 +31,15 @@ public class FrameBufferTest {
         camera = new Camera();
 
 
-        float[] vertices = new float[] {
+        float[] vertices = new float[]{
                 //Pos       Color           Uvs
-                -1, -1,     1, 1, 1, 1,     0, 0, // Lower left
-                -1, 1,      1, 1, 1, 1,     0, 1, // Upper left
-                1, 1,       1, 1, 1, 1,     1, 1, // Upper right
+                -1, -1, 1, 1, 1, 1, 0, 0, // Lower left
+                -1, 1, 1, 1, 1, 1, 0, 1, // Upper left
+                1, 1, 1, 1, 1, 1, 1, 1, // Upper right
 
-                1, 1,       1, 1, 1, 1,     1, 1, // Upper right
-                1, -1,      1, 1, 1, 1,     1, 0, // Lower right
-                -1, -1,     1, 1, 1, 1,     0, 0  // Lower left
+                1, 1, 1, 1, 1, 1, 1, 1, // Upper right
+                1, -1, 1, 1, 1, 1, 1, 0, // Lower right
+                -1, -1, 1, 1, 1, 1, 0, 0  // Lower left
         };
 
         texture = new TextureRegion(new Texture(

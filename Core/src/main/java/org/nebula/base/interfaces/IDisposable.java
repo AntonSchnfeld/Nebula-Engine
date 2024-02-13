@@ -11,7 +11,6 @@ package org.nebula.base.interfaces;
  * </p>
  *
  * @author Anton Schoenfeld
- *
  * @see java.lang.AutoCloseable
  */
 @FunctionalInterface

@@ -180,7 +180,7 @@ public class Color {
 
     @Override
     public String toString() {
-        return "Color[r: " + red + ", g: " + green + ", b: " + blue + ", a: " +alpha +"]";
+        return "Color[r: " + red + ", g: " + green + ", b: " + blue + ", a: " + alpha + "]";
     }
 
     public void set(Color that) {

@@ -87,6 +87,7 @@ public class Shader implements IDisposable {
     private final int id;
     private final VertexAttribs vertexAttribs;
     private final HashMap<String, Integer> uniformLocations, attribLocations;
+
     /**
      * Creates a new Shader with specified vertex and fragment shader sources.
      *

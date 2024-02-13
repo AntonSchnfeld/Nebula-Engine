@@ -4,7 +4,6 @@ import org.joml.Vector2f;
 import org.joml.Vector2i;
 import org.nebula.io.Files;
 import org.nebula.jgl.Camera;
-import org.nebula.jgl.data.buffer.Buffer;
 import org.nebula.jgl.data.buffer.Mesh;
 import org.nebula.jgl.data.shader.Shader;
 import org.nebula.jgl.data.texture.Texture;
@@ -13,12 +12,12 @@ import org.nebula.jglfw.GLFWWindow;
 import static org.lwjgl.opengl.GL11C.*;
 
 public class MeshTest {
-    private Mesh mesh;
     private final Shader shader;
     private final GLFWWindow window;
     private final Camera camera;
     private final Texture texture;
     private final Vector2i windowSize;
+    private Mesh mesh;
 
     public MeshTest() {
         window = new GLFWWindow(getClass().getName());
@@ -33,9 +32,9 @@ public class MeshTest {
                 Files.readResourceAsString("default.frag"));
         texture = new Texture(Files.readImageFromResource("nebula.png"), true);
         float[] vertices = {
-                -0.75f, -0.75f, 0,     1, 1, 1, 1,     0, 0,   0,
-                0.75f, -0.75f, 0,      1, 1, 1, 1,     1, 0,   0,
-                0, 0.75f, 0,           1, 1, 1, 1,     0.5f, 1,   0
+                -0.75f, -0.75f, 0, 1, 1, 1, 1, 0, 0, 0,
+                0.75f, -0.75f, 0, 1, 1, 1, 1, 1, 0, 0,
+                0, 0.75f, 0, 1, 1, 1, 1, 0.5f, 1, 0
         };
 
         window.setRenderer(this::drawTriangle);

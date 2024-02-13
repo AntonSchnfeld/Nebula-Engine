@@ -136,4 +136,54 @@ public class Vertex {
                 textureId
         };
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Vertex vertex = (Vertex) o;
+
+        if (Float.compare(x, vertex.x) != 0) return false;
+        if (Float.compare(y, vertex.y) != 0) return false;
+        if (Float.compare(z, vertex.z) != 0) return false;
+        if (Float.compare(red, vertex.red) != 0) return false;
+        if (Float.compare(green, vertex.green) != 0) return false;
+        if (Float.compare(blue, vertex.blue) != 0) return false;
+        if (Float.compare(alpha, vertex.alpha) != 0) return false;
+        if (Float.compare(u, vertex.u) != 0) return false;
+        if (Float.compare(v, vertex.v) != 0) return false;
+        return Float.compare(textureId, vertex.textureId) == 0;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = (x != 0.0f ? Float.floatToIntBits(x) : 0);
+        result = 31 * result + (y != 0.0f ? Float.floatToIntBits(y) : 0);
+        result = 31 * result + (z != 0.0f ? Float.floatToIntBits(z) : 0);
+        result = 31 * result + (red != 0.0f ? Float.floatToIntBits(red) : 0);
+        result = 31 * result + (green != 0.0f ? Float.floatToIntBits(green) : 0);
+        result = 31 * result + (blue != 0.0f ? Float.floatToIntBits(blue) : 0);
+        result = 31 * result + (alpha != 0.0f ? Float.floatToIntBits(alpha) : 0);
+        result = 31 * result + (u != 0.0f ? Float.floatToIntBits(u) : 0);
+        result = 31 * result + (v != 0.0f ? Float.floatToIntBits(v) : 0);
+        result = 31 * result + (textureId != 0.0f ? Float.floatToIntBits(textureId) : 0);
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return "Vertex{" +
+                "x=" + x +
+                ", y=" + y +
+                ", z=" + z +
+                ", red=" + red +
+                ", green=" + green +
+                ", blue=" + blue +
+                ", alpha=" + alpha +
+                ", u=" + u +
+                ", v=" + v +
+                ", textureId=" + textureId +
+                '}';
+    }
 }

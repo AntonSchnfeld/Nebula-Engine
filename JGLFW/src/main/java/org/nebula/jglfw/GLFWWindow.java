@@ -163,7 +163,7 @@ public class GLFWWindow implements IDisposable {
             frame++;
             now = System.currentTimeMillis();
             if (now - then >= 1000) {
-                System.out.print("\rFPS: " + frame);
+                glfwSetWindowTitle(windowObject, title + " FPS: " + frame);
                 frame = 0;
                 then = System.currentTimeMillis();
             }

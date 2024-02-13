@@ -94,10 +94,7 @@ public class RenderBatch extends Batch {
      */
     @Override
     public void begin() {
-        if (rendering)
-            throw new IllegalStateException("Can not call RenderBatch.begin when RenderBatch is already rendering");
-
-        rendering = true;
+        super.begin();
 
         triVertices.clear();
         quadVertices.clear();
@@ -105,18 +102,6 @@ public class RenderBatch extends Batch {
         textures.clear();
 
         z = 0f;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void end() {
-        if (!rendering)
-            throw new IllegalStateException("Can not call RenderBatch.end when RenderBatch is not rendering");
-
-        rendering = false;
-        flush();
     }
 
     /**

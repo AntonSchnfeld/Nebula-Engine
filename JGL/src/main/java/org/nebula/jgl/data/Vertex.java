@@ -6,8 +6,8 @@ public class Vertex {
     public static final int POSITION_LOC = 0;
     public static final int POSITION_SIZE = 3;
     public static final int POSITION_SIZE_BYTES = POSITION_SIZE * Float.BYTES;
-    public static final int COLOR_POINTER = POSITION_POINTER + POSITION_SIZE_BYTES;
     public static final int POSITION_POINTER = 0;
+    public static final int COLOR_POINTER = POSITION_POINTER + POSITION_SIZE_BYTES;
     public static final int COLOR_LOC = 1;
     public static final int COLOR_SIZE = 4;
     public static final int COLOR_SIZE_BYTES = COLOR_SIZE * Float.BYTES;

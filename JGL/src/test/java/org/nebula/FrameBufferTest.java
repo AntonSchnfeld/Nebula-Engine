@@ -15,7 +15,7 @@ import static org.lwjgl.opengl.GL33C.*;
 
 public class FrameBufferTest {
     private final GLFWWindow window;
-    private final Batch batch;
+    private final RenderBatch batch;
     private final FrameBuffer frameBuffer;
     private final Shader renderingShader, postProcessingShader;
     private final Camera camera;

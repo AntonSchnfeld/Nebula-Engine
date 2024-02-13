@@ -224,19 +224,22 @@ public class RenderBatch extends Batch {
     }
 
     /**
-     * {@inheritDoc}
+     * Renders a textured quad with specified coordinates and texture coordinates.
+     *
+     * @param texture the texture to be rendered
+     * @param x       the x-coordinate of the quad's position
+     * @param y       the y-coordinate of the quad's position
+     * @param width   the width of the quad
+     * @param height  the height of the quad
      */
-    @Override
     public void texture(TextureRegion texture, float x, float y, float width, float height) {
         texture(texture, x, y, x + width, y, x, y + width, x + width, y + height);
     }
 
-    @Override
     public void texture(TextureRegion texture, Vector2f v1, Vector2f v2, Vector2f v3, Vector2f v4) {
         texture(texture, v1.x, v1.y, v2.x, v2.y, v3.x, v3.y, v4.x, v4.y);
     }
 
-    @Override
     public void texture(TextureRegion texture, float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4) {
         if (texture == null) {
             quad(x1, y1, x3, y3, x4, y4, x2, y2);
@@ -259,34 +262,54 @@ public class RenderBatch extends Batch {
     }
 
     /**
-     * {@inheritDoc}
+     * Renders a textured quad with the specified coordinates and texture coordinates, using the width and height
+     * of the texture region.
+     *
+     * @param texture the texture to be rendered
+     * @param x       the x-coordinate of the quad's position
+     * @param y       the y-coordinate of the quad's position
      */
-    @Override
     public void texture(TextureRegion texture, float x, float y) {
         texture(texture, x, y, texture.getTexture().getWidth(), texture.getTexture().getHeight());
     }
 
     /**
-     * {@inheritDoc}
+     * Renders a textured quad with specified coordinates.
+     *
+     * @param texture the texture to be rendered
+     * @param x       the x-coordinate of the quad's position
+     * @param y       the y-coordinate of the quad's position
+     * @param width   the width of the quad
+     * @param height  the height of the quad
      */
-    @Override
     public void texture(Texture texture, float x, float y, float width, float height) {
         texture(new TextureRegion(texture), x, y, width, height);
     }
 
     /**
-     * {@inheritDoc}
+     * Renders a textured quad with specified coordinates.
+     *
+     * @param texture the texture to be rendered
+     * @param x       the x-coordinate of the quad's position
+     * @param y       the y-coordinate of the quad's position
      */
-    @Override
     public void texture(Texture texture, float x, float y) {
         TextureRegion region = new TextureRegion(texture);
         texture(region, x, y, texture.getWidth(), texture.getHeight());
     }
 
     /**
-     * {@inheritDoc}
+     * Renders a quad with specified coordinates.
+     *
+     * @param x1 the x-coordinate of the first vertex
+     * @param y1 the y-coordinate of the first vertex
+     * @param x2 the x-coordinate of the second vertex
+     * @param y2 the y-coordinate of the second vertex
+     * @param x3 the x-coordinate of the third vertex
+     * @param y3 the y-coordinate of the third vertex
+     * @param x4 the x-coordinate of the fourth vertex
+     * @param y4 the y-coordinate of the fourth vertex
      */
-    @Override
     public void quad(float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4) {
         quadVertices.add(new Vertex(x1, y1, z, color, -1, -1, -1));
         quadVertices.add(new Vertex(x2, y2, z, color, -1, -1, -1));
@@ -296,27 +319,36 @@ public class RenderBatch extends Batch {
     }
 
     /**
-     * {@inheritDoc}
+     * Renders a quad with specified coordinates using {@link Vector2f} vertices.
+     *
+     * @param v1 the position of the first vertex
+     * @param v2 the position of the second vertex
+     * @param v3 the position of the third vertex
+     * @param v4 the position of the fourth vertex
      */
-    @Override
     public void quad(Vector2f v1, Vector2f v2, Vector2f v3, Vector2f v4) {
         quad(v1.x, v1.y, v2.x, v2.y, v3.x, v3.y, v4.x, v4.y);
     }
 
-    @Override
     public void quad(Vector2f position, Vector2f dimensions) {
         quad(position.x, position.y, dimensions.x, dimensions.y);
     }
 
-    @Override
     public void quad(float x, float y, float width, float height) {
         quad(x, y, x + width, y, x, y + width, x + width, y + height);
     }
 
     /**
-     * {@inheritDoc}
+     * Renders a textured triangle with specified coordinates and texture coordinates.
+     *
+     * @param texture the texture to be rendered
+     * @param x1      the x-coordinate of the first vertex
+     * @param y1      the y-coordinate of the first vertex
+     * @param x2      the x-coordinate of the second vertex
+     * @param y2      the y-coordinate of the second vertex
+     * @param x3      the x-coordinate of the third vertex
+     * @param y3      the y-coordinate of the third vertex
      */
-    @Override
     public void texturedTriangle(TextureRegion texture, float x1, float y1, float x2, float y2, float x3, float y3) {
         // Using this function without a texture is virtually the same as triangle
         if (texture == null || texture.getTexture() == null) {
@@ -345,17 +377,27 @@ public class RenderBatch extends Batch {
     }
 
     /**
-     * {@inheritDoc}
+     * Renders a textured triangle with specified {@link Vector2f} vertices and texture coordinates.
+     *
+     * @param texture the texture to be rendered
+     * @param v1     the position of the first vertex
+     * @param v2     the position of the second vertex
+     * @param v3     the position of the third vertex
      */
-    @Override
     public void texturedTriangle(TextureRegion texture, Vector2f v1, Vector2f v2, Vector2f v3) {
         texturedTriangle(texture, v1.x, v1.y, v2.x, v2.y, v3.x, v3.y);
     }
 
     /**
-     * {@inheritDoc}
+     * Renders a triangle with specified coordinates.
+     *
+     * @param x1 the x-coordinate of the first vertex
+     * @param y1 the y-coordinate of the first vertex
+     * @param x2 the x-coordinate of the second vertex
+     * @param y2 the y-coordinate of the second vertex
+     * @param x3 the x-coordinate of the third vertex
+     * @param y3 the y-coordinate of the third vertex
      */
-    @Override
     public void triangle(float x1, float y1, float x2, float y2, float x3, float y3) {
         triVertices.add(new Vertex(x1, y1, z, color, -1, -1, -1));
         triVertices.add(new Vertex(x2, y2, z, color, -1, -1, -1));
@@ -364,17 +406,24 @@ public class RenderBatch extends Batch {
     }
 
     /**
-     * {@inheritDoc}
+     * Renders a triangle with specified {@link Vector2f} vertices.
+     *
+     * @param v1 the position of the first vertex
+     * @param v2 the position of the second vertex
+     * @param v3 the position of the third vertex
      */
-    @Override
     public void triangle(Vector2f v1, Vector2f v2, Vector2f v3) {
         triangle(v1.x, v1.y, v2.x, v2.y, v3.x, v3.y);
     }
 
     /**
-     * {@inheritDoc}
+     * Renders a line between two specified coordinates.
+     *
+     * @param x1 the x-coordinate of the starting point
+     * @param y1 the y-coordinate of the starting point
+     * @param x2 the x-coordinate of the ending point
+     * @param y2 the y-coordinate of the ending point
      */
-    @Override
     public void line(float x1, float y1, float x2, float y2) {
         lineVertices.add(new Vertex(x1, y1, z, color, -1, -1, -1));
         lineVertices.add(new Vertex(x2, y2, z, color, -1, -1, -1));
@@ -386,9 +435,11 @@ public class RenderBatch extends Batch {
     }
 
     /**
-     * {@inheritDoc}
+     * Renders a line between two specified {@link Vector2f} points.
+     *
+     * @param v1 the starting point
+     * @param v2 the ending point
      */
-    @Override
     public void line(Vector2f v1, Vector2f v2) {
         line(v1.x, v1.y, v2.x, v2.y);
     }

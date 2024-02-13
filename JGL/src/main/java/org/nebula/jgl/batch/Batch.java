@@ -35,7 +35,6 @@ public abstract class Batch implements IDisposable {
     protected boolean blendingEnabled;
     protected Matrix4f projectionMatrix;
     protected float lineWidth;
-
     protected Matrix4f viewMatrix;
 
     public Batch() {
@@ -68,148 +67,12 @@ public abstract class Batch implements IDisposable {
      */
     public abstract void flush();
 
-    /**
-     * Renders a textured quad with specified coordinates and texture coordinates.
-     *
-     * @param texture the texture to be rendered
-     * @param x       the x-coordinate of the quad's position
-     * @param y       the y-coordinate of the quad's position
-     * @param width   the width of the quad
-     * @param height  the height of the quad
-     */
-    public abstract void texture(TextureRegion texture, float x, float y, float width, float height);
-
-    public abstract void texture(TextureRegion texture, Vector2f v1, Vector2f v2, Vector2f v3, Vector2f v4);
-
-    public abstract void texture(TextureRegion texture, float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4);
-
-    /**
-     * Renders a textured quad with the specified coordinates and texture coordinates, using the width and height
-     * of the texture region.
-     *
-     * @param texture the texture to be rendered
-     * @param x       the x-coordinate of the quad's position
-     * @param y       the y-coordinate of the quad's position
-     */
-    public abstract void texture(TextureRegion texture, float x, float y);
-
-    /**
-     * Renders a textured quad with specified coordinates.
-     *
-     * @param texture the texture to be rendered
-     * @param x       the x-coordinate of the quad's position
-     * @param y       the y-coordinate of the quad's position
-     * @param width   the width of the quad
-     * @param height  the height of the quad
-     */
-    public abstract void texture(Texture texture, float x, float y, float width, float height);
-
-    /**
-     * Renders a textured quad with specified coordinates.
-     *
-     * @param texture the texture to be rendered
-     * @param x       the x-coordinate of the quad's position
-     * @param y       the y-coordinate of the quad's position
-     */
-    public abstract void texture(Texture texture, float x, float y);
-
-    /**
-     * Renders a quad with specified coordinates.
-     *
-     * @param x1 the x-coordinate of the first vertex
-     * @param y1 the y-coordinate of the first vertex
-     * @param x2 the x-coordinate of the second vertex
-     * @param y2 the y-coordinate of the second vertex
-     * @param x3 the x-coordinate of the third vertex
-     * @param y3 the y-coordinate of the third vertex
-     * @param x4 the x-coordinate of the fourth vertex
-     * @param y4 the y-coordinate of the fourth vertex
-     */
-    public abstract void quad(float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4);
-
-    /**
-     * Renders a quad with specified coordinates using {@link Vector2f} vertices.
-     *
-     * @param v1 the position of the first vertex
-     * @param v2 the position of the second vertex
-     * @param v3 the position of the third vertex
-     * @param v4 the position of the fourth vertex
-     */
-    public abstract void quad(Vector2f v1, Vector2f v2, Vector2f v3, Vector2f v4);
-
-    public abstract void quad(Vector2f positon, Vector2f dimensions);
-
-    public abstract void quad(float x, float y, float width, float height);
-
-    /**
-     * Renders a textured triangle with specified coordinates and texture coordinates.
-     *
-     * @param texture the texture to be rendered
-     * @param x1      the x-coordinate of the first vertex
-     * @param y1      the y-coordinate of the first vertex
-     * @param x2      the x-coordinate of the second vertex
-     * @param y2      the y-coordinate of the second vertex
-     * @param x3      the x-coordinate of the third vertex
-     * @param y3      the y-coordinate of the third vertex
-     */
-    public abstract void texturedTriangle(TextureRegion texture, float x1, float y1, float x2, float y2,
-                                          float x3, float y3);
-
-    /**
-     * Renders a textured triangle with specified {@link Vector2f} vertices and texture coordinates.
-     *
-     * @param texture the texture to be rendered
-     * @param xy1     the position of the first vertex
-     * @param xy2     the position of the second vertex
-     * @param xy3     the position of the third vertex
-     */
-    public abstract void texturedTriangle(TextureRegion texture, Vector2f xy1, Vector2f xy2, Vector2f xy3);
-
-    /**
-     * Renders a triangle with specified coordinates.
-     *
-     * @param x1 the x-coordinate of the first vertex
-     * @param y1 the y-coordinate of the first vertex
-     * @param x2 the x-coordinate of the second vertex
-     * @param y2 the y-coordinate of the second vertex
-     * @param x3 the x-coordinate of the third vertex
-     * @param y3 the y-coordinate of the third vertex
-     */
-    public abstract void triangle(float x1, float y1, float x2, float y2, float x3, float y3);
-
-    /**
-     * Renders a triangle with specified {@link Vector2f} vertices.
-     *
-     * @param v1 the position of the first vertex
-     * @param v2 the position of the second vertex
-     * @param v3 the position of the third vertex
-     */
-    public abstract void triangle(Vector2f v1, Vector2f v2, Vector2f v3);
-
-    /**
-     * Renders a line between two specified coordinates.
-     *
-     * @param x1 the x-coordinate of the starting point
-     * @param y1 the y-coordinate of the starting point
-     * @param x2 the x-coordinate of the ending point
-     * @param y2 the y-coordinate of the ending point
-     */
-    public abstract void line(float x1, float y1, float x2, float y2);
-
-    /**
-     * Renders a line between two specified {@link Vector2f} points.
-     *
-     * @param v1 the starting point
-     * @param v2 the ending point
-     */
-    public abstract void line(Vector2f v1, Vector2f v2);
-
     public float getLineWidth() {
         return lineWidth;
     }
 
     public void setLineWidth(float width) {
-        this.lineWidth = width;
+        this.lineWidth = Math.clamp(width, 0, 1);
     }
 
     public void setColor(float r, float g, float b, float a) {

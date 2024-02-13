@@ -36,13 +36,15 @@ public abstract class Batch implements IDisposable {
     protected Matrix4f projectionMatrix;
     protected float lineWidth;
     protected Matrix4f viewMatrix;
+    protected boolean rendering;
 
     public Batch() {
-        this.lineWidth = 10;
+        this.lineWidth = 1;
         this.color = new Color(1, 1, 1, 1);
         this.blendingEnabled = true;
         this.projectionMatrix = new Matrix4f();
         this.viewMatrix = new Matrix4f();
+        this.rendering = false;
     }
 
     /**
@@ -50,14 +52,25 @@ public abstract class Batch implements IDisposable {
      * It sets up the necessary states and buffers to start the rendering process.
      * Subsequent calls to draw sprites should be made between {@code begin()} and {@code end()}.
      */
-    public abstract void begin();
+    public void begin() {
+        if (rendering)
+            throw new IllegalStateException("Can not call RenderBatch.begin when RenderBatch is already rendering");
+
+        rendering = true;
+    }
 
     /**
      * Finishes the rendering process and performs any necessary cleanup.
      * This method is called after all sprites have been drawn between {@code begin()} and {@code end()}.
      * It ensures that any remaining buffered data is flushed and the rendering state is restored.
      */
-    public abstract void end();
+    public void end() {
+        if (!rendering)
+            throw new IllegalStateException("Can not call RenderBatch.end when RenderBatch is not rendering");
+
+        rendering = false;
+        flush();
+    }
 
     /**
      * Flushes any remaining batched rendering commands to the graphics pipeline.

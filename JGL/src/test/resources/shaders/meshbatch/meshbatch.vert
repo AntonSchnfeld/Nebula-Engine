@@ -10,8 +10,10 @@ vec2 applyTransform(vec2 pos, Transform transform) {
     float cosine = cos(radians(transform.rotation));
     float sine = sin(radians(transform.rotation));
 
+    float originalX = pos.x; // Store the original pos.x
+
     pos.x = pos.x * cosine - pos.y * sine;
-    pos.y = pos.x * sine - pos.y * cosine;
+    pos.y = originalX * sine + pos.y * cosine; // Use the original pos.x here
 
     pos.x *= transform.scale.x;
     pos.y *= transform.scale.y;

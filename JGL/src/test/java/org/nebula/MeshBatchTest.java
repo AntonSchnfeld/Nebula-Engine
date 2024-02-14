@@ -46,6 +46,7 @@ public class MeshBatchTest {
         window.dispose();
         shader.dispose();
         mesh.dispose();
+        meshBatch.dispose();
     }
 
     public static void main(String[] args) {

@@ -98,7 +98,7 @@ public class MeshBatch extends Batch {
             }
         }
 
-        return meshVertices;
+        return meshVertices.flip();
     }
 
     /**

@@ -8,6 +8,10 @@ import org.nebula.jgl.data.shader.Shader;
 import org.nebula.jgl.data.texture.Texture;
 import org.nebula.jgl.data.texture.TextureRegion;
 
+import java.util.MissingFormatWidthException;
+
+import static org.lwjgl.opengl.GL33C.*;
+
 /**
  * <br>
  * <h2>Batch</h2>
@@ -32,7 +36,7 @@ import org.nebula.jgl.data.texture.TextureRegion;
 public abstract class Batch implements IDisposable {
     protected Color color;
     protected Shader shader;
-    protected boolean blendingEnabled;
+    protected boolean blendingEnabled, wireFrameEnabled;
     protected Matrix4f projectionMatrix;
     protected float lineWidth;
     protected Matrix4f viewMatrix;
@@ -42,6 +46,7 @@ public abstract class Batch implements IDisposable {
         this.lineWidth = 1;
         this.color = new Color(1, 1, 1, 1);
         this.blendingEnabled = true;
+        this.wireFrameEnabled = false;
         this.projectionMatrix = new Matrix4f();
         this.viewMatrix = new Matrix4f();
         this.rendering = false;
@@ -55,6 +60,14 @@ public abstract class Batch implements IDisposable {
     public void begin() {
         if (rendering)
             throw new IllegalStateException("Can not call RenderBatch.begin when RenderBatch is already rendering");
+
+        if (blendingEnabled) {
+            glEnable(GL_BLEND);
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        }
+        if (wireFrameEnabled) {
+            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+        } else glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
         rendering = true;
     }
@@ -80,12 +93,20 @@ public abstract class Batch implements IDisposable {
      */
     public abstract void flush();
 
+    public boolean isWireFrameEnabled() {
+        return wireFrameEnabled;
+    }
+
+    public void setWireFrameEnabled(boolean wireFrameEnabled) {
+        this.wireFrameEnabled = wireFrameEnabled;
+    }
+
     public float getLineWidth() {
         return lineWidth;
     }
 
     public void setLineWidth(float width) {
-        this.lineWidth = Math.clamp(width, 0, 1);
+        this.lineWidth = width;
     }
 
     public void setColor(float r, float g, float b, float a) {

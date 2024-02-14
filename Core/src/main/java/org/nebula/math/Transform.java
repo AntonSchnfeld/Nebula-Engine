@@ -13,8 +13,8 @@ import org.joml.Vector2f;
  * @author Anton Schoenfeld
  */
 public class Transform {
-    private Vector2f translation;
-    private Vector2f scale;
+    private final Vector2f translation;
+    private final Vector2f scale;
     private float rotation;
 
     /**
@@ -59,6 +59,24 @@ public class Transform {
     public Transform(Transform that) {
         this();
         set(that);
+    }
+
+    public Transform withTranslation(Vector2f translation) {
+        Transform withTranslation = new Transform(this);
+        withTranslation.setTranslation(translation);
+        return withTranslation;
+    }
+
+    public Transform withScale(Vector2f scale) {
+        Transform withScale = new Transform(this);
+        withScale.setScale(scale);
+        return withScale;
+    }
+
+    public Transform withRotation(float rotation) {
+        Transform withRotation = new Transform(this);
+        withRotation.rotation = rotation;
+        return withRotation;
     }
 
     public void set(Transform that) {

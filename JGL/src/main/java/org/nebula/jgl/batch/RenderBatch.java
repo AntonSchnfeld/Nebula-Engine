@@ -68,12 +68,6 @@ public class RenderBatch extends Batch {
         initVertexArray(triVao, triBuffer);
         initVertexArray(quadVao, quadBuffer);
         initVertexArray(lineVao, lineBuffer);
-
-        glEnable(GL_DEPTH_TEST);
-        glDepthFunc(GL_LESS);
-
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     }
 
     private void initVertexArray(VertexArray vertexArray, Buffer buffer) {
@@ -110,6 +104,9 @@ public class RenderBatch extends Batch {
     @Override
     public void flush() {
         glLineWidth(lineWidth);
+
+        glEnable(GL_DEPTH_TEST);
+        glDepthFunc(GL_LESS);
 
         float[] triangleVertices = getVerticesFromList(triVertices);
         float[] quadVertices = getVerticesFromList(this.quadVertices);
@@ -172,6 +169,8 @@ public class RenderBatch extends Batch {
         lineVao.unbind();
 
         shader.unbind();
+
+        glDisable(GL_DEPTH_TEST);
     }
 
     private void generateQuadElementBuffer() {
@@ -435,16 +434,6 @@ public class RenderBatch extends Batch {
 
     public boolean canFit(TextureRegion texture) {
         return canFit(texture.getTexture());
-    }
-
-    public boolean isWireFrameEnabled() {
-        return wireframeEnabled;
-    }
-
-    public void setWireFrameEnabled(boolean wireframeEnabled) {
-        this.wireframeEnabled = wireframeEnabled;
-        if (wireframeEnabled) glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-        else glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     }
 
     /**

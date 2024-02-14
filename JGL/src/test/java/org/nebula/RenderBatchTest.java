@@ -55,14 +55,9 @@ public class RenderBatchTest {
     }
 
     private void draw() {
-        windowSize = window.getSize(windowSize);
-
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        glViewport(0, 0, windowSize.x, windowSize.y);
-        glClearColor(0, 0, 0, 1);
-
         batch.setViewMatrix(camera.getView());
         batch.setProjectionMatrix(camera.getProjection());
+
         batch.begin();
         transform.setRotation(transform.getRotation() + 0.25f);
         batch.setColor(1, 1, 1, 0.5f);

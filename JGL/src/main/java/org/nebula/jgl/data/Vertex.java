@@ -1,8 +1,9 @@
 package org.nebula.jgl.data;
 
 import org.joml.Vector2f;
+import org.nebula.base.util.Poolable;
 
-public class Vertex {
+public class Vertex implements Poolable {
     public static final int POSITION_LOC = 0;
     public static final int POSITION_SIZE = 3;
     public static final int POSITION_SIZE_BYTES = POSITION_SIZE * Float.BYTES;
@@ -46,6 +47,10 @@ public class Vertex {
     public Vertex(Vector2f position, Color color, Vector2f uv, float textureId) {
         this(position.x, position.y, 0, color.getRed(), color.getGreen(), color.getGreen(), color.getAlpha()
                 , uv.x, uv.y, textureId);
+    }
+
+    public Vertex() {
+        this(0, 0, 0, 0, 0, 0, 0, 0, 0, -1);
     }
 
     public float getX() {
@@ -185,5 +190,34 @@ public class Vertex {
                 ", v=" + v +
                 ", textureId=" + textureId +
                 '}';
+    }
+
+    @Override
+    public void clean() {
+        x = 0;
+        y = 0;
+        z = 0;
+        red = 0;
+        green = 0;
+        blue = 0;
+        alpha = 0;
+        u = 0;
+        v = 0;
+        textureId = -1;
+    }
+
+    public Vertex set(float x, float y, float z, Color color, float u, float v, int textureId) {
+        this.x = x;
+        this.y = y;
+        this.z = z;
+        this.red = color.getRed();
+        this.green = color.getGreen();
+        this.blue = color.getBlue();
+        this.alpha = color.getAlpha();
+        this.u = u;
+        this.v = v;
+        this.textureId = textureId;
+
+        return this;
     }
 }

@@ -1,6 +1,7 @@
 package org.nebula.jgl.batch;
 
 import org.joml.Vector2f;
+import org.nebula.base.util.Pool;
 import org.nebula.jgl.JGL;
 import org.nebula.jgl.data.Vertex;
 import org.nebula.jgl.data.buffer.Buffer;
@@ -20,8 +21,8 @@ public class RenderBatch extends Batch {
     private final VertexArray triVao, quadVao, lineVao;
     private final Buffer triBuffer, quadBuffer, quadElementBuffer, lineBuffer;
     private final List<Vertex> triVertices, quadVertices, lineVertices;
-
     private final List<Texture> textures;
+    private final Pool<Vertex> vertexPool;
     private final int maxTextures;
     private final int[] slots;
     private boolean rendering;
@@ -31,6 +32,13 @@ public class RenderBatch extends Batch {
     public RenderBatch(int maxTextures) {
         super();
         this.maxTextures = maxTextures;
+
+        this.vertexPool = new Pool<>() {
+            @Override
+            protected Vertex newPoolable() {
+                return new Vertex();
+            }
+        };
 
         slots = new int[maxTextures];
         for (int i = 0; i < maxTextures; i++)
@@ -89,6 +97,10 @@ public class RenderBatch extends Batch {
     @Override
     public void begin() {
         super.begin();
+
+        vertexPool.addAll(triVertices);
+        vertexPool.addAll(quadVertices);
+        vertexPool.addAll(lineVertices);
 
         triVertices.clear();
         quadVertices.clear();
@@ -174,20 +186,19 @@ public class RenderBatch extends Batch {
     }
 
     private void generateQuadElementBuffer() {
-        int[] indices = new int[(int) (quadVertices.size() * 1.5)];
+        int[] indices = new int[quadVertices.size() * 6 / 4];
 
-        for (int i = 0; i < indices.length; i += 6) {
-            int offsetArrayIndex = 6 * i;
-            int offset = 4 * i;
+        for (int i = 0; i < quadVertices.size(); i += 4) {
+            int offsetArrayIndex = i * 6 / 4;
+            int offset = i;
 
-            // 3, 2, 0, 0, 2, 1        7, 6, 4, 4, 6, 5
             // Triangle 1
             indices[offsetArrayIndex] = offset + 3;
             indices[offsetArrayIndex + 1] = offset + 2;
-            indices[offsetArrayIndex + 2] = offset + 0;
+            indices[offsetArrayIndex + 2] = offset;
 
             // Triangle 2
-            indices[offsetArrayIndex + 3] = offset + 0;
+            indices[offsetArrayIndex + 3] = offset;
             indices[offsetArrayIndex + 4] = offset + 2;
             indices[offsetArrayIndex + 5] = offset + 1;
         }
@@ -237,10 +248,12 @@ public class RenderBatch extends Batch {
         final float[] uvs = texture.getUvs();
         final int texId = textures.indexOf(texture.getTexture());
 
-        quadVertices.add(new Vertex(x1, y1, z, color, uvs[0], uvs[1], texId));
-        quadVertices.add(new Vertex(x3, y3, z, color, uvs[2], uvs[3], texId));
-        quadVertices.add(new Vertex(x4, y4, z, color, uvs[4], uvs[5], texId));
-        quadVertices.add(new Vertex(x2, y2, z, color, uvs[6], uvs[7], texId));
+
+
+        quadVertices.add(vertexPool.get().set(x1, y1, z, color, uvs[0], uvs[1], texId));
+        quadVertices.add(vertexPool.get().set(x3, y3, z, color, uvs[2], uvs[3], texId));
+        quadVertices.add(vertexPool.get().set(x4, y4, z, color, uvs[4], uvs[5], texId));
+        quadVertices.add(vertexPool.get().set(x2, y2, z, color, uvs[6], uvs[7], texId));
 
         incrementZ();
     }
@@ -295,10 +308,10 @@ public class RenderBatch extends Batch {
      * @param y4 the y-coordinate of the fourth vertex
      */
     public void quad(float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4) {
-        quadVertices.add(new Vertex(x1, y1, z, color, -1, -1, -1));
-        quadVertices.add(new Vertex(x2, y2, z, color, -1, -1, -1));
-        quadVertices.add(new Vertex(x3, y3, z, color, -1, -1, -1));
-        quadVertices.add(new Vertex(x4, y4, z, color, -1, -1, -1));
+        quadVertices.add(vertexPool.get().set(x1, y1, z, color, -1, -1, -1));
+        quadVertices.add(vertexPool.get().set(x2, y2, z, color, -1, -1, -1));
+        quadVertices.add(vertexPool.get().set(x3, y3, z, color, -1, -1, -1));
+        quadVertices.add(vertexPool.get().set(x4, y4, z, color, -1, -1, -1));
         incrementZ();
     }
 
@@ -347,9 +360,9 @@ public class RenderBatch extends Batch {
         final float[] uvs = texture.getUvs();
         final int texId = textures.indexOf(texture.getTexture());
 
-        triVertices.add(new Vertex(x1, y1, z, color, uvs[0], uvs[1], texId));
-        triVertices.add(new Vertex(x2, y2, z, color, uvs[2], uvs[3], texId));
-        triVertices.add(new Vertex(x3, y3, z, color, uvs[4], uvs[5], texId));
+        triVertices.add(vertexPool.get().set(x1, y1, z, color, uvs[0], uvs[1], texId));
+        triVertices.add(vertexPool.get().set(x2, y2, z, color, uvs[2], uvs[3], texId));
+        triVertices.add(vertexPool.get().set(x3, y3, z, color, uvs[4], uvs[5], texId));
         incrementZ();
     }
 
@@ -383,9 +396,9 @@ public class RenderBatch extends Batch {
      * @param y3 the y-coordinate of the third vertex
      */
     public void triangle(float x1, float y1, float x2, float y2, float x3, float y3) {
-        triVertices.add(new Vertex(x1, y1, z, color, -1, -1, -1));
-        triVertices.add(new Vertex(x2, y2, z, color, -1, -1, -1));
-        triVertices.add(new Vertex(x3, y3, z, color, -1, -1, -1));
+        triVertices.add(vertexPool.get().set(x1, y1, z, color, -1, -1, -1));
+        triVertices.add(vertexPool.get().set(x2, y2, z, color, -1, -1, -1));
+        triVertices.add(vertexPool.get().set(x3, y3, z, color, -1, -1, -1));
         incrementZ();
     }
 
@@ -409,8 +422,8 @@ public class RenderBatch extends Batch {
      * @param y2 the y-coordinate of the ending point
      */
     public void line(float x1, float y1, float x2, float y2) {
-        lineVertices.add(new Vertex(x1, y1, z, color, -1, -1, -1));
-        lineVertices.add(new Vertex(x2, y2, z, color, -1, -1, -1));
+        lineVertices.add(vertexPool.get().set(x1, y1, z, color, -1, -1, -1));
+        lineVertices.add(vertexPool.get().set(x2, y2, z, color, -1, -1, -1));
         incrementZ();
     }
 

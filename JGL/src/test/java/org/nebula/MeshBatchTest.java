@@ -8,6 +8,7 @@ import org.nebula.jgl.batch.MeshBatch;
 import org.nebula.jgl.data.buffer.Mesh;
 import org.nebula.jgl.data.shader.Shader;
 import org.nebula.jglfw.GLFWWindow;
+import org.nebula.jglfw.listeners.IGLFWInputListener;
 import org.nebula.math.Maths;
 import org.nebula.math.Transform;
 
@@ -28,20 +29,33 @@ public class MeshBatchTest {
         meshBatch = new MeshBatch();
         final float[] vertices = {
                 -0.75f, -0.75f, 1, 0, 0, 1, // Lower left
+                0.75f, -0.75f, 0, 0, 1, 1, // Lower right
                 -0.75f, 0.75f, 0, 1, 0, 1, // Upper left
-                0.75f, 0.75f, 0, 0, 1, 1, // Upper right
-
-                -0.75f, -0.75f, 1, 0, 0, 1, // Lower left
-                0.75f, -0.75f, 1, 0, 1, 1, // Lower right
-                0.75f, 0.75f, 0, 0, 1, 1, // Upper right
+                0.75f, 0.75f, 1, 0, 1, 1, // Upper right
         };
-        mesh = new Mesh(vertices);
-        Transform transform = mesh.getTransform();
-        transform.setRotation(0);
-        transform.setScale(new Vector2f(1, 1));
-        transform.setTranslation(new Vector2f(0, 0));
+        final int[] indices = {
+                0, 1, 2,
+                1, 3, 2
+        };
+        mesh = new Mesh(vertices, indices);
 
         meshBatch.setShader(shader);
+
+        window.addInputListener(new IGLFWInputListener() {
+            @Override
+            public void onCursorPositionChange(GLFWWindow window, double x, double y) {
+
+            }
+            @Override
+            public void onKeyAction(GLFWWindow window, int key, int scanCode, int action, int mods) {
+                if (action == GLFW.GLFW_PRESS && key == GLFW.GLFW_KEY_R)
+                    System.out.println("R clicked");
+            }
+            @Override
+            public void onMouseButtonAction(GLFWWindow window, int button, int action, int mods) {
+
+            }
+        });
 
         window.setRenderer(this::draw);
         window.loop();
@@ -64,7 +78,8 @@ public class MeshBatchTest {
         transform.setRotation(transform.getRotation() + 1f);
         transform.getScale().set(Math.sin(GLFW.glfwGetTime()), Math.sin(GLFW.glfwGetTime()));
         transform.getTranslation().set(Math.sin(GLFW.glfwGetTime()), Math.sin(GLFW.glfwGetTime()));
-        meshBatch.mesh(mesh);
+        for (int i = 0; i < 1_000_000; i++)
+            meshBatch.mesh(mesh);
         meshBatch.end();
     }
 }

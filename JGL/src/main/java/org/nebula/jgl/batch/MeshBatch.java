@@ -1,5 +1,6 @@
 package org.nebula.jgl.batch;
 
+import org.lwjgl.opengl.ARBFragmentShader;
 import org.lwjgl.system.MemoryUtil;
 import org.nebula.jgl.JGL;
 import org.nebula.jgl.data.buffer.Buffer;
@@ -10,6 +11,7 @@ import org.nebula.jgl.data.shader.VertexAttribs;
 import org.nebula.math.Transform;
 
 import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,14 +21,16 @@ public class MeshBatch extends Batch {
     private static final int TRANSFORM_SIZE = 5;
     private final List<Mesh> meshes;
     private final VertexArray vertexArray;
-    private final Buffer buffer;
+    private final Buffer buffer, elementBuffer;
     private VertexAttribs vertexAttribs;
+    private Shader instanceShader;
 
     public MeshBatch() {
         super();
         this.meshes = new ArrayList<>();
         this.vertexArray = new VertexArray();
         this.buffer = new Buffer(Buffer.Type.ARRAY_BUFFER);
+        this.elementBuffer = new Buffer(Buffer.Type.ELEMENT_ARRAY_BUFFER);
     }
 
     @Override
@@ -46,19 +50,27 @@ public class MeshBatch extends Batch {
 
     @Override
     public void flush() {
+
+        glEnable(GL_DEPTH_TEST);
+        glDepthFunc(GL_LEQUAL);
+
         final int totalVerticesSize = calculateTotalVerticesSize();
         FloatBuffer vertices = getBatchVertices(totalVerticesSize);
+        IntBuffer indices = getBatchIndices(totalVerticesSize);
 
         buffer.data(vertices, Buffer.Usage.STATIC_DRAW);
+        elementBuffer.data(indices, Buffer.Usage.STATIC_DRAW);
         vertexArray.bind();
-        final int totalCount = totalVerticesSize / vertexAttribs.getVertexSize();
+        elementBuffer.bind();
+        final int totalVertexCount = totalVerticesSize / vertexAttribs.getVertexSize();
         shader.bind();
         shader.uploadUniformMat4f("uView", viewMatrix);
         shader.uploadUniformMat4f("uProjection", projectionMatrix);
-        glDrawArrays(GL_TRIANGLES, 0, totalCount);
+        glDrawElements(GL_TRIANGLES, totalVerticesSize, GL_UNSIGNED_INT, 0);
         JGL.checkForOpenGLError();
 
         MemoryUtil.memFree(vertices);
+        MemoryUtil.memFree(indices);
     }
 
     @Override
@@ -101,6 +113,26 @@ public class MeshBatch extends Batch {
         return meshVertices.flip();
     }
 
+    private IntBuffer getBatchIndices(final int len) {
+        IntBuffer batchIndices = MemoryUtil.memAllocInt(len);
+        int offset = 0; // Keep track of the offset for each mesh
+
+        for (Mesh mesh : meshes) {
+            IntBuffer indices = mesh.getIndices();
+
+            // Iterate through the indices and add them to the batchIndices with offset
+            while (indices.hasRemaining()) {
+                int index = indices.get() + offset;
+                batchIndices.put(index);
+            }
+
+            // Update the offset for the next mesh
+            offset += indices.capacity(); // Assuming indices.capacity() is equivalent to the vertex count
+        }
+
+        return batchIndices.flip();
+    }
+
     /**
      * Calculates the total size of the vertices of all currently stored Meshes. In other words,
      * the number of floats stored in each vertex in each mesh is combined.
@@ -122,5 +154,13 @@ public class MeshBatch extends Batch {
 
     public void mesh(Mesh mesh) {
         meshes.add(mesh);
+    }
+
+    public void meshInstanced(Mesh mesh, Transform[] transforms, int instances) {
+
+    }
+
+    public void meshInstanced(Mesh mesh, Transform[] transforms) {
+        meshInstanced(mesh, transforms, transforms.length);
     }
 }

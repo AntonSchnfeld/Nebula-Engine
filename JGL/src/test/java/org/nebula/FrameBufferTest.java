@@ -1,8 +1,9 @@
 package org.nebula;
 
 import org.nebula.io.Files;
-import org.nebula.jgl.Camera;
+import org.nebula.jgl.camera.Camera;
 import org.nebula.jgl.batch.RenderBatch;
+import org.nebula.jgl.camera.OrthographicCamera;
 import org.nebula.jgl.data.FrameBuffer;
 import org.nebula.jgl.data.buffer.Mesh;
 import org.nebula.jgl.data.shader.Shader;
@@ -17,7 +18,7 @@ public class FrameBufferTest {
     private final RenderBatch batch;
     private final FrameBuffer frameBuffer;
     private final Shader renderingShader, postProcessingShader;
-    private final Camera camera;
+    private final OrthographicCamera camera;
     private final TextureRegion texture;
     private Mesh mesh;
 
@@ -27,7 +28,7 @@ public class FrameBufferTest {
         window.setResizable(false);
         window.setWindowIcon(Files.readImageFromResource("images/nebula.png"));
 
-        camera = new Camera();
+        camera = new OrthographicCamera();
 
 
         float[] vertices = new float[]{

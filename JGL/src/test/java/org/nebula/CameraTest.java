@@ -1,7 +1,8 @@
 package org.nebula;
 
 import org.joml.Vector2i;
-import org.nebula.jgl.Camera;
+import org.nebula.jgl.camera.Camera;
+import org.nebula.jgl.camera.OrthographicCamera;
 import org.nebula.jgl.data.buffer.Buffer;
 import org.nebula.jgl.data.buffer.VertexArray;
 import org.nebula.jgl.data.shader.Shader;
@@ -38,7 +39,7 @@ public class CameraTest {
             }
             """;
 
-    private final Camera camera;
+    private final OrthographicCamera camera;
     private final GLFWWindow window;
     private final VertexArray vertexArray;
     private final Buffer buffer;
@@ -52,7 +53,7 @@ public class CameraTest {
         buffer = new Buffer(Buffer.Type.ARRAY_BUFFER);
         shader = new Shader(vertex, fragment);
 
-        camera = new Camera();
+        camera = new OrthographicCamera();
 
         window.setRenderer(this::drawTriangle);
         init();

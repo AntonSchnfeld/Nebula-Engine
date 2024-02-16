@@ -2,9 +2,11 @@ package org.nebula;
 
 import org.joml.Vector2f;
 import org.joml.Vector2i;
+import org.joml.Vector3f;
 import org.nebula.io.Files;
-import org.nebula.jgl.Camera;
+import org.nebula.jgl.camera.Camera;
 import org.nebula.jgl.batch.RenderBatch;
+import org.nebula.jgl.camera.OrthographicCamera;
 import org.nebula.jgl.data.Color;
 import org.nebula.jgl.data.shader.Shader;
 import org.nebula.jgl.data.texture.Texture;
@@ -13,19 +15,17 @@ import org.nebula.jglfw.GLFWWindow;
 import org.nebula.math.Maths;
 import org.nebula.math.Transform;
 
-import static org.lwjgl.opengl.GL33C.*;
-
 public class RenderBatchTest {
     private final RenderBatch batch;
     private final GLFWWindow window;
-    private final Camera camera;
+    private final OrthographicCamera camera;
     private final TextureRegion texture, triangleTexture;
     private Vector2i windowSize;
     private Transform transform;
 
     public RenderBatchTest() {
         final float size = 1;
-        camera = new Camera(new Vector2f(0, 0), -size, size, -size, size, -size, size);
+        camera = new OrthographicCamera(new Vector3f(), -size, size, -size, size, -size, size);
         window = new GLFWWindow(getClass().getName());
         window.setRenderer(this::draw);
         window.createGLCapabilities();

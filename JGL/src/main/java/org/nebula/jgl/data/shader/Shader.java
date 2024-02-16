@@ -2,7 +2,6 @@ package org.nebula.jgl.data.shader;
 
 import org.joml.*;
 import org.nebula.base.interfaces.IDisposable;
-import org.nebula.jgl.data.ShaderException;
 import org.nebula.jgl.data.buffer.Buffer;
 
 import java.util.AbstractMap;
@@ -82,8 +81,10 @@ public class Shader implements IDisposable {
             entry("mat4x3", new GLSLDatatype(4 * 3, 4 * 3 * Float.BYTES, Buffer.Datatype.FLOAT)),
             entry("mat4x4", new GLSLDatatype(4 * 4, 4 * 4 * Float.BYTES, Buffer.Datatype.FLOAT)),
             entry("sampler2D", new GLSLDatatype(1, Integer.BYTES, Buffer.Datatype.INT)),
+            entry("sampler3D", new GLSLDatatype(1, Integer.BYTES, Buffer.Datatype.INT)),
             entry("samplerCube", new GLSLDatatype(1, Integer.BYTES, Buffer.Datatype.INT))
     );
+    private static Shader currentlyBoundShader;
     private final int id;
     private final VertexAttribs vertexAttribs;
     private final HashMap<String, Integer> uniformLocations, attribLocations;
@@ -112,9 +113,9 @@ public class Shader implements IDisposable {
         glCompileShader(fragmentShader);
 
         if (glGetShaderi(vertexShader, GL_COMPILE_STATUS) == GL_FALSE)
-            throw new ShaderException(glGetShaderInfoLog(vertexShader));
+            throw new ShaderCompileException(glGetShaderInfoLog(vertexShader));
         if (glGetShaderi(fragmentShader, GL_COMPILE_STATUS) == GL_FALSE)
-            throw new ShaderException(glGetShaderInfoLog(fragmentShader));
+            throw new ShaderCompileException(glGetShaderInfoLog(fragmentShader));
 
         glAttachShader(id, vertexShader);
         glAttachShader(id, fragmentShader);
@@ -122,7 +123,7 @@ public class Shader implements IDisposable {
         glLinkProgram(id);
 
         if (glGetProgrami(id, GL_LINK_STATUS) == GL_FALSE)
-            throw new ShaderException(glGetProgramInfoLog(id));
+            throw new ShaderLinkageException(glGetProgramInfoLog(id));
 
         glDeleteShader(vertexShader);
         glDeleteShader(fragmentShader);
@@ -130,7 +131,7 @@ public class Shader implements IDisposable {
         glValidateProgram(id);
 
         if (glGetProgrami(id, GL_VALIDATE_STATUS) == GL_FALSE)
-            throw new ShaderException(glGetProgramInfoLog(id));
+            throw new ShaderValidationException(glGetProgramInfoLog(id));
     }
 
     private static AbstractMap.SimpleEntry<String, GLSLDatatype> entry(String name, GLSLDatatype datatype) {
@@ -161,7 +162,7 @@ public class Shader implements IDisposable {
 
             Matcher matcher = pattern.matcher(attribDeclaration);
             if (!matcher.matches()) {
-                throw new RuntimeException("Invalid vertex attribute declaration: " + attribDeclaration);
+                throw new ShaderException("Invalid vertex attribute declaration: " + attribDeclaration);
             }
 
             int location = Integer.parseInt(matcher.group(1));
@@ -181,6 +182,10 @@ public class Shader implements IDisposable {
         return new VertexAttribs(vertexAttribs);
     }
 
+    public static Shader getCurrentlyBoundShader() {
+        return currentlyBoundShader;
+    }
+
     /**
      * Binds the shader for use in rendering.
      * <p>
@@ -188,11 +193,17 @@ public class Shader implements IDisposable {
      * </p>
      */
     public void bind() {
-        glUseProgram(id);
+        if (currentlyBoundShader != this) {
+            glUseProgram(id);
+            currentlyBoundShader = this;
+        }
     }
 
     public void unbind() {
-        glUseProgram(0);
+        if (currentlyBoundShader == this) {
+            glUseProgram(0);
+            currentlyBoundShader = null;
+        }
     }
 
     public int getAttribLocation(final String attribLocation) {

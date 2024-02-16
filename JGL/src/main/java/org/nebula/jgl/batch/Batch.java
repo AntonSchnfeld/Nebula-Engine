@@ -22,7 +22,7 @@ import static org.lwjgl.opengl.GL33C.*;
  * performance in graphics applications.
  * </p>
  * <p>
- * Implementation of this interface should support the rendering of textures, quads, triangles, and lines,
+ * Extending this class should support the rendering of textures, quads, triangles, and lines,
  * as well as color and blending settings.
  * </p>
  *
@@ -42,6 +42,9 @@ public abstract class Batch implements IDisposable {
     protected Matrix4f viewMatrix;
     protected boolean rendering;
 
+    /**
+     * Constructs a Batch object with default settings.
+     */
     public Batch() {
         this.lineWidth = 1;
         this.color = new Color(1, 1, 1, 1);
@@ -56,6 +59,8 @@ public abstract class Batch implements IDisposable {
      * Prepares the Batch for rendering. This method is called before drawing any sprites.
      * It sets up the necessary states and buffers to start the rendering process.
      * Subsequent calls to draw sprites should be made between {@code begin()} and {@code end()}.
+     *
+     * @throws IllegalStateException If called when already rendering.
      */
     public void begin() {
         if (rendering)
@@ -76,6 +81,8 @@ public abstract class Batch implements IDisposable {
      * Finishes the rendering process and performs any necessary cleanup.
      * This method is called after all sprites have been drawn between {@code begin()} and {@code end()}.
      * It ensures that any remaining buffered data is flushed and the rendering state is restored.
+     *
+     * @throws IllegalStateException If called when not rendering.
      */
     public void end() {
         if (!rendering)

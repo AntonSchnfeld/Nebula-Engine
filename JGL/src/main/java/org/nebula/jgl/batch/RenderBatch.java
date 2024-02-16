@@ -17,6 +17,24 @@ import static org.lwjgl.opengl.GL33C.*;
 import static org.nebula.jgl.data.Vertex.*;
 import static org.nebula.jgl.data.buffer.Buffer.*;
 
+/**
+ * <br>
+ * <h2>RenderBatch</h2>
+ * <br>
+ * The RenderBatch class extends the Batch class and provides a versatile and efficient rendering system for textured
+ * quads, triangles, and lines. It supports batching multiple renderable elements into a single draw call, optimizing
+ * performance. The class uses vertex arrays and buffers for OpenGL rendering and includes features such as texture
+ * management, depth testing, and wireframe rendering.
+ *
+ * @see Batch
+ * @see VertexArray
+ * @see Buffer
+ * @see Texture
+ * @see TextureRegion
+ * @see Vertex
+ * @see Shader
+ * @see Pool
+ */
 public class RenderBatch extends Batch {
     private final VertexArray triVao, quadVao, lineVao;
     private final Buffer triBuffer, quadBuffer, quadElementBuffer, lineBuffer;
@@ -29,6 +47,11 @@ public class RenderBatch extends Batch {
     private float z;
     private boolean wireframeEnabled;
 
+    /**
+     * Constructs a RenderBatch with the specified maximum number of textures.
+     *
+     * @param maxTextures The maximum number of unique textures this RenderBatch can handle.
+     */
     public RenderBatch(int maxTextures) {
         super();
         this.maxTextures = maxTextures;
@@ -68,16 +91,28 @@ public class RenderBatch extends Batch {
         init();
     }
 
+    /**
+     * Constructs a RenderBatch with the default maximum number of textures based on the OpenGL hardware limit.
+     */
     public RenderBatch() {
         this(JGL.getMaxTextureImageUnits());
     }
 
+    /**
+     * Initializes vertex arrays and buffers for each type of primitive (triangle, quad, line).
+     */
     private void init() {
         initVertexArray(triVao, triBuffer);
         initVertexArray(quadVao, quadBuffer);
         initVertexArray(lineVao, lineBuffer);
     }
 
+    /**
+     * Initializes a VertexArray with the specified Buffer configuration.
+     *
+     * @param vertexArray The VertexArray to initialize.
+     * @param buffer      The Buffer to bind to the VertexArray.
+     */
     private void initVertexArray(VertexArray vertexArray, Buffer buffer) {
         vertexArray.bind();
         buffer.bind();
@@ -92,7 +127,7 @@ public class RenderBatch extends Batch {
     }
 
     /**
-     * {@inheritDoc}
+     * Begins the rendering process, clearing stored vertices and textures.
      */
     @Override
     public void begin() {
@@ -111,7 +146,7 @@ public class RenderBatch extends Batch {
     }
 
     /**
-     * {@inheritDoc}
+     * Flushes the stored vertices and textures, preparing for rendering.
      */
     @Override
     public void flush() {
@@ -185,6 +220,9 @@ public class RenderBatch extends Batch {
         glDisable(GL_DEPTH_TEST);
     }
 
+    /**
+     * Generates the element buffer for quad rendering.
+     */
     private void generateQuadElementBuffer() {
         int[] indices = new int[quadVertices.size() * 6 / 4];
 
@@ -206,6 +244,12 @@ public class RenderBatch extends Batch {
         quadElementBuffer.data(indices, Usage.STATIC_DRAW);
     }
 
+    /**
+     * Converts the stored vertices from a list to a float array for rendering.
+     *
+     * @param vertexList The list of vertices to convert.
+     * @return The float array containing vertex data.
+     */
     private float[] getVerticesFromList(List<Vertex> vertexList) {
         float[] vertices = new float[VERTEX_SIZE * vertexList.size()];
 
@@ -235,6 +279,19 @@ public class RenderBatch extends Batch {
         texture(texture, v1.x, v1.y, v2.x, v2.y, v3.x, v3.y, v4.x, v4.y);
     }
 
+    /**
+     * Renders a textured quad with specified coordinates and texture coordinates.
+     *
+     * @param texture The texture to be rendered.
+     * @param x1      The x-coordinate of the first vertex.
+     * @param y1      The y-coordinate of the first vertex.
+     * @param x2      The x-coordinate of the second vertex.
+     * @param y2      The y-coordinate of the second vertex.
+     * @param x3      The x-coordinate of the third vertex.
+     * @param y3      The y-coordinate of the third vertex.
+     * @param x4      The x-coordinate of the fourth vertex.
+     * @param y4      The y-coordinate of the fourth vertex.
+     */
     public void texture(TextureRegion texture, float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4) {
         if (texture == null) {
             quad(x1, y1, x3, y3, x4, y4, x2, y2);
@@ -441,16 +498,28 @@ public class RenderBatch extends Batch {
         line(v1.x, v1.y, v2.x, v2.y);
     }
 
+    /**
+     * Checks if a given texture can fit into the RenderBatch based on the maximum number of textures allowed.
+     *
+     * @param texture The texture to check for fit.
+     * @return True if the texture can fit, false otherwise.
+     */
     public boolean canFit(Texture texture) {
         return textures.contains(texture) || textures.size() < maxTextures;
     }
 
+    /**
+     * Checks if a given texture region can fit into the RenderBatch based on the maximum number of textures allowed.
+     *
+     * @param texture The texture region to check for fit.
+     * @return True if the texture region can fit, false otherwise.
+     */
     public boolean canFit(TextureRegion texture) {
         return canFit(texture.getTexture());
     }
 
     /**
-     * {@inheritDoc}
+     * Disposes of the vertex arrays and buffers used by the RenderBatch.
      */
     @Override
     public void dispose() {

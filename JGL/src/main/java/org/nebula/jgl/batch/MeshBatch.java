@@ -17,6 +17,26 @@ import java.util.List;
 
 import static org.lwjgl.opengl.GL33C.*;
 
+/**
+ * <br>
+ * <h2>MeshBatch</h2>
+ * <br>
+ * The MeshBatch class extends the Batch class and provides functionality for efficiently rendering multiple Mesh objects
+ * in a single draw call using batch rendering. It supports vertex transformations, depth testing, and can handle both
+ * indexed and non-indexed meshes.
+ * <p>
+ * This class assumes that the provided shader accepts additional transform values (translation, scale, rotation) after
+ * each vertex for proper rendering.
+ * </p>
+ *
+ * @see Batch
+ * @see Mesh
+ * @see VertexArray
+ * @see Buffer
+ * @see Shader
+ * @see VertexAttribs
+ * @see Transform
+ */
 public class MeshBatch extends Batch {
     private static final int TRANSFORM_SIZE = 5;
     private final List<Mesh> meshes;
@@ -25,6 +45,9 @@ public class MeshBatch extends Batch {
     private VertexAttribs vertexAttribs;
     private Shader instanceShader;
 
+    /**
+     * Constructs a MeshBatch with necessary buffers and arrays for batch rendering.
+     */
     public MeshBatch() {
         super();
         this.meshes = new ArrayList<>();
@@ -33,6 +56,11 @@ public class MeshBatch extends Batch {
         this.elementBuffer = new Buffer(Buffer.Type.ELEMENT_ARRAY_BUFFER);
     }
 
+    /**
+     * Sets the shader for the MeshBatch and configures the vertex attributes.
+     *
+     * @param shader The shader to set.
+     */
     @Override
     public void setShader(Shader shader) {
         super.setShader(shader);
@@ -41,6 +69,9 @@ public class MeshBatch extends Batch {
         vertexAttribs.configure(vertexArray);
     }
 
+    /**
+     * Begins the rendering process, clearing the stored meshes.
+     */
     @Override
     public void begin() {
         super.begin();
@@ -48,6 +79,9 @@ public class MeshBatch extends Batch {
         meshes.clear();
     }
 
+    /**
+     * Finishes the rendering process, performing any necessary cleanup and flushing the batched data.
+     */
     @Override
     public void flush() {
 
@@ -73,6 +107,9 @@ public class MeshBatch extends Batch {
         MemoryUtil.memFree(indices);
     }
 
+    /**
+     * Disposes of the buffers used by the MeshBatch.
+     */
     @Override
     public void dispose() {
         buffer.dispose();
@@ -113,6 +150,12 @@ public class MeshBatch extends Batch {
         return meshVertices.flip();
     }
 
+    /**
+     * Returns the concatenated indices of all stored Meshes in one native IntBuffer.
+     *
+     * @param len the result of {@link MeshBatch#calculateTotalVerticesSize()}
+     * @return a native IntBuffer containing the concatenated indices of all stored meshes
+     */
     private IntBuffer getBatchIndices(final int len) {
         IntBuffer batchIndices = MemoryUtil.memAllocInt(len);
         int offset = 0; // Keep track of the offset for each mesh
@@ -152,14 +195,32 @@ public class MeshBatch extends Batch {
         return len;
     }
 
+    /**
+     * Adds a Mesh to the batch for rendering.
+     *
+     * @param mesh The Mesh to add to the batch.
+     */
     public void mesh(Mesh mesh) {
         meshes.add(mesh);
     }
 
+    /**
+     * Adds instances of a Mesh with specified transformations to the batch for instanced rendering.
+     *
+     * @param mesh       The Mesh to add instances of.
+     * @param transforms An array of Transform objects representing the transformations of each instance.
+     * @param instances  The number of instances to render.
+     */
     public void meshInstanced(Mesh mesh, Transform[] transforms, int instances) {
 
     }
 
+    /**
+     * Adds instances of a Mesh with specified transformations to the batch for instanced rendering.
+     *
+     * @param mesh       The Mesh to add instances of.
+     * @param transforms An array of Transform objects representing the transformations of each instance.
+     */
     public void meshInstanced(Mesh mesh, Transform[] transforms) {
         meshInstanced(mesh, transforms, transforms.length);
     }

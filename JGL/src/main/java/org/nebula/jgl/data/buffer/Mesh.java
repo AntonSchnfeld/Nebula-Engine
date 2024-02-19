@@ -2,6 +2,7 @@ package org.nebula.jgl.data.buffer;
 
 import org.lwjgl.system.MemoryUtil;
 import org.nebula.base.interfaces.IDisposable;
+import org.nebula.jgl.data.shader.Shader;
 import org.nebula.math.Transform;
 
 import java.nio.Buffer;
@@ -25,18 +26,7 @@ public class Mesh implements IDisposable {
 
     private FloatBuffer vertices;
     private IntBuffer indices;
-    private final Transform transform;
-
-    /**
-     * Constructs a Mesh object with the specified size for the vertex buffer.
-     *
-     * @param size The size of the vertex buffer.
-     */
-    public Mesh(int size) {
-        vertices = MemoryUtil.memAllocFloat(size);
-        indices = MemoryUtil.memAllocInt(size);
-        transform = new Transform();
-    }
+    private final Shader shader;
 
     /**
      * Constructs a Mesh object with the given array of vertices.
@@ -44,11 +34,23 @@ public class Mesh implements IDisposable {
      * @param vertices The array of vertices representing the mesh.
      */
     public Mesh(float[] vertices) {
+        this(Shader.getCurrentlyBoundShader(), vertices);
+    }
+
+    public Mesh(Shader shader, float[] vertices) {
+        this.shader = shader;
         this.vertices = MemoryUtil.memAllocFloat(vertices.length);
         this.indices = MemoryUtil.memAllocInt(vertices.length);
         this.vertices.put(0, vertices);
         initIndices();
-        transform = new Transform();
+    }
+
+    public Mesh(Shader shader, float[] vertices, int[] indices) {
+        this.shader = shader;
+        this.vertices = MemoryUtil.memAllocFloat(vertices.length);
+        this.indices = MemoryUtil.memAllocInt(indices.length);
+        this.vertices.put(0, vertices);
+        this.indices.put(0, indices);
     }
 
     /**
@@ -58,11 +60,15 @@ public class Mesh implements IDisposable {
      * @param indices The array of indices representing the mesh.
      */
     public Mesh(float[] vertices, int[] indices) {
-        this.vertices = MemoryUtil.memAllocFloat(vertices.length);
-        this.indices = MemoryUtil.memAllocInt(indices.length);
-        this.vertices.put(0, vertices);
-        this.indices.put(0, indices);
-        transform = new Transform();
+        this(Shader.getCurrentlyBoundShader(), vertices, indices);
+    }
+
+    public Mesh(Shader shader, FloatBuffer vertices) {
+        this.shader = shader;
+        validateBuffer(vertices, "Tried to use indirect FloatBuffer as vertices for Mesh");
+        this.vertices = vertices;
+        this.indices = MemoryUtil.memAllocInt(vertices.limit());
+        initIndices();
     }
 
     /**
@@ -72,11 +78,15 @@ public class Mesh implements IDisposable {
      * @throws IllegalArgumentException If an indirect FloatBuffer of vertices is provided.
      */
     public Mesh(FloatBuffer vertices) {
+        this(Shader.getCurrentlyBoundShader(), vertices);
+    }
+
+    public Mesh(Shader shader, FloatBuffer vertices, IntBuffer indices) {
+        this.shader = shader;
         validateBuffer(vertices, "Tried to use indirect FloatBuffer as vertices for Mesh");
+        validateBuffer(indices, "Tried to use indirect IntBuffer as indices for Mesh");
         this.vertices = vertices;
-        this.indices = MemoryUtil.memAllocInt(vertices.limit());
-        initIndices();
-        transform = new Transform();
+        this.indices = indices;
     }
 
     /**
@@ -87,11 +97,7 @@ public class Mesh implements IDisposable {
      * @throws IllegalArgumentException If an indirect FloatBuffer or IntBuffer is provided.
      */
     public Mesh(FloatBuffer vertices, IntBuffer indices) {
-        validateBuffer(vertices, "Tried to use indirect FloatBuffer as vertices for Mesh");
-        validateBuffer(indices, "Tried to use indirect IntBuffer as indices for Mesh");
-        this.vertices = vertices;
-        this.indices = indices;
-        transform = new Transform();
+        this(Shader.getCurrentlyBoundShader(), vertices, indices);
     }
 
     /**
@@ -112,14 +118,6 @@ public class Mesh implements IDisposable {
     private void validateBuffer(Buffer buffer, String errorMessage) {
         if (!buffer.isDirect())
             throw new IllegalArgumentException(errorMessage);
-    }
-    /**
-     * Gets the transformation applied to the mesh.
-     *
-     * @return The transformation object associated with the mesh.
-     */
-    public Transform getTransform() {
-        return transform;
     }
 
     /**
@@ -202,8 +200,7 @@ public class Mesh implements IDisposable {
         Mesh mesh = (Mesh) o;
 
         if (!vertices.equals(mesh.vertices)) return false;
-        if (!indices.equals(mesh.indices)) return false;
-        return transform.equals(mesh.transform);
+        return indices.equals(mesh.indices);
     }
 
     /**
@@ -213,7 +210,6 @@ public class Mesh implements IDisposable {
     public int hashCode() {
         int result = vertices.hashCode();
         result = 31 * result + indices.hashCode();
-        result = 31 * result + transform.hashCode();
         return result;
     }
 
@@ -222,8 +218,11 @@ public class Mesh implements IDisposable {
         return "Mesh{" +
                 "vertices=" + vertices +
                 ", indices=" + indices +
-                ", transform=" + transform +
                 '}';
+    }
+
+    public Shader getShader() {
+        return shader;
     }
 
     /**

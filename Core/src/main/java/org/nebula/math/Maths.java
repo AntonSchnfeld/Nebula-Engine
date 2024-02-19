@@ -1,6 +1,6 @@
 package org.nebula.math;
 
-import org.joml.Vector2f;
+import org.joml.Vector3f;
 
 public class Maths {
 
@@ -12,15 +12,24 @@ public class Maths {
      * @param transform The Transform object containing rotation, scaling, and translation information.
      * @return The transformed position vector.
      */
-    public static Vector2f transform(Vector2f position, Transform transform) {
-        // Apply rotation
-        float cos = (float) Math.cos(Math.toRadians(transform.getRotation()));
-        float sin = (float) Math.sin(Math.toRadians(transform.getRotation()));
+    public static Vector3f transform(Vector3f position, Transform transform) {
+        // Apply rotation around the Z-axis
+        float cosZ = (float) Math.cos(Math.toRadians(transform.getRotation().x));
+        float sinZ = (float) Math.sin(Math.toRadians(transform.getRotation().x));
 
-        float newX = position.x * cos - position.y * sin;
-        float newY = position.x * sin + position.y * cos;
+        float newX = position.x * cosZ - position.y * sinZ;
+        float newY = position.x * sinZ + position.y * cosZ;
 
-        position.set(newX, newY);
+        // Apply rotation around the X-axis
+        float cosX = (float) Math.cos(Math.toRadians(transform.getRotation().y));
+        float sinX = (float) Math.sin(Math.toRadians(transform.getRotation().y));
+
+        float tempY = newY * cosX - position.z * sinX;
+        float newZ = position.z * cosX + newY * sinX;
+
+        newY = tempY;
+
+        position.set(newX, newY, newZ);
 
         // Apply scaling
         position.mul(transform.getScale());

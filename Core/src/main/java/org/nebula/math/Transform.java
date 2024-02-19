@@ -1,6 +1,7 @@
 package org.nebula.math;
 
 import org.joml.Vector2f;
+import org.joml.Vector3f;
 
 /**
  * <br>
@@ -13,15 +14,15 @@ import org.joml.Vector2f;
  * @author Anton Schoenfeld
  */
 public class Transform {
-    private final Vector2f translation;
-    private final Vector2f scale;
-    private float rotation;
+    private final Vector3f translation;
+    private final Vector3f scale;
+    private final Vector2f rotation;
 
     /**
      * Constructs a Transform with default values (no translation, unit scale, and no rotation).
      */
     public Transform() {
-        this(new Vector2f(0, 0), new Vector2f(1, 1), 0);
+        this(new Vector3f(), new Vector3f(1f), new Vector2f());
     }
 
     /**
@@ -29,8 +30,8 @@ public class Transform {
      *
      * @param translation The translation vector.
      */
-    public Transform(Vector2f translation) {
-        this(translation, new Vector2f(1, 1), 0);
+    public Transform(Vector3f translation) {
+        this(translation, new Vector3f(1f), new Vector2f());
     }
 
     /**
@@ -39,8 +40,8 @@ public class Transform {
      * @param translation The translation vector.
      * @param rotation    The rotation angle in degrees.
      */
-    public Transform(Vector2f translation, float rotation) {
-        this(translation, new Vector2f(1, 1), rotation);
+    public Transform(Vector3f translation, Vector2f rotation) {
+        this(translation, new Vector3f(1f), rotation);
     }
 
     /**
@@ -50,7 +51,7 @@ public class Transform {
      * @param scale       The scaling vector.
      * @param rotation    The rotation angle in degrees.
      */
-    public Transform(Vector2f translation, Vector2f scale, float rotation) {
+    public Transform(Vector3f translation, Vector3f scale, Vector2f rotation) {
         this.translation = translation;
         this.scale = scale;
         this.rotation = rotation;
@@ -61,28 +62,28 @@ public class Transform {
         set(that);
     }
 
-    public Transform withTranslation(Vector2f translation) {
+    public Transform withTranslation(Vector3f translation) {
         Transform withTranslation = new Transform(this);
         withTranslation.setTranslation(translation);
         return withTranslation;
     }
 
-    public Transform withScale(Vector2f scale) {
+    public Transform withScale(Vector3f scale) {
         Transform withScale = new Transform(this);
         withScale.setScale(scale);
         return withScale;
     }
 
-    public Transform withRotation(float rotation) {
+    public Transform withRotation(Vector2f rotation) {
         Transform withRotation = new Transform(this);
-        withRotation.rotation = rotation;
+        withRotation.setRotation(rotation);
         return withRotation;
     }
 
     public void set(Transform that) {
         this.translation.set(that.translation);
         this.scale.set(that.scale);
-        this.rotation = that.rotation;
+        this.rotation.set(that.rotation);
     }
 
     /**
@@ -90,7 +91,7 @@ public class Transform {
      *
      * @return The translation vector.
      */
-    public Vector2f getTranslation() {
+    public Vector3f getTranslation() {
         return translation;
     }
 
@@ -99,7 +100,7 @@ public class Transform {
      *
      * @param translation The new translation vector.
      */
-    public void setTranslation(Vector2f translation) {
+    public void setTranslation(Vector3f translation) {
         this.translation.set(translation);
     }
 
@@ -108,7 +109,7 @@ public class Transform {
      *
      * @return The scaling vector.
      */
-    public Vector2f getScale() {
+    public Vector3f getScale() {
         return scale;
     }
 
@@ -117,7 +118,7 @@ public class Transform {
      *
      * @param scale The new scaling vector.
      */
-    public void setScale(Vector2f scale) {
+    public void setScale(Vector3f scale) {
         this.scale.set(scale);
     }
 
@@ -126,7 +127,7 @@ public class Transform {
      *
      * @return The rotation angle.
      */
-    public float getRotation() {
+    public Vector2f getRotation() {
         return rotation;
     }
 
@@ -135,8 +136,8 @@ public class Transform {
      *
      * @param rotation The new rotation angle.
      */
-    public void setRotation(float rotation) {
-        this.rotation = rotation;
+    public void setRotation(Vector2f rotation) {
+        this.rotation.set(rotation);
     }
 
     /**
@@ -152,7 +153,7 @@ public class Transform {
 
         Transform transform = (Transform) o;
 
-        if (Float.compare(rotation, transform.rotation) != 0) return false;
+        if (!rotation.equals(transform.rotation)) return false;
         if (!translation.equals(transform.translation)) return false;
         return scale.equals(transform.scale);
     }
@@ -166,7 +167,7 @@ public class Transform {
     public int hashCode() {
         int result = translation.hashCode();
         result = 31 * result + scale.hashCode();
-        result = 31 * result + (rotation != 0.0f ? Float.floatToIntBits(rotation) : 0);
+        result = 31 * result + rotation.hashCode();
         return result;
     }
 

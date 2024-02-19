@@ -83,10 +83,7 @@ public class MeshBatchTest {
         meshBatch.setViewMatrix(camera.getView());
         meshBatch.setProjectionMatrix(camera.getProjection());
         meshBatch.begin();
-        final Transform transform = mesh.getTransform();
-        transform.setRotation(transform.getRotation() + 1f);
-        transform.getScale().set(Math.sin(GLFW.glfwGetTime()), Math.sin(GLFW.glfwGetTime()));
-        transform.getTranslation().set(Math.sin(GLFW.glfwGetTime()) * 100f, Math.sin(GLFW.glfwGetTime()) * 100f);
+
         for (int i = 0; i < 75_000; i++)
             meshBatch.mesh(mesh);
         meshBatch.end();

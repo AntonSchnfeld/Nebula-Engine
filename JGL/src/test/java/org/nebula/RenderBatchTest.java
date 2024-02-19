@@ -42,7 +42,7 @@ public class RenderBatchTest {
         texture = new TextureRegion(nebula);
         triangleTexture = new TextureRegion(nebula, new float[]{0, 0, 1, 0, 0.5f, 1});
 
-        transform = new Transform(new Vector2f(0, 0), new Vector2f(1, 1), 0);
+        transform = new Transform(new Vector3f(), new Vector3f(1), new Vector2f());
 
         window.loop();
         window.dispose();
@@ -59,14 +59,17 @@ public class RenderBatchTest {
         batch.setProjectionMatrix(camera.getProjection());
 
         batch.begin();
-        transform.setRotation(transform.getRotation() + 0.25f);
+        transform.setRotation(transform.getRotation().set(transform.getRotation().x + 0.1f, transform.getRotation().y));
         batch.setColor(1, 1, 1, 0.5f);
         batch.texture(texture, -0.75f, -0.75f, 1.5f, 1.5f);
         batch.setColor(Color.WHITE);
+        Vector3f lowerLeft = Maths.transform(new Vector3f(-0.75f, -0.75f, 0), transform);
+        Vector3f lowerRight = Maths.transform(new Vector3f(0.75f, -0.75f, 0), transform);
+        Vector3f middle = Maths.transform(new Vector3f(0, 0.75f, 0), transform);
         batch.texturedTriangle(triangleTexture,
-                Maths.transform(new Vector2f(-0.5f, -0.5f), transform),
-                Maths.transform(new Vector2f(0.5f, -0.5f), transform),
-                Maths.transform(new Vector2f(0, 0.5f), transform));
+                new Vector2f(lowerLeft.x, lowerLeft.y),
+                new Vector2f(lowerRight.x, lowerRight.y),
+                new Vector2f(middle.x, middle.y));
         batch.end();
     }
 }

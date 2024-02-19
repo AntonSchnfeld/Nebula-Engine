@@ -1,5 +1,6 @@
 package org.nebula.jgl.batch;
 
+import org.lwjgl.glfw.GLFWNativeWin32;
 import org.lwjgl.opengl.ARBFragmentShader;
 import org.lwjgl.system.MemoryUtil;
 import org.nebula.jgl.JGL;
@@ -127,24 +128,8 @@ public class MeshBatch extends Batch {
         FloatBuffer meshVertices = MemoryUtil.memAllocFloat(len);
         for (Mesh mesh : meshes) {
             final FloatBuffer vertices = mesh.getVertices();
-            final int count = vertices.limit() / (vertexAttribs.getVertexSize() - TRANSFORM_SIZE);
-            final Transform transform = mesh.getTransform();
 
-            // Add all the vertices of the current mesh into the native concatenated FloatBuffer
-            // and insert the transform values after each vertex.
-            // Vertex layout: {vertex data as defined by the shader}, translation, scale, rotation
-            for (int i = 0; i < count; i++) {
-
-                for (int j = 0; j < vertexAttribs.getVertexSize() - TRANSFORM_SIZE; j++) {
-                    meshVertices.put(vertices.get());
-                }
-
-                meshVertices.put(transform.getTranslation().x);
-                meshVertices.put(transform.getTranslation().y);
-                meshVertices.put(transform.getScale().x);
-                meshVertices.put(transform.getScale().y);
-                meshVertices.put(transform.getRotation());
-            }
+            meshVertices.put(vertices);
         }
 
         return meshVertices.flip();

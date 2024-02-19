@@ -35,19 +35,25 @@ Transform new_Transform(vec2 translation, vec2 scale, float rotation) {
 uniform mat4 uView;
 uniform mat4 uProjection;
 
-layout(location = 0) in vec2 vPos;
+layout(location = 0) in vec3 vPos;
 layout(location = 1) in vec4 vCol;
+/*
 layout(location = 2) in vec2 vTranslation;
 layout(location = 3) in vec2 vScale;
 layout(location = 4) in float vRotation;
+*/
 
 out vec4 fCol;
 
 void main() {
+    /*
     Transform transform = new_Transform(vTranslation, vScale, vRotation);
 
     vec2 transformedPos = applyTransform(vPos, transform);
 
     fCol = vCol;
     gl_Position = uView * uProjection * vec4(transformedPos, 0, 1);
+    */
+    fCol = vCol;
+    gl_Position = uView * uProjection * vec4(vPos, 1);
 }
